@@ -1,0 +1,624 @@
+// Rare Scents – Datenbankschema
+//
+// Grundregeln:
+//  * Alle Geldbeträge werden als Integer in Cent gespeichert (niemals Float).
+//  * Prozentwerte werden in Basispunkten gespeichert (810 = 8,10 %).
+//  * Volumen wird in Millilitern als Integer gespeichert.
+//  * Zeitstempel sind immer UTC.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Benutzer / Rollen
+// ---------------------------------------------------------------------------
+
+enum Role {
+  ADMIN
+  STAFF
+}
+
+/// Interne Benutzer (Admin-Dashboard). Kundendaten liegen in `Customer`.
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  role         Role      @default(STAFF)
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  inventoryMovements InventoryMovement[]
+
+  @@index([email])
+}
+
+// ---------------------------------------------------------------------------
+// Katalog
+// ---------------------------------------------------------------------------
+
+enum CategoryKind {
+  /// Damen / Herren / Unisex
+  GENDER
+  /// Abfüllungen / Sets / Duftproben
+  TYPE
+}
+
+enum FragranceFamily {
+  FLORAL
+  ORIENTAL
+  HOLZIG
+  FRISCH
+  ZITRUS
+  GOURMAND
+  AROMATISCH
+  CHYPRE
+  LEDER
+}
+
+enum ProductKind {
+  /// Eigenständiges Parfüm (Flakon)
+  PARFUM
+  /// Abfüllung aus einem Original-/Alternativflakon
+  ABFUELLUNG
+  /// Duftprobe (kleine Größen)
+  PROBE
+  /// Geschenkset / Bundle
+  SET
+}
+
+model Category {
+  id            String       @id @default(cuid())
+  slug          String       @unique
+  name          String
+  description   String?
+  kind          CategoryKind
+  heroImageUrl  String?
+  sortOrder     Int          @default(0)
+  isActive      Boolean      @default(true)
+  metaTitle     String?
+  metaDesc      String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  products Product[] @relation("ProductCategories")
+
+  @@index([isActive, sortOrder])
+}
+
+model Product {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  name        String
+  /// Kurzer Teaser für Produktkarten
+  subtitle    String?
+  description String
+  /// Duftrichtung in Worten, z. B. "Warm-orientalisch mit Amber"
+  scentProfile String?
+  fragranceFamily FragranceFamily
+  kind        ProductKind     @default(PARFUM)
+
+  /// Duftnoten – jeweils als Liste einzelner Noten
+  topNotes    String[]
+  heartNotes  String[]
+  baseNotes   String[]
+
+  /// Pflichtangaben / Inhaltsstoffe (INCI o. ä.)
+  ingredients String?
+  /// Anwendungshinweise
+  usage       String?
+  /// Rechtlicher Hinweis, z. B. Kennzeichnung als Duftalternative
+  legalNotice String?
+
+  /// Kennzeichnung als Duftalternative (keine Originalware)
+  isAlternative Boolean @default(false)
+  /// Klar erkennbarer Demo-Datensatz
+  isDemo        Boolean @default(false)
+
+  isActive    Boolean @default(true)
+  isBestseller Boolean @default(false)
+  isNew        Boolean @default(false)
+
+  /// Für die Sortierung "Beliebtheit"
+  popularity  Int     @default(0)
+
+  metaTitle   String?
+  metaDesc    String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  categories Category[]       @relation("ProductCategories")
+  images     ProductImage[]
+  variants   ProductVariant[]
+  orderItems OrderItem[]
+
+  @@index([isActive, createdAt])
+  @@index([isActive, isBestseller])
+  @@index([isActive, isNew])
+  @@index([fragranceFamily])
+  @@index([kind])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  url       String
+  /// Cloudinary public_id – nötig, um das Bild wieder löschen zu können
+  publicId  String?
+  alt       String
+  width     Int?
+  height    Int?
+  sortOrder Int     @default(0)
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, sortOrder])
+}
+
+/// Eine kaufbare Größe eines Produkts. Preis und Lagerbestand hängen
+/// immer an der Variante, niemals am Produkt.
+model ProductVariant {
+  id        String @id @default(cuid())
+  productId String
+
+  sku       String @unique
+  /// Anzeigename der Größe, z. B. "10 ml"
+  size      String
+  /// Volumen in Millilitern – Basis für den Grundpreis je 100 ml
+  volumeMl  Int
+
+  priceCents          Int
+  /// Optionaler Streichpreis (UVP / vorheriger Preis)
+  compareAtPriceCents Int?
+
+  /// Physisch vorhandener Bestand
+  stock         Int @default(0)
+  /// Durch offene, noch nicht bezahlte Bestellungen blockierter Bestand
+  reservedStock Int @default(0)
+  /// Ab diesem Bestand warnt das Dashboard
+  lowStockThreshold Int @default(3)
+
+  isActive        Boolean   @default(true)
+  /// Vorbestellung erlaubt, auch wenn kein Bestand vorhanden ist
+  preorderEnabled Boolean   @default(false)
+  /// Voraussichtliches Wiederverfügbarkeitsdatum
+  restockDate     DateTime?
+
+  /// Lieferzeit in Werktagen
+  deliveryMinDays Int @default(1)
+  deliveryMaxDays Int @default(2)
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product            Product                  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems         OrderItem[]
+  movements          InventoryMovement[]
+  backInStockSubs    BackInStockSubscription[]
+
+  @@index([productId, sortOrder])
+  @@index([isActive])
+  @@index([priceCents])
+}
+
+enum InventoryReason {
+  /// Wareneingang / manuelle Korrektur nach oben
+  RESTOCK
+  /// Manuelle Korrektur durch Admin
+  MANUAL_ADJUSTMENT
+  /// Reservierung beim Anlegen einer Bestellung
+  RESERVATION
+  /// Freigabe einer Reservierung (Abbruch/Timeout)
+  RELEASE
+  /// Endgültiger Abzug nach bestätigter Zahlung
+  SALE
+  /// Rückbuchung nach Storno/Erstattung
+  RETURN
+}
+
+/// Lückenloses Lagerjournal ("Inventory"): jede Bestandsänderung wird
+/// nachvollziehbar protokolliert.
+model InventoryMovement {
+  id        String          @id @default(cuid())
+  variantId String
+  reason    InventoryReason
+  /// Änderung des physischen Bestands (kann negativ sein)
+  stockDelta    Int @default(0)
+  /// Änderung des reservierten Bestands (kann negativ sein)
+  reservedDelta Int @default(0)
+  /// Bestand nach der Buchung – erleichtert die Fehlersuche
+  stockAfter    Int
+  reservedAfter Int
+
+  orderId String?
+  note    String?
+  userId  String?
+
+  createdAt DateTime @default(now())
+
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  order   Order?         @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  user    User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([variantId, createdAt])
+  @@index([orderId])
+}
+
+// ---------------------------------------------------------------------------
+// Kunden & Adressen
+// ---------------------------------------------------------------------------
+
+model Customer {
+  id        String  @id @default(cuid())
+  email     String  @unique
+  firstName String
+  lastName  String
+  phone     String?
+
+  /// Ausdrückliche Einwilligung in Werbe-E-Mails
+  marketingOptIn Boolean @default(false)
+
+  /// Stripe-Kundenreferenz (keine Zahlungsdaten!)
+  stripeCustomerId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders    Order[]
+  addresses Address[]
+
+  @@index([email])
+}
+
+enum AddressType {
+  SHIPPING
+  BILLING
+}
+
+model Address {
+  id         String      @id @default(cuid())
+  customerId String?
+  type       AddressType
+
+  firstName   String
+  lastName    String
+  company     String?
+  street      String
+  houseNumber String?
+  addressLine2 String?
+  postalCode  String
+  city        String
+  state       String?
+  /// ISO-3166-1 alpha-2, z. B. "CH", "DE", "AT"
+  country     String
+  phone       String?
+
+  createdAt DateTime @default(now())
+
+  customer       Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  shippingOrders Order[]   @relation("ShippingAddress")
+  billingOrders  Order[]   @relation("BillingAddress")
+
+  @@index([customerId])
+}
+
+// ---------------------------------------------------------------------------
+// Bestellungen
+// ---------------------------------------------------------------------------
+
+enum OrderStatus {
+  /// Zahlung ausstehend
+  PENDING_PAYMENT
+  /// Bezahlt
+  PAID
+  /// In Bearbeitung
+  PROCESSING
+  /// Versandbereit
+  READY_TO_SHIP
+  /// Versendet
+  SHIPPED
+  /// Zugestellt
+  DELIVERED
+  /// Storniert
+  CANCELLED
+  /// Erstattet
+  REFUNDED
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  /// Menschenlesbare Bestellnummer, z. B. RS-260817-4KD9P
+  orderNumber String      @unique
+  /// Zufälliges Token für den Bestellstatus-Link (Gastbestellungen)
+  accessToken String      @unique @default(cuid())
+  status      OrderStatus @default(PENDING_PAYMENT)
+
+  customerId String?
+  /// E-Mail-Schnappschuss zum Bestellzeitpunkt
+  email      String
+
+  currency String @default("EUR")
+
+  /// Alle Beträge in Cent, brutto gerechnet (Endkundenpreise inkl. MwSt.)
+  subtotalCents Int
+  discountCents Int @default(0)
+  shippingCents Int @default(0)
+  totalCents    Int
+  /// Im Bruttobetrag enthaltene Umsatzsteuer
+  taxCents      Int @default(0)
+  /// Steuersatz in Basispunkten (810 = 8,10 %)
+  taxRateBp     Int @default(0)
+
+  discountCodeId    String?
+  discountCodeLabel String?
+
+  shippingMethodKey   String
+  shippingMethodLabel String
+  shippingMinDays     Int
+  shippingMaxDays     Int
+
+  customerNote String?
+
+  shippingAddressId String
+  billingAddressId  String
+
+  stripeCheckoutSessionId String? @unique
+  stripePaymentIntentId   String?
+
+  /// Bestand wurde nach bestätigter Zahlung endgültig abgebucht
+  stockCommitted Boolean @default(false)
+  /// Reservierung wurde wieder freigegeben (Abbruch/Storno)
+  stockReleased  Boolean @default(false)
+  /// Bis wann die Reservierung gilt
+  reservationExpiresAt DateTime?
+
+  paidAt      DateTime?
+  cancelledAt DateTime?
+  refundedAt  DateTime?
+
+  /// Bestätigungsmail an den Kunden wurde versendet (Idempotenz)
+  confirmationEmailSentAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  customer        Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  shippingAddress Address       @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
+  billingAddress  Address       @relation("BillingAddress", fields: [billingAddressId], references: [id])
+  discountCode    DiscountCode? @relation(fields: [discountCodeId], references: [id], onDelete: SetNull)
+
+  items     OrderItem[]
+  payments  Payment[]
+  shipments Shipment[]
+  movements InventoryMovement[]
+
+  @@index([status, createdAt])
+  @@index([email])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id      String @id @default(cuid())
+  orderId String
+
+  /// Referenzen bleiben optional, damit gelöschte Produkte
+  /// die Bestellhistorie nicht zerstören.
+  productId String?
+  variantId String?
+
+  /// Schnappschuss der Produktdaten zum Bestellzeitpunkt
+  productName String
+  variantSize String
+  sku         String
+  imageUrl    String?
+  volumeMl    Int
+
+  unitPriceCents Int
+  quantity       Int
+  lineTotalCents Int
+
+  deliveryMinDays Int
+  deliveryMaxDays Int
+  /// Position war eine Vorbestellung
+  isPreorder      Boolean @default(false)
+
+  order   Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([variantId])
+}
+
+enum PaymentProvider {
+  STRIPE
+  PAYPAL
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+/// Zahlungsvorgang. Es werden ausschließlich Referenzen und
+/// nicht-sensible Anzeigedaten (Marke, letzte 4 Ziffern) gespeichert –
+/// niemals vollständige Kartendaten.
+model Payment {
+  id       String          @id @default(cuid())
+  orderId  String
+  provider PaymentProvider @default(STRIPE)
+  status   PaymentStatus   @default(PENDING)
+
+  amountCents   Int
+  refundedCents Int    @default(0)
+  currency      String @default("EUR")
+
+  stripePaymentIntentId String? @unique
+  stripeChargeId        String?
+
+  methodType  String?
+  methodBrand String?
+  methodLast4 String?
+
+  failureCode    String?
+  failureMessage String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
+}
+
+model Shipment {
+  id      String @id @default(cuid())
+  orderId String
+
+  carrier        String
+  trackingNumber String
+  trackingUrl    String?
+
+  shippedAt   DateTime  @default(now())
+  deliveredAt DateTime?
+  /// Versandbestätigung an den Kunden verschickt
+  notifiedAt  DateTime?
+
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+// ---------------------------------------------------------------------------
+// Rabattcodes
+// ---------------------------------------------------------------------------
+
+enum DiscountType {
+  /// Prozentrabatt, `value` in Basispunkten (1000 = 10 %)
+  PERCENT
+  /// Fester Betrag, `value` in Cent
+  FIXED
+  /// Kostenloser Versand
+  FREE_SHIPPING
+}
+
+model DiscountCode {
+  id          String       @id @default(cuid())
+  code        String       @unique
+  description String?
+  type        DiscountType
+  value       Int          @default(0)
+
+  minSubtotalCents Int  @default(0)
+  maxRedemptions   Int?
+  usedCount        Int  @default(0)
+
+  startsAt DateTime?
+  endsAt   DateTime?
+  isActive Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders Order[]
+
+  @@index([code])
+}
+
+// ---------------------------------------------------------------------------
+// Marketing & Benachrichtigungen
+// ---------------------------------------------------------------------------
+
+model NewsletterSubscription {
+  id    String @id @default(cuid())
+  email String @unique
+
+  /// Nachweis der Einwilligung (DSGVO Art. 7 Abs. 1)
+  consentAt   DateTime @default(now())
+  consentText String
+  source      String   @default("website")
+  /// Gehashte IP – kein Klartext
+  ipHash      String?
+
+  /// Double-Opt-in
+  confirmToken   String?   @unique
+  confirmedAt    DateTime?
+  unsubscribedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+model BackInStockSubscription {
+  id        String  @id @default(cuid())
+  email     String
+  variantId String
+
+  notifiedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([email, variantId])
+  @@index([variantId, notifiedAt])
+}
+
+model ContactMessage {
+  id      String  @id @default(cuid())
+  name    String
+  email   String
+  subject String
+  message String
+  ipHash  String?
+
+  handledAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Webhooks (Idempotenz)
+// ---------------------------------------------------------------------------
+
+enum WebhookStatus {
+  RECEIVED
+  PROCESSED
+  FAILED
+  IGNORED
+}
+
+/// Jedes eingehende Webhook-Ereignis wird genau einmal verarbeitet.
+/// `eventId` ist eindeutig – ein zweiter Zustellversuch wird erkannt.
+model WebhookEvent {
+  id       String        @id @default(cuid())
+  provider String        @default("stripe")
+  eventId  String        @unique
+  type     String
+  status   WebhookStatus @default(RECEIVED)
+
+  error       String?
+  attempts    Int       @default(0)
+  receivedAt  DateTime  @default(now())
+  processedAt DateTime?
+
+  @@index([type, receivedAt])
+}

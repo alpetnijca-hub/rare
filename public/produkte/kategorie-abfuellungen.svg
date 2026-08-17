@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600" role="img" aria-label="abfuellungen">
+  <defs>
+    <linearGradient id="cat-bg-abfuellungen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#131313"/>
+      <stop offset="100%" stop-color="#080808"/>
+    </linearGradient>
+    <radialGradient id="cat-glow-abfuellungen" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#7a9c6a" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#7a9c6a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#cat-bg-abfuellungen)"/>
+  <rect width="600" height="600" fill="url(#cat-glow-abfuellungen)"/>
+  <circle cx="300" cy="288" r="118" fill="none" stroke="#C8A45D" stroke-opacity="0.35" stroke-width="1.4"/>
+  <circle cx="300" cy="288" r="86" fill="none" stroke="#C8A45D" stroke-opacity="0.18" stroke-width="1"/>
+  <path d="M268 236h64v26l14 24v96a20 20 0 0 1-20 20h-52a20 20 0 0 1-20-20v-96l14-24z" fill="#0d0d0d" stroke="#C8A45D" stroke-width="1.6" stroke-opacity="0.75"/>
+  <rect x="288" y="212" width="24" height="24" fill="#C8A45D" opacity="0.75"/>
+</svg>
