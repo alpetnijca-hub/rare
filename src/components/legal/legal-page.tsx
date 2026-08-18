@@ -4,20 +4,28 @@ import Link from "next/link";
 /**
  * Einheitliches Layout für Rechts- und Serviceseiten.
  *
- * Der Warnhinweis oben ist bewusst deutlich sichtbar: Die enthaltenen Texte
- * sind Platzhalter und ersetzen keine rechtliche Beratung.
+ * Der Hinweis oben ist bewusst deutlich sichtbar und kennt zwei Stufen:
+ *
+ *   "placeholder" – der Text enthält noch Platzhalter und ist unfertig.
+ *   "review"      – der Text ist auf dieses Unternehmen zugeschnitten,
+ *                   ersetzt aber weiterhin keine Rechtsberatung.
+ *
+ * Keine der beiden Stufen behauptet Rechtssicherheit. Genau das ist der
+ * Punkt: Automatisch erzeugte Rechtstexte sind nie geprüft.
  */
+export type LegalNotice = "placeholder" | "review" | "none";
+
 export function LegalPage({
   title,
   intro,
   lastUpdated,
-  showPlaceholderNotice = true,
+  notice = "placeholder",
   children,
 }: {
   title: string;
   intro?: string;
   lastUpdated?: string;
-  showPlaceholderNotice?: boolean;
+  notice?: LegalNotice;
   children: ReactNode;
 }) {
   return (
@@ -36,7 +44,7 @@ export function LegalPage({
           )}
         </header>
 
-        {showPlaceholderNotice && (
+        {notice === "placeholder" && (
           <aside
             role="note"
             className="mb-10 border border-amber-800/60 bg-amber-950/25 p-5 md:p-6"
@@ -50,9 +58,32 @@ export function LegalPage({
               wurde nicht auf euren konkreten Fall geprüft. Alle Rechtstexte,
               Produktangaben, Markennennungen, Duftvergleiche und
               Kennzeichnungspflichten – insbesondere nach Kosmetikverordnung,
-              Preisangabenverordnung, Fernabsatzrecht und Datenschutzrecht –
-              müssen vor dem Livegang durch eine fachkundige Person geprüft und
-              an euer Unternehmen angepasst werden.
+              Preisbekanntgabeverordnung, Fernabsatzrecht und Datenschutzrecht
+              – müssen vor dem Livegang durch eine fachkundige Person geprüft
+              und an euer Unternehmen angepasst werden.
+            </p>
+          </aside>
+        )}
+
+        {notice === "review" && (
+          <aside
+            role="note"
+            className="mb-10 border border-amber-800/60 bg-amber-950/25 p-5 md:p-6"
+          >
+            <p className="mb-2 text-sm font-medium text-amber-200">
+              Vor dem Livegang juristisch prüfen lassen
+            </p>
+            <p className="text-sm leading-relaxed text-amber-100/85">
+              Dieser Text wurde auf dieses Unternehmen zugeschnitten, ist aber{" "}
+              <strong className="font-medium">
+                nicht automatisch rechtssicher
+              </strong>{" "}
+              und ersetzt keine Rechtsberatung. Rechtstexte, Produktangaben,
+              Markennennungen, Duftvergleiche und Kennzeichnungspflichten –
+              insbesondere nach Kosmetikrecht, Preisbekanntgabeverordnung,
+              Lebensmittel- und Gebrauchsgegenständerecht, Fernabsatzrecht
+              sowie revDSG und DSGVO – müssen vor der Veröffentlichung von
+              einer fachkundigen Person geprüft werden.
             </p>
           </aside>
         )}

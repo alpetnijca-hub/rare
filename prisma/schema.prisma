@@ -347,9 +347,9 @@ model Order {
   /// E-Mail-Schnappschuss zum Bestellzeitpunkt
   email      String
 
-  currency String @default("EUR")
+  currency String @default("CHF")
 
-  /// Alle Beträge in Cent, brutto gerechnet (Endkundenpreise inkl. MwSt.)
+  /// Alle Beträge in Rappen (Integer), brutto gerechnet – Endkundenpreise in CHF
   subtotalCents Int
   discountCents Int @default(0)
   shippingCents Int @default(0)
@@ -465,7 +465,7 @@ model Payment {
 
   amountCents   Int
   refundedCents Int    @default(0)
-  currency      String @default("EUR")
+  currency      String @default("CHF")
 
   stripePaymentIntentId String? @unique
   stripeChargeId        String?

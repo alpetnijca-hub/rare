@@ -1,9 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LegalList, LegalPage, LegalSection } from "@/components/legal/legal-page";
-import { siteConfig } from "@/config/site";
-import { shippingMethods } from "@/lib/shipping";
-import { formatPrice } from "@/lib/money";
+import {
+  LegalList,
+  LegalPage,
+  LegalSection,
+} from "@/components/legal/legal-page";
+import {
+  isVatRegistered,
+  maxPreorderQuantity,
+  maxQuantityPerItem,
+  returnsPolicy,
+  siteConfig,
+  taxConfig,
+} from "@/config/site";
+import { shippingCountries, shippingMethods } from "@/lib/shipping";
+import { formatPrice, formatTaxRate } from "@/lib/money";
 
 export const metadata: Metadata = {
   title: "Allgemeine Geschäftsbedingungen",
@@ -11,182 +22,371 @@ export const metadata: Metadata = {
   alternates: { canonical: "/agb" },
 };
 
+const returnShippingByCustomer = returnsPolicy.returnShippingPaidBy === "customer";
+
 export default function TermsPage() {
-  const standard = shippingMethods[0];
+  const { contact } = siteConfig;
+  const countryNames = shippingCountries.map((country) => country.name);
 
   return (
     <LegalPage
       title="Allgemeine Geschäftsbedingungen"
       intro="Bedingungen für Bestellungen über diesen Onlineshop."
-      lastUpdated="PLATZHALTER – Datum eintragen"
+      lastUpdated="18. August 2026"
+      notice="review"
     >
-      <LegalSection title="§ 1 Geltungsbereich und Anbieter">
+      <LegalSection title="1. Geltungsbereich und Anbieter">
         <p>
-          Diese Bedingungen gelten für alle Bestellungen über diesen Shop
-          zwischen {siteConfig.legalName}, {siteConfig.contact.street},{" "}
-          {siteConfig.contact.postalCode} {siteConfig.contact.city} (nachfolgend
-          „wir“) und dir als Kundin oder Kunde.
+          Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für sämtliche
+          Bestellungen, die über diesen Onlineshop zwischen
         </p>
         <p>
-          Wir verkaufen ausschliesslich an Endverbraucherinnen und
-          Endverbraucher in haushaltsüblichen Mengen sowie an Unternehmen.
-          Abweichende Bedingungen erkennen wir nicht an, sofern wir ihnen nicht
-          ausdrücklich zugestimmt haben.
+          {siteConfig.legalName}
+          <br />
+          {contact.street}
+          <br />
+          {contact.postalCode} {contact.city}, {contact.country}
+          <br />
+          E-Mail:{" "}
+          <a
+            href={`mailto:${contact.email}`}
+            className="text-gold underline underline-offset-2 hover:text-gold-light"
+          >
+            {contact.email}
+          </a>
+        </p>
+        <p>
+          (nachfolgend „wir“ oder „Rare Scents“) und dir als Kundin oder Kunde
+          abgeschlossen werden. Massgebend ist die zum Zeitpunkt der Bestellung
+          veröffentlichte Fassung.
+        </p>
+        <p>
+          Wir verkaufen an Endverbraucherinnen und Endverbraucher in
+          haushaltsüblichen Mengen. Entgegenstehende oder ergänzende
+          Bedingungen erkennen wir nicht an, sofern wir ihnen nicht
+          ausdrücklich schriftlich zugestimmt haben. Wir dürfen Bestellungen
+          ohne Angabe von Gründen ablehnen, insbesondere bei offensichtlich
+          gewerblicher Weiterveräusserung oder bei begründetem Verdacht auf
+          Missbrauch.
         </p>
       </LegalSection>
 
-      <LegalSection title="§ 2 Vertragsschluss">
+      <LegalSection title="2. Vertragsschluss">
         <p>
-          Die Darstellung der Produkte im Shop ist kein bindendes Angebot,
-          sondern eine unverbindliche Aufforderung zur Bestellung.
+          Die Darstellung der Produkte im Shop stellt kein bindendes Angebot
+          dar, sondern eine unverbindliche Einladung zur Bestellung.
         </p>
         <p>
           Mit dem Klick auf „Zahlungspflichtig bestellen“ gibst du ein
-          verbindliches Angebot ab. Wir bestätigen den Eingang unverzüglich per
-          E-Mail; diese Eingangsbestätigung stellt noch keine Annahme dar. Der
-          Vertrag kommt zustande, sobald wir die Annahme erklären oder die Ware
-          versenden.
+          verbindliches Angebot zum Kauf der im Warenkorb enthaltenen Artikel
+          ab. Wir bestätigen den Eingang deiner Bestellung unverzüglich per
+          E-Mail. Diese Eingangsbestätigung ist noch keine Annahme des
+          Angebots.
         </p>
         <p>
-          Vor dem Absenden kannst du alle Eingaben im Bezahlvorgang prüfen und
-          über die Zurück-Funktion des Browsers korrigieren.
+          Der Vertrag kommt zustande, sobald wir die Annahme ausdrücklich
+          erklären oder die Ware versenden – spätestens jedoch mit der
+          Versandbestätigung. Können wir eine Bestellung nicht ausführen,
+          informieren wir dich unverzüglich; bereits geleistete Zahlungen
+          erstatten wir in diesem Fall vollständig zurück.
+        </p>
+        <p>
+          Vor dem verbindlichen Absenden kannst du alle Eingaben im
+          Bestellvorgang prüfen und über die Korrekturfunktionen des Formulars
+          oder die Zurück-Funktion deines Browsers ändern. Den Vertragstext
+          senden wir dir mit der Bestellbestätigung zu; er ist zusätzlich über
+          den persönlichen Link zu deiner Bestellung abrufbar.
+        </p>
+        <p>
+          Je Artikel können höchstens {maxQuantityPerItem} Stück bestellt
+          werden, bei Vorbestellungen höchstens {maxPreorderQuantity} Stück.
         </p>
       </LegalSection>
 
-      <LegalSection title="§ 3 Preise und Versandkosten">
+      <LegalSection title="3. Preise und Versandkosten">
         <p>
-          Alle Preise verstehen sich als Endpreise in Euro inklusive
-          gesetzlicher Umsatzsteuer, zuzüglich Versandkosten. Die Versandkosten
-          werden im Warenkorb und im Bezahlvorgang vor Abgabe der Bestellung
-          gesondert ausgewiesen. Es entstehen keine weiteren Kosten.
+          Alle Preise sind Endpreise in Schweizer Franken (CHF)
+          {isVatRegistered
+            ? ` inklusive der gesetzlichen Mehrwertsteuer von ${formatTaxRate(taxConfig.rateBp)}`
+            : ". Wir sind nicht mehrwertsteuerpflichtig und weisen deshalb keine Mehrwertsteuer aus"}
+          , zuzüglich Versandkosten.
+        </p>
+        <p>
+          Der Shop bietet die Möglichkeit, Preise zur Orientierung in einer
+          anderen Währung anzuzeigen. Diese Umrechnung ist unverbindlich und
+          mit „ca.“ gekennzeichnet.{" "}
+          <strong className="font-medium text-cream">
+            Verbindlich ist ausschliesslich der Preis in Schweizer Franken; die
+            Belastung erfolgt in CHF.
+          </strong>{" "}
+          Kosten, die deine Bank oder dein Kartenherausgeber für eine
+          Fremdwährungsbelastung erhebt, liegen ausserhalb unseres Einflusses.
+        </p>
+        <p>
+          Die Versandkosten werden im Warenkorb und im Bestellvorgang vor
+          Abgabe der Bestellung gesondert ausgewiesen:
         </p>
         <LegalList
           items={shippingMethods.map((method) => (
             <>
               {method.label}: {formatPrice(method.priceCents)}
               {method.freeFromCents !== null && (
-                <> – kostenlos ab {formatPrice(method.freeFromCents)} Bestellwert</>
+                <>
+                  {" "}
+                  – ab einem Bestellwert von{" "}
+                  {formatPrice(method.freeFromCents)} versandkostenfrei
+                </>
               )}
             </>
           ))}
         />
-        <p className="text-xs text-subtle">
-          PLATZHALTER: Bei Lieferungen über Zollgrenzen hinweg (z. B. aus der
-          Schweiz in die EU) müssen Hinweise zu Zoll, Einfuhrumsatzsteuer und
-          etwaigen Bearbeitungsgebühren ergänzt und fachlich geprüft werden.
+        <p>
+          Bei Lieferungen aus der Schweiz in die Europäische Union können
+          zusätzlich Einfuhrumsatzsteuer, Zollabgaben und Bearbeitungsgebühren
+          des Transportunternehmens anfallen. Diese Abgaben werden von den
+          Behörden beziehungsweise vom Transportunternehmen direkt bei dir
+          erhoben, sind nicht im Kaufpreis enthalten und trägst du. Bitte
+          informiere dich vor der Bestellung über die in deinem Land geltenden
+          Freigrenzen.
         </p>
       </LegalSection>
 
-      <LegalSection title="§ 4 Zahlung">
+      <LegalSection title="4. Zahlung">
         <p>
-          Die Zahlung erfolgt über unseren Zahlungsdienstleister Stripe. Zur
-          Verfügung stehen Kredit- und Debitkarte sowie – je nach Endgerät –
-          Apple&nbsp;Pay und Google&nbsp;Pay. Weitere Methoden können hinzukommen.
+          Die Zahlungsabwicklung erfolgt über unseren Zahlungsdienstleister
+          Stripe Payments Europe Ltd. Zur Verfügung stehen Kredit- und
+          Debitkarte sowie – je nach Endgerät – Apple&nbsp;Pay und
+          Google&nbsp;Pay. Weitere Zahlungsarten können hinzukommen; welche
+          verfügbar sind, siehst du im Bestellvorgang.
         </p>
         <p>
-          Der Kaufpreis ist mit Vertragsschluss sofort fällig. Deine
-          Zahlungsdaten werden ausschliesslich von Stripe verarbeitet; wir
-          speichern keine vollständigen Kartendaten.
+          Der Kaufpreis ist mit Vertragsschluss sofort und vollständig fällig.
+          Wir versenden erst nach bestätigtem Zahlungseingang.
+        </p>
+        <p>
+          Deine Zahlungsdaten werden ausschliesslich von Stripe verarbeitet.
+          Vollständige Kartendaten erreichen unsere Systeme zu keinem Zeitpunkt
+          und werden von uns nicht gespeichert.
+        </p>
+        <p>
+          Reservierte Artikel halten wir für die Dauer des Bezahlvorgangs
+          zurück. Wird die Zahlung nicht innerhalb dieser Frist abgeschlossen,
+          geben wir die Reservierung wieder frei und die Bestellung kommt nicht
+          zustande.
         </p>
       </LegalSection>
 
-      <LegalSection title="§ 5 Lieferung und Lieferzeit">
+      <LegalSection title="5. Lieferung, Lieferfristen und Vorbestellungen">
         <p>
-          Wir liefern in folgende Länder: {standard.countries.join(", ")}.
-          Die Lieferzeit ist bei jedem Artikel angegeben und beginnt mit
-          bestätigtem Zahlungseingang. Angaben in Werktagen verstehen sich als
-          Montag bis Freitag ohne Feiertage.
+          Wir liefern nach {countryNames.join(", ")}. Eine Lieferung an
+          Packstationen oder Postfächer ist nicht möglich.
+        </p>
+        <p>
+          Die bei jedem Artikel angegebene Lieferzeit ist eine Schätzung in
+          Werktagen (Montag bis Freitag, ohne Feiertage) und beginnt mit dem
+          bestätigten Zahlungseingang. Verbindliche Liefertermine sagen wir nur
+          zu, wenn wir dies ausdrücklich schriftlich bestätigt haben.
         </p>
         <p>
           Enthält eine Bestellung Artikel mit unterschiedlichen Lieferzeiten,
           versenden wir vollständig, sobald alle Positionen bereitstehen. Auf
-          Wunsch teilen wir die Lieferung – schreib uns dazu bitte kurz.
+          Wunsch teilen wir die Lieferung – schreib uns dazu bitte kurz; für
+          die Teillieferung können zusätzliche Versandkosten anfallen.
         </p>
         <p>
-          Bei Vorbestellungen gilt die auf der Produktseite genannte
-          voraussichtliche Lieferzeit. Verzögert sich die Verfügbarkeit
-          wesentlich, informieren wir dich und du kannst kostenfrei vom Vertrag
-          zurücktreten.
+          Bei als vorbestellbar gekennzeichneten Artikeln gilt die auf der
+          Produktseite genannte voraussichtliche Lieferzeit. Verzögert sich die
+          Verfügbarkeit wesentlich oder wird ein Artikel dauerhaft nicht mehr
+          verfügbar, informieren wir dich unverzüglich. Du kannst in diesem
+          Fall kostenfrei vom Vertrag zurücktreten; bereits geleistete
+          Zahlungen erstatten wir umgehend.
+        </p>
+        <p>
+          Die Gefahr des zufälligen Untergangs geht mit der Übergabe an dich
+          über. Ist die Sendung bei Ankunft sichtbar beschädigt, melde dies
+          bitte direkt beim Transportunternehmen und informiere uns – das
+          erleichtert die Abwicklung, ist für deine Ansprüche uns gegenüber
+          aber nicht Voraussetzung.
         </p>
       </LegalSection>
 
-      <LegalSection title="§ 6 Eigentumsvorbehalt">
-        <p>Die Ware bleibt bis zur vollständigen Bezahlung unser Eigentum.</p>
+      <LegalSection title="6. Eigentumsvorbehalt">
+        <p>
+          Die gelieferte Ware bleibt bis zur vollständigen Bezahlung unser
+          Eigentum.
+        </p>
       </LegalSection>
 
-      <LegalSection title="§ 7 Widerrufsrecht">
+      <LegalSection title="7. Rückgabe und Widerruf">
         <p>
-          Verbraucherinnen und Verbrauchern steht ein Widerrufsrecht zu. Die
-          Einzelheiten und die Ausnahmen findest du in unserer{" "}
+          Bei Onlinebestellungen besteht nach Schweizer Recht kein gesetzliches
+          Widerrufsrecht. Wir gewähren dir freiwillig ein Rückgaberecht von{" "}
+          {returnsPolicy.voluntaryDays} Tagen ab Erhalt für ungeöffnete,
+          originalversiegelte Artikel.{" "}
+          {returnShippingByCustomer
+            ? "Die Kosten der Rücksendung trägst du."
+            : "Die Kosten der Rücksendung übernehmen wir."}
+        </p>
+        <p>
+          Für Verbraucherinnen und Verbraucher mit Wohnsitz in der
+          Europäischen Union gilt zusätzlich das gesetzliche Widerrufsrecht von{" "}
+          {returnsPolicy.euWithdrawalDays} Tagen. Alle Einzelheiten,
+          Ausnahmen und das Muster-Widerrufsformular findest du unter{" "}
           <Link
             href="/widerruf"
             className="text-gold underline underline-offset-2 hover:text-gold-light"
           >
-            Widerrufsbelehrung
+            Rückgabe &amp; Widerruf
           </Link>
           .
         </p>
         <p>
-          Bitte beachte: Bei versiegelten Waren, die aus Gründen des
-          Gesundheitsschutzes oder der Hygiene nicht zur Rückgabe geeignet sind,
-          erlischt das Widerrufsrecht, wenn die Versiegelung nach der Lieferung
-          entfernt wurde. Das betrifft insbesondere geöffnete Parfüms und
-          Abfüllungen.
+          <strong className="font-medium text-cream">Wichtig:</strong> Bei
+          versiegelten Waren, die aus Gründen des Gesundheitsschutzes oder der
+          Hygiene nicht zur Rückgabe geeignet sind, ist eine Rückgabe
+          ausgeschlossen, sobald die Versiegelung nach der Lieferung entfernt
+          wurde. Das betrifft insbesondere geöffnete Parfüms, Abfüllungen und
+          Proben.
         </p>
       </LegalSection>
 
-      <LegalSection title="§ 8 Gewährleistung">
+      <LegalSection title="8. Gewährleistung und Mängel">
         <p>
-          Es gelten die gesetzlichen Gewährleistungsrechte. Bei Mängeln melde
+          Es gelten die gesetzlichen Bestimmungen über die Sachgewährleistung
+          (Art. 197 ff. OR). Weist die gelieferte Ware einen Mangel auf, melde
           dich bitte unter{" "}
           <a
-            href={`mailto:${siteConfig.contact.email}`}
+            href={`mailto:${contact.email}`}
             className="text-gold underline underline-offset-2 hover:text-gold-light"
           >
-            {siteConfig.contact.email}
+            {contact.email}
           </a>{" "}
-          – wir finden gemeinsam eine Lösung.
+          – nach Möglichkeit mit Bestellnummer und Foto. Wir prüfen jeden Fall
+          einzeln und liefern in der Regel Ersatz oder erstatten den Kaufpreis.
+        </p>
+        <p>
+          Prüfe die Ware bitte nach Erhalt und zeige erkennbare Mängel
+          innerhalb angemessener Frist an. Für Verbraucherinnen und Verbraucher
+          gilt die gesetzliche Verjährungsfrist von zwei Jahren ab Ablieferung.
+        </p>
+        <p>
+          Nicht als Mangel gelten geringfügige, warentypische Abweichungen in
+          Farbe, Konsistenz oder Duftverlauf sowie das natürliche Nachlassen
+          der Duftintensität über die Zeit.
         </p>
       </LegalSection>
 
-      <LegalSection title="§ 9 Produkthinweise">
+      <LegalSection title="9. Produkthinweise, Duftalternativen und Abfüllungen">
         <p>
-          Unsere Abfüllungen werden von Hand aus grösseren Gebinden abgefüllt
-          und in geeignete Flakons umgefüllt. Farbe und Duftverlauf können
-          natürlichen Schwankungen unterliegen.
+          Unsere Abfüllungen werden von Hand aus grösseren Gebinden in geeignete
+          Flakons umgefüllt und anschliessend versiegelt. Füllmengen sind
+          Nennwerte; geringfügige, technisch bedingte Abweichungen sind
+          möglich. Farbe und Duftverlauf unterliegen natürlichen Schwankungen.
         </p>
         <p>
           Produkte, die als „Duftalternative“ oder „inspiriert von einer
-          Duftrichtung“ gekennzeichnet sind, sind eigenständige Erzeugnisse und
-          keine Originalware. Es besteht keine Verbindung, Lizenz oder
-          Zusammenarbeit mit den Herstellern anderer Düfte.
+          Duftrichtung“ gekennzeichnet sind, sind{" "}
+          <strong className="font-medium text-cream">
+            eigenständige Erzeugnisse und keine Originalware
+          </strong>
+          . Es besteht keine Verbindung, Lizenzierung, Zusammenarbeit oder
+          sonstige Zugehörigkeit zu den Herstellern anderer Düfte. Allfällig
+          genannte Marken sind Eigentum ihrer jeweiligen Inhaber und dienen
+          ausschliesslich der beschreibenden Einordnung einer Duftrichtung.
         </p>
         <p>
-          Parfüms enthalten Duftstoffe, die allergische Reaktionen auslösen
-          können. Bitte beachte die Angaben auf der Produktseite und der
-          Verpackung.
+          Parfüms enthalten Duftstoffe, die bei entsprechender Veranlagung
+          allergische Reaktionen auslösen können. Beachte bitte die Angaben auf
+          der Produktseite und auf der Verpackung. Bei bekannten Allergien oder
+          empfindlicher Haut empfehlen wir zuerst eine Probe. Parfüm ist
+          leicht entzündlich, gehört nicht in Kinderhände und ist vor
+          direkter Sonneneinstrahlung geschützt zu lagern.
+        </p>
+        <p>
+          Produktabbildungen dienen der Veranschaulichung. Verpackungen und
+          Flakonformen können vom Hersteller ohne Vorankündigung geändert
+          werden.
         </p>
       </LegalSection>
 
-      <LegalSection title="§ 10 Haftung">
+      <LegalSection title="10. Rabattcodes und Aktionen">
         <p>
-          PLATZHALTER: Eine Haftungsklausel ist rechtlich heikel und muss auf
-          die gewählte Rechtsordnung abgestimmt werden. Unwirksame
-          Haftungsausschlüsse können abgemahnt werden – bitte fachkundig
-          formulieren lassen.
+          Rabattcodes sind nur innerhalb des angegebenen Zeitraums und nur für
+          die jeweils genannten Produkte gültig. Sie sind nicht mit anderen
+          Aktionen kombinierbar, sofern nichts anderes angegeben ist, können
+          nicht in bar ausbezahlt und nicht nachträglich auf eine bereits
+          abgeschlossene Bestellung angerechnet werden. Bei einer Rückgabe wird
+          der tatsächlich bezahlte Betrag erstattet.
         </p>
       </LegalSection>
 
-      <LegalSection title="§ 11 Schlussbestimmungen">
+      <LegalSection title="11. Haftung">
         <p>
-          PLATZHALTER: Anwendbares Recht und Gerichtsstand sind hier zu regeln.
-          Zu beachten ist, dass Verbraucherinnen und Verbraucher der Schutz
-          zwingender Vorschriften ihres Aufenthaltsstaats nicht entzogen werden
-          darf.
+          Wir haften unbeschränkt für Schäden aus der Verletzung des Lebens,
+          des Körpers oder der Gesundheit sowie für Schäden, die wir
+          absichtlich oder grobfahrlässig verursacht haben. Ebenso bleibt die
+          Haftung nach dem Produktehaftpflichtgesetz unberührt.
         </p>
         <p>
-          Sollte eine Bestimmung unwirksam sein, bleibt die Wirksamkeit der
-          übrigen Bestimmungen unberührt.
+          Für leichte Fahrlässigkeit haften wir nur bei Verletzung einer
+          wesentlichen Vertragspflicht – also einer Pflicht, deren Erfüllung
+          die ordnungsgemässe Durchführung des Vertrags überhaupt erst
+          ermöglicht und auf deren Einhaltung du regelmässig vertrauen darfst.
+          In diesem Fall ist die Haftung auf den bei Vertragsschluss
+          vorhersehbaren, vertragstypischen Schaden begrenzt.
+        </p>
+        <p>
+          Eine weitergehende Haftung, insbesondere für indirekte Schäden und
+          entgangenen Gewinn, ist ausgeschlossen, soweit das Gesetz dies
+          zulässt. Zwingende gesetzliche Rechte von Verbraucherinnen und
+          Verbrauchern bleiben in jedem Fall unberührt.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="12. Datenschutz">
+        <p>
+          Wie wir mit deinen Daten umgehen, steht in unserer{" "}
+          <Link
+            href="/datenschutz"
+            className="text-gold underline underline-offset-2 hover:text-gold-light"
+          >
+            Datenschutzerklärung
+          </Link>
+          . Sie ist Bestandteil dieser Bedingungen, soweit sie
+          Verarbeitungszwecke beschreibt.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="13. Änderungen dieser Bedingungen">
+        <p>
+          Wir können diese AGB jederzeit für künftige Bestellungen anpassen.
+          Für eine bereits abgeschlossene Bestellung gilt stets die Fassung,
+          die zum Zeitpunkt der Bestellung veröffentlicht war.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="14. Anwendbares Recht und Gerichtsstand">
+        <p>
+          Es gilt ausschliesslich schweizerisches Recht unter Ausschluss des
+          Übereinkommens der Vereinten Nationen über Verträge über den
+          internationalen Warenkauf (CISG).
+        </p>
+        <p>
+          Gerichtsstand ist – soweit gesetzlich zulässig –{" "}
+          {contact.city}. Bestellst du als Verbraucherin oder Verbraucher mit
+          Wohnsitz in der EU, bleiben die zwingenden Verbraucherschutzvorschriften
+          und der Gerichtsstand deines Wohnsitzstaats unberührt; das
+          anwendbare Recht darf dir den Schutz zwingender Bestimmungen deines
+          Aufenthaltsstaats nicht entziehen.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="15. Schlussbestimmungen">
+        <p>
+          Sollte eine Bestimmung dieser AGB ganz oder teilweise unwirksam sein
+          oder werden, bleibt die Wirksamkeit der übrigen Bestimmungen
+          unberührt. An die Stelle der unwirksamen Bestimmung tritt die
+          gesetzliche Regelung.
         </p>
       </LegalSection>
     </LegalPage>

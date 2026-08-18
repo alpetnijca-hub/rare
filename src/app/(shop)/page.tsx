@@ -6,7 +6,7 @@ import { ProductCard } from "@/components/product/product-card";
 import { siteConfig } from "@/config/site";
 import { getBestsellers, getNewArrivals } from "@/lib/products";
 import { amountUntilFreeShipping } from "@/lib/shipping";
-import { formatPrice } from "@/lib/money";
+import { Money } from "@/components/currency/money";
 
 export const metadata: Metadata = {
   title: `${siteConfig.name} – Parfüms, Duftalternativen & Abfüllungen`,
@@ -210,7 +210,7 @@ export default async function HomePage() {
                   Gratis ab
                 </dt>
                 <dd className="mt-1 font-display text-xl text-cream">
-                  {freeShippingFrom ? formatPrice(freeShippingFrom) : "—"}
+                  {freeShippingFrom ? <Money cents={freeShippingFrom} /> : "—"}
                 </dd>
               </div>
             </dl>

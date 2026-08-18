@@ -123,7 +123,7 @@ function itemsTable(items: OrderEmailItem[]): string {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">${rows}</table>`;
 }
 
-/** Summenblock inklusive ausgewiesener Umsatzsteuer. */
+/** Summenblock, bei bestehender Steuerpflicht inklusive ausgewiesener MwSt. */
 function totalsTable(data: OrderEmailData): string {
   const rows: Array<{ label: string; value: string; strong?: boolean }> = [
     { label: "Zwischensumme", value: formatPrice(data.subtotalCents) },

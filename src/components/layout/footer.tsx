@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { NewsletterForm } from "@/components/newsletter-form";
+import { CurrencySwitcher } from "@/components/currency/currency-switcher";
+import { isVatRegistered, taxConfig } from "@/config/site";
+import { formatTaxRate } from "@/lib/money";
 
 const shopLinks = [
   { href: "/shop", label: "Alle Düfte" },
@@ -23,7 +26,7 @@ const legalLinks = [
   { href: "/impressum", label: "Impressum" },
   { href: "/datenschutz", label: "Datenschutz" },
   { href: "/agb", label: "AGB" },
-  { href: "/widerruf", label: "Widerrufsbelehrung" },
+  { href: "/widerruf", label: "Rückgabe & Widerruf" },
   { href: "/cookie-einstellungen", label: "Cookie-Einstellungen" },
 ];
 
@@ -170,10 +173,17 @@ export function Footer() {
             </ul>
           </nav>
 
-          <p className="text-xs leading-relaxed text-subtle">
-            © {new Date().getFullYear()} {siteConfig.legalName}. Alle Preise in
-            Euro inklusive gesetzlicher Umsatzsteuer, zuzüglich Versandkosten.
-          </p>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <p className="text-xs leading-relaxed text-subtle">
+              © {new Date().getFullYear()} {siteConfig.legalName}. Alle Preise
+              in Schweizer Franken{" "}
+              {isVatRegistered
+                ? `inklusive ${formatTaxRate(taxConfig.rateBp)} MwSt.`
+                : "– keine MwSt., da nicht mehrwertsteuerpflichtig"}
+              , zuzüglich Versandkosten.
+            </p>
+            <CurrencySwitcher label="Anzeigewährung" showLabel />
+          </div>
 
           <p className="max-w-4xl text-xs leading-relaxed text-subtle">
             <strong className="font-medium text-muted">

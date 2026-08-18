@@ -25,24 +25,44 @@ Prisma 7 · Stripe · Resend · Auth.js v5 · Cloudinary · Vitest
 12. [Tests](#12-tests)
 13. [Checkliste vor dem Livegang](#13-checkliste-vor-dem-livegang)
 14. [Wartung und Fehlersuche](#14-wartung-und-fehlersuche)
+15. [Währung und Mehrwertsteuer](#15-währung-und-mehrwertsteuer)
 
 ---
 
 ## 1. Wichtige Hinweise vor dem Livegang
 
-> **Die mitgelieferten Rechtstexte sind Platzhalter und nicht rechtssicher.**
-> Impressum, Datenschutzerklärung, AGB, Widerrufsbelehrung sowie alle
-> Produktangaben, Markennennungen, Duftvergleiche und Kennzeichnungspflichten
-> müssen vor der Veröffentlichung von einer fachkundigen Person geprüft und an
-> euer Unternehmen angepasst werden. Das betrifft insbesondere die
-> Kosmetikverordnung, die Preisangabenverordnung, das Fernabsatzrecht und das
-> Datenschutzrecht.
+> **Die mitgelieferten Rechtstexte sind nicht automatisch rechtssicher.**
+> Impressum, Datenschutzerklärung, AGB und die Rückgabe-/Widerrufsseite sind
+> auf Rare Scents als Schweizer Einzelunternehmen zugeschnitten, ersetzen aber
+> keine Rechtsberatung. Sie müssen – ebenso wie Produktangaben,
+> Markennennungen, Duftvergleiche und Kennzeichnungspflichten – vor der
+> Veröffentlichung von einer fachkundigen Person geprüft werden. Das betrifft
+> insbesondere das Kosmetikrecht, die Preisbekanntgabeverordnung (PBV), das
+> Fernabsatzrecht sowie revDSG und DSGVO.
+
+**Hinterlegte Firmendaten** (`src/config/site.ts`):
+
+| Feld | Wert |
+| --- | --- |
+| Firma | Rare Scents, Inhaber Alvin Ramdedovic |
+| Rechtsform | Einzelunternehmen |
+| Adresse | Neugasse 4b, 9242 Oberuzwil, Schweiz |
+| E-Mail | rarescents.swiss@gmail.com |
+| Instagram | @rarescents.swiss |
+| Handelsregister / UID | keine (nicht eingetragen) |
+| Mehrwertsteuer | nicht mehrwertsteuerpflichtig |
+| Abrechnungswährung | CHF |
 
 Weitere Punkte, die zwingend zu erledigen sind:
 
-- **Firmendaten eintragen:** `src/config/site.ts` enthält Platzhalter (Firmenname,
-  Adresse, UID, MwSt-Nummer, beide Geschäftspartner). Sie werden direkt in
-  Impressum, Rechnungen und E-Mails verwendet.
+- **Mehrwertsteuer:** `SHOP_TAX_RATE_BP` steht auf `0`, weil ohne UID und ohne
+  MwSt-Registrierung keine Mehrwertsteuer ausgewiesen werden darf. Der Shop
+  blendet dann alle MwSt-Zeilen aus und schreibt stattdessen „keine MwSt.“.
+  Sobald die Steuerpflicht eintritt (Umsatz ab CHF 100'000 pro Jahr), auf
+  `810` setzen – mehr ist nicht nötig, alle Anzeigen passen sich automatisch an.
+- **Telefonnummer:** `siteConfig.contact.phone` ist `null`. In der Schweiz
+  genügt nach Art. 3 Abs. 1 lit. s UWG eine E-Mail-Adresse. Sobald eine Nummer
+  eingetragen wird, erscheint sie automatisch in Impressum und Kontaktseite.
 - **Demo-Produkte entfernen:** Die sechs Seed-Produkte sind erfundene Demo-Inhalte
   mit selbst gezeichneten Abbildungen (`isDemo: true`). Vor dem Livegang durch
   eigene Produkte und eigene Fotos ersetzen.
@@ -51,12 +71,9 @@ Weitere Punkte, die zwingend zu erledigen sind:
   geschützten Markenlogos, Markennamen im Produktnamen oder fremden
   Produktbilder ohne Genehmigung. Die Formulierung „Duftalternative“ bzw.
   „inspiriert von einer Duftrichtung“ ist bereits im System vorgesehen.
-- **Steuersatz prüfen:** `SHOP_TAX_RATE_BP` ist auf 810 (8,1 % Schweiz)
-  voreingestellt. Für Deutschland 1900, für Österreich 2000, bei
-  Kleinunternehmerregelung 0.
-- **Währung:** Der Shop rechnet in EUR (Vorgabe). Bei Sitz in der Schweiz ist zu
-  prüfen, ob CHF sinnvoller ist – dann `siteConfig.currency`, die Stripe-Währung
-  und die Preise anpassen.
+- **Wechselkurse pflegen:** `SHOP_DISPLAY_RATES` enthält die Kurse für den
+  Währungsumschalter. Sie veralten – regelmässig aktualisieren oder den
+  Umschalter mit `SHOP_DISPLAY_RATES=""` ganz abschalten (siehe Abschnitt 15).
 
 ---
 
@@ -590,16 +607,18 @@ Bitte **nicht gegen die Produktionsdatenbank** ausführen.
 
 ### Recht und Inhalte
 
-- [ ] Impressum vollständig: Firmenname, Rechtsform, beide Geschäftspartner, Adresse, UID/Handelsregister, MwSt-Nummer
-- [ ] Datenschutzerklärung an tatsächlich eingesetzte Dienste angepasst
+- [ ] Impressum stimmt: Firmenname, Rechtsform, Inhaber, Adresse, E-Mail
+- [ ] Datenschutzerklärung an tatsächlich eingesetzte Dienste angepasst, Transportunternehmen namentlich ergänzt
 - [ ] AGB geprüft, insbesondere Haftung, Gerichtsstand und Zollhinweise
-- [ ] Widerrufsbelehrung geprüft, Rücksendekosten eindeutig geregelt
+- [ ] Rückgabe- und Widerrufsseite geprüft: freiwillige Frist Schweiz, gesetzliche Frist EU, Rücksendekosten
+- [ ] Zollhinweise für Lieferungen in die EU konkret beziffert (`/versand`)
 - [ ] Alle Rechtstexte von einer fachkundigen Person freigegeben
 - [ ] Duftalternativen korrekt gekennzeichnet, keine geschützten Marken im Produktnamen
 - [ ] Keine fremden Produktbilder oder Markenlogos ohne Genehmigung
 - [ ] Inhaltsstoffe und Pflichtangaben je Produkt vollständig
 - [ ] Grundpreis je 100 ml wird korrekt angezeigt
-- [ ] Steuersatz (`SHOP_TAX_RATE_BP`) stimmt mit der steuerlichen Situation überein
+- [ ] Steuersatz (`SHOP_TAX_RATE_BP`) stimmt mit der steuerlichen Situation überein (aktuell `0` = nicht MwSt-pflichtig)
+- [ ] Wechselkurse in `SHOP_DISPLAY_RATES` aktuell, oder Umschalter abgeschaltet
 - [ ] Demo-Produkte gelöscht, `isDemo` bei echten Produkten nicht gesetzt
 - [ ] Demo-Bilder in `public/produkte/` durch eigene Fotos ersetzt
 
@@ -706,6 +725,68 @@ im Lager eintragen – der Rückstand wird automatisch verrechnet.
 ```bash
 npm run db:studio
 ```
+
+---
+
+## 15. Währung und Mehrwertsteuer
+
+### Eine Abrechnungswährung, mehrere Anzeigewährungen
+
+Der Shop rechnet **ausschliesslich in Schweizer Franken**. Jeder Betrag in
+Datenbank, Bestellung, Stripe-Session, Rechnung und E-Mail ist ein
+Integer-Betrag in Rappen. Es gibt keine zweite Abrechnungswährung – das hält
+Zahlungen, Rückerstattungen und die Buchhaltung eindeutig.
+
+Zusätzlich können Besucher oben im Header oder unten im Footer eine
+**Anzeigewährung** wählen. Diese rechnet die CHF-Preise nur zur Orientierung
+um:
+
+- Umgerechnete Beträge tragen ein sichtbares „ca.“.
+- Auf Produktseite, im Warenkorb und im Checkout steht, dass in CHF belastet
+  wird; im Checkout steht der CHF-Betrag zusätzlich neben der Gesamtsumme.
+- Der Server berechnet weiterhin nur CHF. Die Auswahl beeinflusst keine
+  einzige Preisberechnung – auch dann nicht, wenn jemand das Cookie
+  manipuliert. Unbekannte Werte fallen still auf CHF zurück.
+
+Die Auswahl liegt im Cookie `rare-scents-currency` und wird schon beim Rendern
+serverseitig gelesen. Dadurch stimmt das Server- mit dem Client-Markup überein:
+kein Umspringen der Preise, keine Hydration-Warnung.
+
+**Kurse pflegen** – die Kurse sind fest hinterlegt und veralten:
+
+```bash
+# Format: <ISO-Code>:<Einheiten je 1 CHF>, mit Komma getrennt
+SHOP_DISPLAY_RATES="EUR:1.07,USD:1.24,GBP:0.92"
+
+# Umschalter komplett abschalten – der Shop zeigt dann nur CHF
+SHOP_DISPLAY_RATES=""
+```
+
+Ohne die Variable gelten die Näherungswerte aus `src/config/currencies.ts`.
+Eine neue Anzeigewährung wird dort in `convertibleCurrencies` ergänzt.
+
+### Mehrwertsteuer
+
+`SHOP_TAX_RATE_BP` steht auf `0`, weil Rare Scents keine UID hat und nicht
+mehrwertsteuerpflichtig ist. Wer nicht registriert ist, **darf keine
+Mehrwertsteuer ausweisen**. Bei `0` blendet der Shop überall die MwSt-Zeilen
+aus – Produktseite, Warenkorb, Checkout, Bestellbestätigung, E-Mails und
+Adminbereich – und schreibt stattdessen „keine MwSt. (nicht
+mehrwertsteuerpflichtig)“.
+
+Sobald die Steuerpflicht eintritt (Umsatz ab CHF 100'000 pro Jahr):
+
+```bash
+SHOP_TAX_RATE_BP="810"   # 8,10 % Schweiz
+```
+
+Danach zusätzlich die UID in `siteConfig.contact.registrationNumber` und die
+MwSt-Nummer in `siteConfig.contact.vatId` eintragen. Impressum, Footer und alle
+Preisangaben passen sich automatisch an.
+
+Der Steuersatz wird in Basispunkten geführt (810 = 8,10 %), damit auch krumme
+Sätze ohne Fliesskommazahlen abgebildet werden können. Die im Bruttopreis
+enthaltene Steuer berechnet `includedTaxCents()` in `src/lib/money.ts`.
 
 ---
 

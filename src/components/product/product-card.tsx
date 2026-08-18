@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AvailabilityBadge, Badge } from "@/components/ui/badge";
-import { discountPercent, formatBasePrice, formatPrice } from "@/lib/money";
+import { BasePrice, Money } from "@/components/currency/money";
+import { basePricePer100Ml, discountPercent } from "@/lib/money";
 import { familyLabels, kindLabels, type ProductListItem } from "@/lib/products";
 import { cn } from "@/lib/utils";
 
@@ -27,9 +28,10 @@ export function ProductCard({
     product.variants[0],
   );
   const savings = discountPercent(fromPriceCents, compareAtPriceCents);
-  const basePrice = cheapestVariant
-    ? formatBasePrice(cheapestVariant.priceCents, cheapestVariant.volumeMl)
-    : null;
+  const hasBasePrice =
+    cheapestVariant !== undefined &&
+    basePricePer100Ml(cheapestVariant.priceCents, cheapestVariant.volumeMl) !==
+      null;
 
   return (
     <article
@@ -127,18 +129,22 @@ export function ProductCard({
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
             <span className="text-xs text-subtle">ab</span>
             <span className="font-display text-xl text-gold-light">
-              {formatPrice(fromPriceCents)}
+              <Money cents={fromPriceCents} />
             </span>
             {compareAtPriceCents && compareAtPriceCents > fromPriceCents && (
               <span className="text-sm text-subtle line-through">
-                {formatPrice(compareAtPriceCents)}
+                <Money cents={compareAtPriceCents} />
               </span>
             )}
           </div>
 
-          {basePrice && (
+          {hasBasePrice && (
             <p className="text-[11px] text-subtle">
-              Grundpreis {basePrice} · inkl. MwSt.
+              Grundpreis{" "}
+              <BasePrice
+                priceCents={cheapestVariant.priceCents}
+                volumeMl={cheapestVariant.volumeMl}
+              />
             </p>
           )}
 

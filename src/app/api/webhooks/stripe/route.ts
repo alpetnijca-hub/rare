@@ -1,6 +1,7 @@
 import type Stripe from "stripe";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { siteConfig } from "@/config/site";
 import { getStripe } from "@/lib/stripe";
 import {
   fulfillPaidOrder,
@@ -163,7 +164,7 @@ async function handleEvent(event: Stripe.Event): Promise<void> {
         paymentIntentId,
         chargeId,
         amountCents: session.amount_total ?? 0,
-        currency: session.currency ?? "eur",
+        currency: session.currency ?? siteConfig.currency.toLowerCase(),
         methodType,
         methodBrand,
         methodLast4,
@@ -221,7 +222,7 @@ async function handleEvent(event: Stripe.Event): Promise<void> {
           provider: "STRIPE",
           status: "FAILED",
           amountCents: intent.amount ?? 0,
-          currency: (intent.currency ?? "eur").toUpperCase(),
+          currency: (intent.currency ?? siteConfig.currency).toUpperCase(),
           stripePaymentIntentId: intent.id,
           failureCode: intent.last_payment_error?.code ?? null,
           failureMessage: intent.last_payment_error?.message?.slice(0, 300) ?? null,

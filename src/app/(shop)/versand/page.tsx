@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LegalList, LegalPage, LegalSection } from "@/components/legal/legal-page";
 import { shippingCountries, shippingMethods } from "@/lib/shipping";
-import { formatPrice } from "@/lib/money";
+import { Money } from "@/components/currency/money";
 import { formatDeliveryRange } from "@/lib/availability";
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ export default function ShippingPage() {
     <LegalPage
       title="Versand & Lieferung"
       intro="Wie und wann deine Bestellung bei dir ankommt – ohne versteckte Kosten."
-      showPlaceholderNotice={false}
+      notice="none"
     >
       <LegalSection title="Versandarten und Kosten">
         <div className="overflow-x-auto">
@@ -42,12 +42,14 @@ export default function ShippingPage() {
                     </span>
                   </td>
                   <td className="py-3 pr-4 tabular-nums text-cream">
-                    {formatPrice(method.priceCents)}
+                    <Money cents={method.priceCents} />
                   </td>
                   <td className="py-3 pr-4 tabular-nums text-muted">
-                    {method.freeFromCents !== null
-                      ? formatPrice(method.freeFromCents)
-                      : "—"}
+                    {method.freeFromCents !== null ? (
+                      <Money cents={method.freeFromCents} />
+                    ) : (
+                      "—"
+                    )}
                   </td>
                   <td className="py-3 text-muted">
                     {formatDeliveryRange(method.minDays, method.maxDays)}
@@ -67,11 +69,21 @@ export default function ShippingPage() {
       <LegalSection title="Lieferländer">
         <p>Wir liefern derzeit in folgende Länder:</p>
         <LegalList items={shippingCountries.map((country) => country.name)} />
+        <p>
+          <strong className="font-medium text-cream">
+            Lieferungen in die EU (Deutschland und Österreich):
+          </strong>{" "}
+          Wir versenden aus der Schweiz. Bei der Einfuhr in die EU fallen
+          Einfuhrumsatzsteuer und je nach Warenwert Zollabgaben an,
+          gegebenenfalls zuzüglich einer Verzollungsgebühr des
+          Transportunternehmens. Diese Abgaben werden direkt bei dir erhoben,
+          sind nicht im Kaufpreis enthalten und trägst du. Sie fallen auch dann
+          an, wenn die Sendung bei uns versandkostenfrei ist.
+        </p>
         <p className="text-xs text-subtle">
-          PLATZHALTER: Bei Lieferungen über eine Zollgrenze (z. B. Schweiz → EU)
-          können Einfuhrabgaben und Bearbeitungsgebühren anfallen, die vom
-          Empfänger zu tragen sind. Diesen Hinweis bitte konkret ausformulieren
-          und fachlich prüfen lassen.
+          Vor dem Livegang prüfen: die aktuellen Freigrenzen und Zollsätze für
+          Parfümerieartikel sowie die Verzollungsgebühren des tatsächlich
+          gewählten Transportunternehmens hier konkret beziffern.
         </p>
       </LegalSection>
 

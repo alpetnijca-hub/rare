@@ -12,94 +12,127 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPage() {
+  const { contact } = siteConfig;
+
+  const mail = (
+    <a
+      href={`mailto:${contact.email}`}
+      className="text-gold underline underline-offset-2 hover:text-gold-light"
+    >
+      {contact.email}
+    </a>
+  );
+
   return (
     <LegalPage
       title="Datenschutzerklärung"
-      intro="Wie wir mit deinen Daten umgehen – welche wir erheben, wofür wir sie verwenden und welche Rechte du hast."
-      lastUpdated="PLATZHALTER – Datum eintragen"
+      intro="Wie wir mit deinen Daten umgehen: welche wir erheben, wofür wir sie verwenden, an wen wir sie weitergeben und welche Rechte du hast."
+      lastUpdated="18. August 2026"
+      notice="review"
     >
       <LegalSection title="1. Verantwortliche Stelle">
         <p>
+          Verantwortlich für die Bearbeitung personenbezogener Daten auf dieser
+          Website ist:
+        </p>
+        <p>
           {siteConfig.legalName}
           <br />
-          {siteConfig.contact.street}, {siteConfig.contact.postalCode}{" "}
-          {siteConfig.contact.city}, {siteConfig.contact.country}
+          {contact.street}
           <br />
-          E-Mail:{" "}
-          <a
-            href={`mailto:${siteConfig.contact.email}`}
-            className="text-gold underline underline-offset-2 hover:text-gold-light"
-          >
-            {siteConfig.contact.email}
-          </a>
+          {contact.postalCode} {contact.city}, {contact.country}
+          <br />
+          E-Mail: {mail}
         </p>
-        <p className="text-xs text-subtle">
-          PLATZHALTER: Falls eine Datenschutzbeauftragte oder ein
-          Datenschutzbeauftragter bestellt wurde oder eine Vertretung in der EU
-          erforderlich ist, sind diese Angaben hier zu ergänzen.
-        </p>
-      </LegalSection>
-
-      <LegalSection title="2. Grundsatz">
         <p>
-          Wir verarbeiten personenbezogene Daten nur, soweit dies zur
-          Bereitstellung des Shops und zur Abwicklung von Bestellungen
-          erforderlich ist oder du eingewilligt hast. Wir verkaufen keine Daten
-          an Dritte.
+          Für alle Fragen zum Datenschutz genügt eine formlose Nachricht an
+          diese Adresse. Wir haben keine Datenschutzbeauftragte und keinen
+          Datenschutzbeauftragten bestellt; dazu sind wir als kleines
+          Einzelunternehmen nicht verpflichtet.
         </p>
       </LegalSection>
 
-      <LegalSection title="3. Aufruf der Website (Server-Logs)">
+      <LegalSection title="2. Geltende Gesetze und Grundsatz">
+        <p>
+          Wir bearbeiten Personendaten nach dem revidierten Schweizer
+          Datenschutzgesetz (revDSG). Soweit wir Waren nach Deutschland oder
+          Österreich liefern und uns damit an Personen in der EU richten, gilt
+          zusätzlich die Datenschutz-Grundverordnung (DSGVO).
+        </p>
+        <p>
+          Wir bearbeiten nur Daten, die wir wirklich brauchen: für die
+          Bereitstellung des Shops, für die Abwicklung deiner Bestellung, zur
+          Erfüllung gesetzlicher Pflichten oder weil du eingewilligt hast.{" "}
+          <strong className="font-medium text-cream">
+            Wir verkaufen keine Daten und geben sie nicht für Werbezwecke
+            Dritter weiter.
+          </strong>
+        </p>
+      </LegalSection>
+
+      <LegalSection title="3. Aufruf der Website (Server-Protokolle)">
         <p>
           Beim Aufruf unserer Seiten verarbeitet unser Hosting-Anbieter
           technische Zugriffsdaten, die dein Browser übermittelt: aufgerufene
-          Adresse, Zeitpunkt, übertragene Datenmenge, Browsertyp und
-          Betriebssystem. Diese Daten sind erforderlich, um die Website
-          auszuliefern und ihre Stabilität und Sicherheit zu gewährleisten.
+          Adresse, Zeitpunkt, übertragene Datenmenge, Browsertyp,
+          Betriebssystem und IP-Adresse. Diese Daten sind erforderlich, um die
+          Website auszuliefern und ihre Stabilität und Sicherheit zu
+          gewährleisten.
         </p>
         <p>
-          In unseren Anwendungsprotokollen speichern wir IP-Adressen nicht im
-          Klartext. Wo eine Zuordnung zum Schutz vor Missbrauch nötig ist –
-          etwa beim Kontaktformular oder bei der Newsletter-Anmeldung –
+          In unseren eigenen Anwendungsprotokollen speichern wir IP-Adressen
+          nicht im Klartext. Wo eine Zuordnung zum Schutz vor Missbrauch nötig
+          ist – etwa beim Kontaktformular oder bei der Newsletter-Anmeldung –
           verwenden wir ausschliesslich einen nicht umkehrbaren Hashwert.
         </p>
         <p>
-          Rechtsgrundlage: berechtigtes Interesse am sicheren Betrieb (Art. 6
-          Abs. 1 lit. f DSGVO bzw. entsprechende Bestimmungen des Schweizer
-          DSG).
+          Grundlage: berechtigtes Interesse am sicheren und stabilen Betrieb
+          (Art. 31 Abs. 1 revDSG, Art. 6 Abs. 1 lit. f DSGVO).
         </p>
       </LegalSection>
 
       <LegalSection title="4. Bestellungen">
         <p>
-          Für die Abwicklung einer Bestellung verarbeiten wir: Vor- und
+          Für die Abwicklung einer Bestellung bearbeiten wir: Vor- und
           Nachname, E-Mail-Adresse, Liefer- und Rechnungsadresse, optional die
-          Telefonnummer, die bestellten Artikel, Beträge sowie den
-          Zahlungsstatus.
+          Telefonnummer, die bestellten Artikel, Beträge, Bestell- und
+          Zahlungsstatus sowie den Zeitpunkt der Bestellung.
         </p>
         <p>
-          Rechtsgrundlage ist die Erfüllung des Kaufvertrags (Art. 6 Abs. 1
-          lit. b DSGVO). Handels- und steuerrechtliche Aufbewahrungsfristen
-          bleiben unberührt: Bestell- und Rechnungsdaten bewahren wir
-          entsprechend der gesetzlichen Fristen auf (PLATZHALTER: geltende
-          Aufbewahrungsfrist eintragen, in der Schweiz in der Regel 10 Jahre).
+          Grundlage ist die Erfüllung des Kaufvertrags (Art. 31 Abs. 2 lit. a
+          revDSG, Art. 6 Abs. 1 lit. b DSGVO).
+        </p>
+        <p>
+          Bestell- und Rechnungsdaten bewahren wir zur Erfüllung der
+          gesetzlichen Aufbewahrungspflicht nach Art. 958f OR{" "}
+          <strong className="font-medium text-cream">zehn Jahre</strong> auf.
+          Ein Löschverlangen wirkt erst nach Ablauf dieser Frist; bis dahin
+          sperren wir die Daten für alle anderen Zwecke.
         </p>
       </LegalSection>
 
       <LegalSection title="5. Zahlungsabwicklung (Stripe)">
         <p>
-          Zahlungen wickeln wir über Stripe ab. Bei einer Zahlung wirst du auf
-          eine gesicherte Seite von Stripe weitergeleitet. Deine Zahlungsdaten
-          – insbesondere vollständige Kartennummern – werden ausschliesslich von
-          Stripe verarbeitet und erreichen unsere Server zu keinem Zeitpunkt.
+          Zahlungen wickeln wir über Stripe ab. Für die Zahlung wirst du auf
+          eine gesicherte Seite von Stripe geleitet.{" "}
+          <strong className="font-medium text-cream">
+            Deine Zahlungsdaten – insbesondere vollständige Kartennummern –
+            werden ausschliesslich von Stripe verarbeitet und erreichen unsere
+            Server zu keinem Zeitpunkt.
+          </strong>{" "}
+          Wir speichern keine Zahlungsmittel.
         </p>
         <p>
-          Wir erhalten von Stripe lediglich Referenzdaten zur Zuordnung der
-          Zahlung sowie nicht sensible Anzeigedaten wie Kartenmarke und die
-          letzten vier Ziffern.
+          Von Stripe erhalten wir lediglich Referenzdaten zur Zuordnung der
+          Zahlung (Transaktionskennungen, Betrag, Status) sowie nicht sensible
+          Anzeigedaten wie Kartenmarke und die letzten vier Ziffern.
         </p>
         <p>
-          Anbieter: Stripe Payments Europe, Ltd., Irland. Weitere Informationen:{" "}
+          Anbieter: Stripe Payments Europe, Ltd., 1 Grand Canal Street Lower,
+          Dublin, Irland; für bestimmte Bearbeitungen zusätzlich Stripe, Inc.,
+          USA. Die Übermittlung in die USA erfolgt auf Grundlage der
+          Standardvertragsklauseln der EU-Kommission und der Anerkennung durch
+          den Bundesrat. Weitere Informationen:{" "}
           <a
             href="https://stripe.com/privacy"
             target="_blank"
@@ -114,62 +147,77 @@ export default function PrivacyPage() {
 
       <LegalSection title="6. Versand">
         <p>
-          Zur Zustellung geben wir Name und Lieferadresse an den beauftragten
-          Versanddienstleister weiter. Diese Übermittlung ist zur
+          Zur Zustellung geben wir Name, Lieferadresse und – sofern für die
+          Avisierung nötig – E-Mail-Adresse oder Telefonnummer an das
+          beauftragte Transportunternehmen weiter. Diese Übermittlung ist zur
           Vertragserfüllung erforderlich.
         </p>
+        <p>
+          Bei Lieferungen in die EU müssen wir für die Zollanmeldung zusätzlich
+          Angaben zum Inhalt und Wert der Sendung an die Zollbehörden
+          übermitteln. Grundlage ist die Erfüllung einer gesetzlichen Pflicht.
+        </p>
         <p className="text-xs text-subtle">
-          PLATZHALTER: Den tatsächlich eingesetzten Versanddienstleister
-          namentlich benennen und auf dessen Datenschutzhinweise verlinken.
+          Vor dem Livegang zu ergänzen: das tatsächlich eingesetzte
+          Transportunternehmen namentlich benennen und auf dessen
+          Datenschutzhinweise verlinken.
         </p>
       </LegalSection>
 
       <LegalSection title="7. E-Mail-Versand (Resend)">
         <p>
           Bestellbestätigungen, Versandbenachrichtigungen und ähnliche
-          Nachrichten versenden wir über den Dienstleister Resend. Dafür werden
-          deine E-Mail-Adresse und der Inhalt der jeweiligen Nachricht
-          verarbeitet.
+          Nachrichten versenden wir über den Dienstleister Resend
+          (Plus Five Five, Inc., USA). Dafür werden deine E-Mail-Adresse und
+          der Inhalt der jeweiligen Nachricht bearbeitet. Resend ist für uns
+          Auftragsbearbeiter; die Übermittlung in die USA ist durch
+          Standardvertragsklauseln abgesichert.
         </p>
       </LegalSection>
 
       <LegalSection title="8. Newsletter">
         <p>
-          Der Newsletter wird ausschliesslich nach ausdrücklicher Einwilligung
-          und Bestätigung über einen Link in einer separaten E-Mail versendet
-          (Double-Opt-in). Wir speichern deine E-Mail-Adresse, den Zeitpunkt und
-          den Wortlaut der Einwilligung sowie einen Hashwert der IP-Adresse, um
-          die Einwilligung nachweisen zu können.
+          Den Newsletter versenden wir ausschliesslich nach ausdrücklicher
+          Einwilligung und deren Bestätigung über einen Link in einer
+          separaten E-Mail (Double-Opt-in). Wir speichern deine
+          E-Mail-Adresse, den Zeitpunkt und den Wortlaut der Einwilligung sowie
+          einen Hashwert der IP-Adresse, um die Einwilligung nachweisen zu
+          können.
         </p>
         <p>
-          Du kannst deine Einwilligung jederzeit widerrufen – über den
-          Abmeldelink in jeder Nachricht oder per E-Mail an uns. Rechtsgrundlage:
-          Einwilligung (Art. 6 Abs. 1 lit. a DSGVO).
+          Du kannst deine Einwilligung jederzeit mit Wirkung für die Zukunft
+          widerrufen – über den Abmeldelink in jeder Nachricht oder per
+          E-Mail an uns. Grundlage: Einwilligung (Art. 6 Abs. 1 lit. a DSGVO,
+          Art. 6 Abs. 6 revDSG).
         </p>
       </LegalSection>
 
-      <LegalSection title="9. Verfügbarkeits-Benachrichtigungen">
+      <LegalSection title="9. Benachrichtigung bei Wiederverfügbarkeit">
         <p>
-          Wenn du dich für eine Benachrichtigung bei Wiederverfügbarkeit
-          einträgst, speichern wir deine E-Mail-Adresse ausschliesslich zu
-          diesem Zweck. Nach dem einmaligen Versand kannst du den Eintrag über
-          den Link in der Nachricht löschen lassen.
+          Trägst du dich für eine Benachrichtigung ein, sobald ein Artikel
+          wieder verfügbar ist, speichern wir deine E-Mail-Adresse
+          ausschliesslich zu diesem Zweck. Nach dem einmaligen Versand kannst
+          du den Eintrag über den Link in der Nachricht löschen lassen; nicht
+          eingelöste Einträge löschen wir spätestens nach zwölf Monaten.
         </p>
       </LegalSection>
 
       <LegalSection title="10. Kontaktformular">
         <p>
-          Deine Angaben aus dem Kontaktformular verarbeiten wir zur Bearbeitung
-          der Anfrage. Zum Schutz vor automatisierten Eintragungen verwenden wir
-          ein verstecktes Feld sowie eine Begrenzung der Anfragen je Absender;
-          dabei wird ein Hashwert der IP-Adresse gespeichert.
+          Deine Angaben aus dem Kontaktformular bearbeiten wir zur Beantwortung
+          der Anfrage. Zum Schutz vor automatisierten Eintragungen verwenden
+          wir ein für dich unsichtbares Zusatzfeld sowie eine Begrenzung der
+          Anfragen je Absender; dabei wird ein Hashwert der IP-Adresse
+          gespeichert. Anfragen löschen wir, sobald sie abschliessend erledigt
+          sind und keine Aufbewahrungspflicht entgegensteht.
         </p>
       </LegalSection>
 
       <LegalSection title="11. Cookies und lokale Speicherung">
         <p>
-          Technisch notwendige Cookies und Einträge im lokalen Speicher deines
-          Browsers setzen wir ein, damit Warenkorb, Bezahlvorgang und Anmeldung
+          Wir setzen ausschliesslich technisch notwendige Cookies und Einträge
+          im lokalen Speicher deines Browsers ein, damit Warenkorb,
+          Bezahlvorgang, Währungsauswahl und die Anmeldung im internen Bereich
           funktionieren. Sie sind ohne Einwilligung zulässig.
         </p>
 
@@ -204,12 +252,13 @@ export default function PrivacyPage() {
         <p className="mt-4">
           {optionalServices.length === 0 ? (
             <>
-              Analyse- oder Marketingdienste setzen wir derzeit{" "}
+              Analyse-, Tracking- oder Marketingdienste setzen wir{" "}
               <strong className="font-medium text-cream">nicht</strong> ein. Es
-              wird deshalb auch kein Einwilligungsbanner angezeigt. Sollten wir
-              künftig solche Dienste einsetzen, werden sie erst nach deiner
-              ausdrücklichen Einwilligung geladen und an dieser Stelle
-              aufgeführt.
+              wird deshalb auch kein Einwilligungsbanner angezeigt – ein Banner
+              ohne einwilligungspflichtige Dienste wäre reine Dekoration.
+              Sollten wir künftig solche Dienste einsetzen, werden sie erst
+              nach deiner ausdrücklichen Einwilligung geladen und an dieser
+              Stelle aufgeführt.
             </>
           ) : (
             <>
@@ -229,41 +278,93 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="12. Deine Rechte">
-        <LegalList
-          items={[
-            "Auskunft über die zu deiner Person gespeicherten Daten",
-            "Berichtigung unrichtiger Daten",
-            "Löschung, soweit keine gesetzlichen Aufbewahrungspflichten entgegenstehen",
-            "Einschränkung der Verarbeitung",
-            "Datenübertragbarkeit in einem gängigen Format",
-            "Widerspruch gegen Verarbeitungen auf Grundlage berechtigter Interessen",
-            "Widerruf erteilter Einwilligungen mit Wirkung für die Zukunft",
-            "Beschwerde bei der zuständigen Aufsichtsbehörde",
-          ]}
-        />
+      <LegalSection title="12. Soziale Netzwerke">
         <p>
-          Für alle Anliegen genügt eine formlose Nachricht an{" "}
-          <a
-            href={`mailto:${siteConfig.contact.email}`}
-            className="text-gold underline underline-offset-2 hover:text-gold-light"
-          >
-            {siteConfig.contact.email}
-          </a>
-          .
-        </p>
-        <p className="text-xs text-subtle">
-          PLATZHALTER: Zuständige Aufsichtsbehörde benennen – in der Schweiz der
-          EDÖB, in Deutschland die Landesdatenschutzbehörde des Sitzes.
+          Auf unserer Website verlinken wir unser Instagram-Profil{" "}
+          {siteConfig.social.instagramHandle} lediglich als gewöhnlichen Link.
+          Es sind keine Zählpixel, Schaltflächen oder eingebetteten Inhalte von
+          Meta eingebunden – beim blossen Aufruf unserer Seiten werden also
+          keine Daten an Instagram übertragen. Erst wenn du den Link anklickst,
+          gelten die Datenschutzbestimmungen von Meta.
         </p>
       </LegalSection>
 
-      <LegalSection title="13. Datensicherheit">
+      <LegalSection title="13. Empfänger und Auslandsbekanntgabe">
+        <p>Personendaten geben wir nur an folgende Kategorien weiter:</p>
+        <LegalList
+          items={[
+            "Zahlungsdienstleister (Stripe, Irland/USA) – zur Abwicklung der Zahlung",
+            "E-Mail-Dienstleister (Resend, USA) – zum Versand von Bestell- und Servicemails",
+            "Hosting- und Datenbankanbieter – zum Betrieb der Website (Bearbeitung in der EU/Schweiz)",
+            "Bildhosting (Cloudinary) – zur Auslieferung der Produktbilder",
+            "Transportunternehmen – zur Zustellung deiner Bestellung",
+            "Behörden – soweit wir dazu gesetzlich verpflichtet sind, etwa gegenüber dem Zoll",
+          ]}
+        />
         <p>
-          Die Übertragung erfolgt verschlüsselt über HTTPS. Zugangsdaten des
-          internen Bereichs speichern wir ausschliesslich als kryptografischen
-          Hash. Der Zugriff auf Bestelldaten ist auf berechtigte Personen
-          beschränkt.
+          Alle Dienstleister sind vertraglich zur Vertraulichkeit und zur
+          Bearbeitung ausschliesslich nach unseren Weisungen verpflichtet.
+          Erfolgt eine Bekanntgabe in ein Land ohne angemessenes
+          Datenschutzniveau, stützen wir uns auf die Standardvertragsklauseln
+          der EU-Kommission in der vom Bundesrat anerkannten Fassung.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="14. Aufbewahrung und Löschung">
+        <LegalList
+          items={[
+            "Bestell- und Rechnungsdaten: 10 Jahre (Art. 958f OR)",
+            "Newsletter-Anmeldungen: bis zum Widerruf der Einwilligung",
+            "Verfügbarkeits-Benachrichtigungen: bis zum Versand, längstens 12 Monate",
+            "Kontaktanfragen: bis zur abschliessenden Bearbeitung",
+            "Server-Protokolle: kurzfristig, im Rahmen der Vorgaben des Hosting-Anbieters",
+          ]}
+        />
+      </LegalSection>
+
+      <LegalSection title="15. Deine Rechte">
+        <LegalList
+          items={[
+            "Auskunft über die zu deiner Person bearbeiteten Daten",
+            "Berichtigung unrichtiger Daten",
+            "Löschung, soweit keine gesetzlichen Aufbewahrungspflichten entgegenstehen",
+            "Einschränkung der Bearbeitung",
+            "Herausgabe oder Übertragung deiner Daten in einem gängigen elektronischen Format",
+            "Widerspruch gegen Bearbeitungen, die auf berechtigten Interessen beruhen",
+            "Widerruf erteilter Einwilligungen mit Wirkung für die Zukunft",
+          ]}
+        />
+        <p>
+          Für alle Anliegen genügt eine formlose Nachricht an {mail}. Damit wir
+          keine Daten an Unbefugte herausgeben, kann eine Identitätsprüfung
+          nötig sein.
+        </p>
+        <p>
+          Du hast zudem das Recht, dich bei einer Aufsichtsbehörde zu
+          beschweren. In der Schweiz ist dies der Eidgenössische Datenschutz-
+          und Öffentlichkeitsbeauftragte (EDÖB), Feldeggweg 1, 3003 Bern. Für
+          Personen mit Wohnsitz in der EU ist die Datenschutzbehörde des
+          eigenen Wohnsitzstaats zuständig.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="16. Datensicherheit">
+        <p>
+          Die Übertragung erfolgt durchgehend verschlüsselt über HTTPS.
+          Zugangsdaten des internen Bereichs speichern wir ausschliesslich als
+          kryptografischen Hash. Der Zugriff auf Bestelldaten ist auf
+          berechtigte Personen beschränkt, Zahlungsvorgänge werden
+          serverseitig gegen eine signierte Rückmeldung von Stripe geprüft.
+          Ein absoluter Schutz vor Angriffen ist technisch nicht möglich.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="17. Änderungen dieser Erklärung">
+        <p>
+          Wir passen diese Datenschutzerklärung an, wenn sich unsere
+          Bearbeitungen oder die Rechtslage ändern. Massgebend ist die jeweils
+          auf dieser Seite veröffentlichte Fassung; das Datum der letzten
+          Änderung steht oben.
         </p>
       </LegalSection>
     </LegalPage>

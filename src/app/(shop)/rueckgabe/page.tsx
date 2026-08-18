@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalList, LegalPage, LegalSection } from "@/components/legal/legal-page";
-import { siteConfig } from "@/config/site";
+import { returnsPolicy, siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
   title: "Rückgabe & Erstattung",
@@ -19,7 +19,7 @@ export default function ReturnsPage() {
         <LegalList
           items={[
             <>
-              Schreib uns innerhalb der Widerrufsfrist an{" "}
+              Schreib uns innerhalb der Rückgabefrist an{" "}
               <a
                 href={`mailto:${siteConfig.contact.email}`}
                 className="text-gold underline underline-offset-2 hover:text-gold-light"
@@ -37,21 +37,24 @@ export default function ReturnsPage() {
 
       <LegalSection title="Was zurückgegeben werden kann">
         <p>
-          Ungeöffnete und originalversiegelte Artikel kannst du im Rahmen deines{" "}
+          Ungeöffnete und originalversiegelte Artikel kannst du innerhalb von{" "}
+          {returnsPolicy.voluntaryDays} Tagen ab Erhalt zurückgeben. Die
+          rechtlichen Einzelheiten – und das gesetzliche Widerrufsrecht für
+          Bestellungen aus der EU – stehen unter{" "}
           <Link
             href="/widerruf"
             className="text-gold underline underline-offset-2 hover:text-gold-light"
           >
-            Widerrufsrechts
-          </Link>{" "}
-          zurückgeben.
+            Rückgabe &amp; Widerruf
+          </Link>
+          .
         </p>
         <p>
           <strong className="font-medium text-cream">Wichtig:</strong> Bei
-          geöffneten Parfüms und Abfüllungen erlischt das Widerrufsrecht aus
-          Gründen der Hygiene, sobald die Versiegelung entfernt wurde. Genau
-          dafür bieten wir Abfüllungen ab 2 ml an – so kannst du günstig testen,
-          bevor du dich für eine grössere Größe entscheidest.
+          geöffneten Parfüms und Abfüllungen ist eine Rückgabe aus Gründen der
+          Hygiene ausgeschlossen, sobald die Versiegelung entfernt wurde. Genau
+          dafür bieten wir Abfüllungen ab 2 ml an – so kannst du günstig
+          testen, bevor du dich für eine grössere Größe entscheidest.
         </p>
       </LegalSection>
 
@@ -68,8 +71,8 @@ export default function ReturnsPage() {
         <p>
           Wir erstatten immer auf das ursprünglich verwendete Zahlungsmittel.
           Die Bearbeitung starten wir nach Eingang und Prüfung der Rücksendung,
-          spätestens innerhalb von 14 Tagen nach Zugang deiner
-          Widerrufserklärung.
+          spätestens innerhalb von {returnsPolicy.refundDays} Tagen nach Zugang
+          deiner Rückgabe- oder Widerrufserklärung.
         </p>
         <p>
           Je nach Bank oder Zahlungsanbieter dauert es anschliessend weitere 5
@@ -81,9 +84,9 @@ export default function ReturnsPage() {
 
       <LegalSection title="Rücksendekosten">
         <p>
-          <strong className="font-medium text-cream">PLATZHALTER:</strong> Hier
-          ist verbindlich festzulegen, wer die unmittelbaren Rücksendekosten
-          trägt. Die Angabe muss mit der Widerrufsbelehrung übereinstimmen.
+          {returnsPolicy.returnShippingPaidBy === "customer"
+            ? "Bei einer Rückgabe ohne Beanstandung trägst du die unmittelbaren Kosten der Rücksendung."
+            : "Die unmittelbaren Kosten der Rücksendung übernehmen wir."}
         </p>
         <p>
           Bei berechtigten Reklamationen (Transportschaden, Falschlieferung,

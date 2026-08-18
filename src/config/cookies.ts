@@ -45,6 +45,13 @@ export const necessaryCookies: Array<{
     type: "Local Storage",
   },
   {
+    name: "rare-scents-currency",
+    purpose:
+      "Merkt sich die selbst gewählte Anzeigewährung. Wird nur gesetzt, wenn der Umschalter tatsächlich betätigt wird, und enthält ausschliesslich einen Währungscode wie «CHF» oder «EUR».",
+    duration: "12 Monate",
+    type: "Cookie",
+  },
+  {
     name: "authjs.session-token",
     purpose:
       "Sitzungscookie für die Anmeldung im internen Adminbereich. Wird nur für Mitarbeitende gesetzt, nicht für Kunden.",

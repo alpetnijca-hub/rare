@@ -38,8 +38,12 @@ export default function ContactPage() {
                 >
                   {siteConfig.contact.email}
                 </a>
-                <br />
-                {siteConfig.contact.phone}
+                {siteConfig.contact.phone && (
+                  <>
+                    <br />
+                    {siteConfig.contact.phone}
+                  </>
+                )}
               </p>
               <p className="mt-3 text-sm text-subtle">
                 Erreichbar {siteConfig.supportHours}

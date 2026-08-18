@@ -1,17 +1,24 @@
+import { baseCurrency } from "@/config/currencies";
+
 /**
  * Zentrale Shop-Konfiguration.
  *
- * ⚠️ VOR DEM LIVEGANG AUSFÜLLEN
- * Alle mit «PLATZHALTER» markierten Werte müssen durch die echten
- * Unternehmensdaten ersetzt werden. Impressum, Datenschutzerklärung und AGB
- * greifen direkt auf diese Werte zu.
+ * Impressum, Datenschutzerklärung, AGB, Rechnungen und E-Mails ziehen ihre
+ * Angaben direkt aus dieser Datei. Wer hier etwas ändert, ändert es überall.
  */
 
 export const siteConfig = {
   /** Anzeigename des Shops. */
   name: "Rare Scents",
-  /** Rechtlicher Firmenname für Impressum, Rechnungen und E-Mails. */
-  legalName: "PLATZHALTER – vollständiger Firmenname eintragen",
+  /**
+   * Rechtlicher Name für Impressum, Bestellbestätigungen und Rechnungen.
+   * Einzelunternehmen ohne Handelsregistereintrag treten unter dem Namen der
+   * Inhaberin bzw. des Inhabers auf; der Fantasiename darf ergänzend genannt
+   * werden.
+   */
+  legalName: "Rare Scents, Inhaber Alvin Ramdedovic",
+  /** Rechtsform – wird im Impressum ausgewiesen. */
+  legalForm: "Einzelunternehmen",
   tagline: "Düfte mit Charakter",
   description:
     "Ausgewählte Parfüms, Duftalternativen und Abfüllungen – sorgfältig kuratiert, ehrlich beschrieben und sicher versendet.",
@@ -23,30 +30,41 @@ export const siteConfig = {
   ),
 
   locale: "de-CH",
-  /**
-   * Zahlenformat für Preise. "de-DE" zeigt EUR-Beträge als "49,90 €".
-   * Wird auf CHF umgestellt, passt "de-CH" besser ("CHF 49.90").
-   */
-  priceLocale: "de-DE",
   language: "de",
-  currency: "EUR" as const,
+
+  /**
+   * Abrechnungswährung. Wird ausschliesslich aus `src/config/currencies.ts`
+   * bezogen, damit Stripe, Datenbank und Anzeige nicht auseinanderlaufen.
+   * Die im Shop wählbare Anzeigewährung ändert daran nichts.
+   */
+  currency: baseCurrency.code,
+  priceLocale: baseCurrency.locale,
+
   country: "CH",
   countryName: "Schweiz",
 
   contact: {
-    /** PLATZHALTER – echte Geschäftsadresse eintragen. */
-    email: "PLATZHALTER@deine-domain.ch",
-    phone: "PLATZHALTER – Telefonnummer",
-    street: "PLATZHALTER – Strasse und Hausnummer",
-    postalCode: "PLZ",
-    city: "Ort",
+    email: "rarescents.swiss@gmail.com",
+    /**
+     * Telefonnummer ist optional. In der Schweiz verlangt Art. 3 Abs. 1 lit. s
+     * UWG Name und Kontaktadresse einschliesslich E-Mail – eine Rufnummer ist
+     * nicht zwingend. `null` blendet die Angabe überall sauber aus.
+     */
+    phone: null as string | null,
+    street: "Neugasse 4b",
+    postalCode: "9242",
+    city: "Oberuzwil",
     country: "Schweiz",
-    /** PLATZHALTER – Handelsregisternummer / UID. */
-    registrationNumber: "PLATZHALTER – UID / Handelsregisternummer",
-    /** PLATZHALTER – Umsatzsteuer-Identifikationsnummer, falls vorhanden. */
-    vatId: "PLATZHALTER – MwSt-Nummer",
-    /** PLATZHALTER – vertretungsberechtigte Personen (beide Geschäftspartner). */
-    representatives: "PLATZHALTER – Vorname Nachname, Vorname Nachname",
+    /**
+     * Nicht im Handelsregister eingetragen und keine UID vorhanden.
+     * Sobald eine UID vergeben wird (Pflicht ab CHF 100'000 Jahresumsatz),
+     * hier eintragen – das Impressum zeigt sie dann automatisch an.
+     */
+    registrationNumber: null as string | null,
+    /** Keine MwSt-Nummer, da nicht mehrwertsteuerpflichtig. */
+    vatId: null as string | null,
+    /** Vertretungsberechtigte Person(en). */
+    representatives: "Alvin Ramdedovic",
   },
 
   social: {
@@ -61,11 +79,50 @@ export const siteConfig = {
 
 /**
  * Steuerliche Einstellungen.
- * Der Satz wird in Basispunkten geführt: 810 = 8,10 %.
+ * Der Satz wird in Basispunkten geführt: 810 entspräche 8,10 %.
+ *
+ * ⚠️ Aktuell 0, weil keine UID und keine Mehrwertsteuerpflicht besteht.
+ * Wer nicht mehrwertsteuerpflichtig ist, darf keine MwSt ausweisen. Sobald
+ * die Steuerpflicht eintritt (Umsatz ab CHF 100'000 pro Jahr), genügt
+ * `SHOP_TAX_RATE_BP=810` in der Umgebung – der Shop weist die im Preis
+ * enthaltene Steuer dann überall automatisch aus.
  */
 export const taxConfig = {
-  rateBp: Number.parseInt(process.env.SHOP_TAX_RATE_BP ?? "810", 10),
+  rateBp: Number.parseInt(process.env.SHOP_TAX_RATE_BP ?? "0", 10),
   pricesIncludeTax: (process.env.SHOP_PRICES_INCLUDE_TAX ?? "true") === "true",
+} as const;
+
+/** true, sobald ein Steuersatz konfiguriert ist. */
+export const isVatRegistered = taxConfig.rateBp > 0;
+
+/**
+ * Rückgabe- und Widerrufsbedingungen.
+ *
+ * Wichtig zum Verständnis: In der Schweiz gibt es für Bestellungen über einen
+ * Onlineshop **kein gesetzliches Widerrufsrecht**. Art. 40a ff. OR gilt nur
+ * für Haustür- und Telefongeschäfte. Was wir Schweizer Kundinnen und Kunden
+ * anbieten, ist deshalb ein freiwilliges, vertraglich zugesagtes
+ * Rückgaberecht – und daran sind wir gebunden, sobald wir es hier zusagen.
+ *
+ * Für Verbraucherinnen und Verbraucher mit Wohnsitz in der EU (wir liefern
+ * nach Deutschland und Österreich) gilt zusätzlich das zwingende
+ * EU-Fernabsatzrecht mit 14-tägigem Widerrufsrecht. Beides steht deshalb
+ * getrennt auf der Seite /widerruf.
+ */
+export const returnsPolicy = {
+  /** Freiwillige Rückgabefrist in Tagen ab Erhalt (Schweiz/Liechtenstein). */
+  voluntaryDays: 14,
+  /** Gesetzliche Widerrufsfrist in Tagen für Verbraucher in der EU. */
+  euWithdrawalDays: 14,
+  /**
+   * Wer trägt die Rücksendekosten?
+   * "customer" ist zulässig, solange – wie hier – vor der Bestellung klar
+   * darüber informiert wird. Auf "shop" umstellen, wenn ihr sie übernehmen
+   * wollt; die Rechtstexte passen sich automatisch an.
+   */
+  returnShippingPaidBy: "customer" as "customer" | "shop",
+  /** Frist für die Erstattung nach Eingang der Rücksendung, in Tagen. */
+  refundDays: 14,
 } as const;
 
 /** Schwelle, ab der das Dashboard vor niedrigem Bestand warnt (Fallback). */

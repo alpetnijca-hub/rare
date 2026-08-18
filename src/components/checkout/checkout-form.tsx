@@ -8,7 +8,9 @@ import { useCart } from "@/components/cart/cart-provider";
 import { useCartQuote } from "@/components/cart/use-cart-quote";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Checkbox, Field, Select, TextArea, TextInput } from "@/components/ui/field";
-import { formatPrice, formatTaxRate } from "@/lib/money";
+import { useCurrency } from "@/components/currency/currency-provider";
+import { CurrencyNotice } from "@/components/currency/currency-switcher";
+import { formatPrice as formatBasePriceCents, formatTaxRate } from "@/lib/money";
 import { formatDeliveryRange } from "@/lib/availability";
 import { shippingCountries } from "@/lib/shipping";
 import { cn } from "@/lib/utils";
@@ -250,6 +252,7 @@ export function CheckoutForm() {
   const [formError, setFormError] = useState<string | null>(null);
   const [fieldIssues, setFieldIssues] = useState<Record<string, string>>({});
 
+  const { format: formatPrice, isConverted } = useCurrency();
   const { quote, loading } = useCartQuote({
     shippingMethod,
     country: shippingAddress.country,
@@ -688,6 +691,17 @@ export function CheckoutForm() {
           </span>
         </div>
 
+        {/* Bei gewählter Fremdwährung steht der tatsächlich belastete
+            CHF-Betrag zusätzlich und unmissverständlich daneben. */}
+        {isConverted && (
+          <p className="-mt-3 mb-5 text-right text-sm text-cream">
+            Belastet werden{" "}
+            <strong className="font-medium text-gold-light">
+              {formatBasePriceCents(quote.totalCents)}
+            </strong>
+          </p>
+        )}
+
         {quote.taxCents > 0 && (
           <p className="-mt-3 mb-5 text-right text-xs text-subtle">
             inkl. {formatPrice(quote.taxCents)} MwSt. (
@@ -735,7 +749,7 @@ export function CheckoutForm() {
               <>
                 Ich habe die{" "}
                 <Link href="/widerruf" target="_blank" className="text-gold underline underline-offset-2">
-                  Widerrufsbelehrung
+                  Rückgabe- und Widerrufsinformationen
                 </Link>{" "}
                 zur Kenntnis genommen.
               </>
@@ -774,6 +788,8 @@ export function CheckoutForm() {
           verbindliche Bestellung ab. Anschliessend wirst du zur gesicherten
           Bezahlseite weitergeleitet. Es fallen keine weiteren Kosten an.
         </p>
+
+        <CurrencyNotice className="mt-3" />
       </aside>
     </form>
   );

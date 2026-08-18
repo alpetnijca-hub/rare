@@ -96,7 +96,7 @@ export const checkoutSchema = z
       message: "Bitte AGB und Datenschutzerklärung bestätigen.",
     }),
     acceptWithdrawal: z.literal(true, {
-      message: "Bitte den Hinweis zum Widerrufsrecht bestätigen.",
+      message: "Bitte die Rückgabe- und Widerrufsinformationen bestätigen.",
     }),
     marketingOptIn: z.boolean().default(false),
   })

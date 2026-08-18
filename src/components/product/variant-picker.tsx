@@ -7,7 +7,8 @@ import { useCart } from "@/components/cart/cart-provider";
 import { Button } from "@/components/ui/button";
 import { AvailabilityBadge } from "@/components/ui/badge";
 import { BackInStockForm } from "@/components/product/back-in-stock-form";
-import { formatBasePrice, formatPrice, formatTaxRate } from "@/lib/money";
+import { useCurrency } from "@/components/currency/currency-provider";
+import { formatTaxRate } from "@/lib/money";
 import type { AvailabilityState } from "@/lib/availability";
 import { cn } from "@/lib/utils";
 
@@ -51,6 +52,7 @@ export function VariantPicker({
   const router = useRouter();
   const searchParams = useSearchParams();
   const { addItem } = useCart();
+  const { format: formatPrice, formatBase } = useCurrency();
   const quantityId = useId();
 
   // Vorauswahl beim ersten Rendern: Variante aus der URL, sonst die erste
@@ -113,7 +115,7 @@ export function VariantPicker({
     });
   }
 
-  const basePrice = formatBasePrice(selected.priceCents, selected.volumeMl);
+  const basePrice = formatBase(selected.priceCents, selected.volumeMl);
   const hasDiscount =
     selected.compareAtPriceCents !== null &&
     selected.compareAtPriceCents > selected.priceCents;
@@ -136,7 +138,7 @@ export function VariantPicker({
         <p className="mt-2 text-xs leading-relaxed text-subtle">
           {taxRateBp > 0
             ? `inkl. ${formatTaxRate(taxRateBp)} MwSt.`
-            : "Umsatzsteuer wird nicht ausgewiesen"}
+            : "keine MwSt. (nicht mehrwertsteuerpflichtig)"}
           , zzgl.{" "}
           <Link href="/versand" className="underline underline-offset-2 hover:text-gold-light">
             Versandkosten

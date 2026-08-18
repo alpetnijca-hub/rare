@@ -1,35 +1,86 @@
 import { siteConfig, taxConfig } from "@/config/site";
+import { baseCurrency, type Currency } from "@/config/currencies";
 
 /**
- * Geldbeträge werden ausschliesslich als Integer in Cent verarbeitet.
+ * Geldbeträge werden ausschliesslich als Integer in der kleinsten Einheit
+ * der Abrechnungswährung verarbeitet – bei CHF also in Rappen.
  * Fliesskommazahlen sind für Geld nicht zulässig (Rundungsfehler).
+ *
+ * Jeder Betrag, der durch dieses Modul läuft, ist ein CHF-Betrag.
+ * `formatIn()` rechnet ihn nur für die Anzeige in eine andere Währung um;
+ * berechnet, gespeichert und belastet wird immer CHF.
  */
 
-const currencyFormatter = new Intl.NumberFormat(siteConfig.priceLocale, {
-  style: "currency",
-  currency: siteConfig.currency,
-});
+const formatterCache = new Map<string, Intl.NumberFormat>();
 
-/** Formatiert Cent als Währungsbetrag, z. B. 4990 -> "49,90 €". */
-export function formatPrice(cents: number): string {
-  return currencyFormatter.format(cents / 100);
+function formatterFor(currency: Currency): Intl.NumberFormat {
+  const cached = formatterCache.get(currency.code);
+  if (cached) return cached;
+
+  const formatter = new Intl.NumberFormat(currency.locale, {
+    style: "currency",
+    currency: currency.code,
+  });
+  formatterCache.set(currency.code, formatter);
+  return formatter;
 }
 
-/** Wandelt eine Eingabe wie "49,90" oder "49.90" in 4990 Cent um. */
+/**
+ * Formatiert Rappen als Betrag in der Abrechnungswährung,
+ * z. B. 4990 -> "CHF 49.90".
+ *
+ * Diese Funktion ist die richtige Wahl überall dort, wo der tatsächlich
+ * belastete Betrag stehen muss: Adminbereich, E-Mails, Rechnungen,
+ * abgeschlossene Bestellungen.
+ */
+export function formatPrice(cents: number): string {
+  return formatterFor(baseCurrency).format(cents / 100);
+}
+
+/**
+ * Rechnet einen CHF-Betrag in die kleinste Einheit einer Anzeigewährung um.
+ * Das Ergebnis bleibt ein Integer.
+ */
+export function convertFromBase(cents: number, currency: Currency): number {
+  if (currency.isBase) return cents;
+  return Math.round(cents * currency.unitsPerBase);
+}
+
+/**
+ * Formatiert einen CHF-Betrag in der gewählten Anzeigewährung.
+ *
+ * Bei einer Fremdwährung wird «ca.» vorangestellt, weil der Kurs eine
+ * hinterlegte Näherung ist und die Belastung in CHF erfolgt.
+ */
+export function formatIn(
+  cents: number,
+  currency: Currency,
+  options: { approximate?: boolean } = {},
+): string {
+  const formatted = formatterFor(currency).format(
+    convertFromBase(cents, currency) / 100,
+  );
+  if (currency.isBase) return formatted;
+  return options.approximate === false ? formatted : `ca. ${formatted}`;
+}
+
+/** Wandelt eine Eingabe wie "49.90" oder "49,90" in 4990 Rappen um. */
 export function parsePriceToCents(input: string): number | null {
   const normalized = input.trim().replace(/\s/g, "").replace(",", ".");
   if (!/^\d+(\.\d{1,2})?$/.test(normalized)) return null;
   return Math.round(Number.parseFloat(normalized) * 100);
 }
 
-/** Wandelt Cent für Formularfelder zurück, z. B. 4990 -> "49.90". */
+/** Wandelt Rappen für Formularfelder zurück, z. B. 4990 -> "49.90". */
 export function centsToInput(cents: number): string {
   return (cents / 100).toFixed(2);
 }
 
 /**
- * Errechnet die im Bruttopreis enthaltene Umsatzsteuer.
- * Beispiel: 10'000 Cent brutto bei 810 bp -> 749 Cent enthaltene MwSt.
+ * Errechnet die im Bruttopreis enthaltene Mehrwertsteuer.
+ * Beispiel: 10'000 Rappen brutto bei 810 bp -> 749 Rappen enthaltene MwSt.
+ *
+ * Liefert 0, solange keine Steuerpflicht konfiguriert ist.
  */
 export function includedTaxCents(
   grossCents: number,
@@ -39,7 +90,7 @@ export function includedTaxCents(
   return Math.round((grossCents * rateBp) / (10_000 + rateBp));
 }
 
-/** Formatiert einen Steuersatz, z. B. 810 -> "8,1 %". */
+/** Formatiert einen Steuersatz, z. B. 810 -> "8.1 %". */
 export function formatTaxRate(rateBp: number = taxConfig.rateBp): string {
   return `${(rateBp / 100).toLocaleString(siteConfig.priceLocale, {
     maximumFractionDigits: 2,
@@ -47,7 +98,7 @@ export function formatTaxRate(rateBp: number = taxConfig.rateBp): string {
 }
 
 /**
- * Grundpreis gemäss Preisangabenverordnung: Preis je 100 ml.
+ * Grundpreis gemäss Preisbekanntgabeverordnung: Preis je 100 ml.
  * Liefert `null`, wenn kein sinnvolles Volumen hinterlegt ist.
  */
 export function basePricePer100Ml(
@@ -58,14 +109,15 @@ export function basePricePer100Ml(
   return Math.round((priceCents / volumeMl) * 100);
 }
 
-/** Fertiger Anzeigetext für den Grundpreis, z. B. "€ 99.00 / 100 ml". */
+/** Fertiger Anzeigetext für den Grundpreis, z. B. "CHF 99.00 / 100 ml". */
 export function formatBasePrice(
   priceCents: number,
   volumeMl: number,
+  currency: Currency = baseCurrency,
 ): string | null {
   const perHundred = basePricePer100Ml(priceCents, volumeMl);
   if (perHundred === null) return null;
-  return `${formatPrice(perHundred)} / 100 ml`;
+  return `${formatIn(perHundred, currency)} / 100 ml`;
 }
 
 /** Rabatt in Prozent zwischen Streich- und Verkaufspreis. */

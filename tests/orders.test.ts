@@ -299,7 +299,7 @@ describe("Zahlung bestätigt (Webhook)", () => {
     const result = await fulfillPaidOrder(order.id, {
       paymentIntentId: "pi_vitest_1",
       amountCents: order.totalCents,
-      currency: "eur",
+      currency: "chf",
       methodType: "card",
       methodBrand: "visa",
       methodLast4: "4242",
@@ -331,7 +331,7 @@ describe("Zahlung bestätigt (Webhook)", () => {
     const payment = {
       paymentIntentId: "pi_vitest_2",
       amountCents: order.totalCents,
-      currency: "eur",
+      currency: "chf",
     };
 
     const first = await fulfillPaidOrder(order.id, payment);
@@ -394,7 +394,7 @@ describe("Zahlung bestätigt (Webhook)", () => {
     await fulfillPaidOrder(order.id, {
       paymentIntentId: "pi_vitest_3",
       amountCents: order.totalCents,
-      currency: "eur",
+      currency: "chf",
     });
 
     stored = await prisma.discountCode.findUniqueOrThrow({
@@ -406,7 +406,7 @@ describe("Zahlung bestätigt (Webhook)", () => {
     await fulfillPaidOrder(order.id, {
       paymentIntentId: "pi_vitest_3",
       amountCents: order.totalCents,
-      currency: "eur",
+      currency: "chf",
     });
 
     stored = await prisma.discountCode.findUniqueOrThrow({
@@ -474,7 +474,7 @@ describe("Freigabe und Storno", () => {
     await fulfillPaidOrder(order.id, {
       paymentIntentId: "pi_vitest_4",
       amountCents: order.totalCents,
-      currency: "eur",
+      currency: "chf",
     });
 
     const released = await releaseOrderStock(order.id);
@@ -495,7 +495,7 @@ describe("Freigabe und Storno", () => {
     await fulfillPaidOrder(order.id, {
       paymentIntentId: "pi_vitest_5",
       amountCents: order.totalCents,
-      currency: "eur",
+      currency: "chf",
     });
     expect((await variantState(variant.id)).stock).toBe(7);
 
@@ -519,7 +519,7 @@ describe("Freigabe und Storno", () => {
     await fulfillPaidOrder(order.id, {
       paymentIntentId: "pi_vitest_6",
       amountCents: order.totalCents,
-      currency: "eur",
+      currency: "chf",
     });
 
     await restockOrder(order.id, null, "Test-Erstattung");
@@ -602,7 +602,7 @@ describe("Vorbestellungen", () => {
     await fulfillPaidOrder(order.id, {
       paymentIntentId: "pi_vitest_7",
       amountCents: order.totalCents,
-      currency: "eur",
+      currency: "chf",
     });
 
     const after = await variantState(preorderVariant.id);

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCart } from "@/components/cart/cart-provider";
+import { CurrencySwitcher } from "@/components/currency/currency-switcher";
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 
@@ -85,6 +86,7 @@ export function Header() {
         <div className="container-shop flex h-9 items-center justify-between text-[11px] tracking-wide text-subtle">
           <p>Versicherter Versand · Sichere Bezahlung · Persönliche Beratung</p>
           <div className="flex items-center gap-5">
+            <CurrencySwitcher label="Anzeigewährung wählen" />
             <Link href="/versand" className="transition-colors hover:text-gold-light">
               Versand &amp; Lieferung
             </Link>
@@ -223,6 +225,10 @@ export function Header() {
               </li>
             ))}
           </ul>
+
+          <div className="mt-5 border-t border-line pt-5">
+            <CurrencySwitcher label="Anzeigewährung" showLabel />
+          </div>
 
           <div
             className="mt-5 flex flex-col gap-3 border-t border-line pt-5 text-sm text-muted"

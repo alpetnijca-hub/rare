@@ -9,12 +9,14 @@ import {
   VariantPicker,
   type VariantOption,
 } from "@/components/product/variant-picker";
-import { siteConfig, taxConfig } from "@/config/site";
+import { returnsPolicy, siteConfig, taxConfig } from "@/config/site";
 import {
   formatDeliveryRange,
   formatRestockDate,
   getAvailability,
 } from "@/lib/availability";
+import { BasePrice, Money } from "@/components/currency/money";
+import { CurrencyNotice } from "@/components/currency/currency-switcher";
 import { formatPrice } from "@/lib/money";
 import {
   familyLabels,
@@ -330,7 +332,8 @@ export default async function ProductPage({ params }: PageProps) {
               </li>
               <li className="flex items-start gap-2.5">
                 <span className="mt-1.5 size-1 shrink-0 bg-gold" aria-hidden="true" />
-                14 Tage Widerrufsrecht
+                {returnsPolicy.voluntaryDays} Tage Rückgaberecht auf
+                ungeöffnete Artikel
               </li>
               <li className="flex items-start gap-2.5">
                 <span className="mt-1.5 size-1 shrink-0 bg-gold" aria-hidden="true" />
@@ -400,13 +403,13 @@ export default async function ProductPage({ params }: PageProps) {
                           {variant.size}
                         </th>
                         <td className="py-3 pr-4 text-cream">
-                          {formatPrice(variant.priceCents)}
+                          <Money cents={variant.priceCents} />
                         </td>
                         <td className="py-3 pr-4 text-subtle">
-                          {formatPrice(
-                            Math.round((variant.priceCents / variant.volumeMl) * 100),
-                          )}{" "}
-                          / 100 ml
+                          <BasePrice
+                            priceCents={variant.priceCents}
+                            volumeMl={variant.volumeMl}
+                          />
                         </td>
                         <td className="py-3 pr-4 text-muted">{availability.label}</td>
                         <td className="py-3 text-muted">
@@ -423,13 +426,17 @@ export default async function ProductPage({ params }: PageProps) {
             </div>
 
             <p className="mt-4 text-xs leading-relaxed text-subtle">
-              Alle Preise verstehen sich als Endpreise
-              {taxConfig.rateBp > 0 ? " inklusive gesetzlicher Umsatzsteuer" : ""},
-              zuzüglich Versandkosten. Lieferzeiten sind Schätzungen in
+              Alle Preise verstehen sich als Endpreise in Schweizer Franken
+              {taxConfig.rateBp > 0
+                ? " inklusive gesetzlicher Mehrwertsteuer"
+                : " (keine MwSt., da nicht mehrwertsteuerpflichtig)"}
+              , zuzüglich Versandkosten. Lieferzeiten sind Schätzungen in
               Werktagen ab Zahlungseingang.
               {!anyPurchasable &&
                 " Dieses Produkt ist derzeit in keiner Größe bestellbar."}
             </p>
+
+            <CurrencyNotice className="mt-2" />
           </InfoSection>
 
           {product.legalNotice && (

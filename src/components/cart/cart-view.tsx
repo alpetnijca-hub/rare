@@ -7,7 +7,9 @@ import { useCart } from "@/components/cart/cart-provider";
 import { useCartQuote } from "@/components/cart/use-cart-quote";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { TextInput } from "@/components/ui/field";
-import { formatPrice, formatTaxRate } from "@/lib/money";
+import { useCurrency } from "@/components/currency/currency-provider";
+import { CurrencyNotice } from "@/components/currency/currency-switcher";
+import { formatTaxRate } from "@/lib/money";
 import { formatDeliveryRange } from "@/lib/availability";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +23,8 @@ function CartLine({
   onQuantityChange: (quantity: number) => void;
   onRemove: () => void;
 }) {
+  const { format: formatPrice } = useCurrency();
+
   return (
     <li className="flex gap-4 border-b border-line py-6 first:pt-0">
       <Link
@@ -139,6 +143,7 @@ export function CartView() {
   const [appliedCode, setAppliedCode] = useState("");
 
   const { quote, loading, error } = useCartQuote({ discountCode: appliedCode });
+  const { format: formatPrice } = useCurrency();
 
   // Erstes Rendern vor dem Lesen des localStorage.
   if (!ready) {
@@ -319,6 +324,8 @@ export function CartView() {
           )}
         </dl>
 
+        <CurrencyNotice className="mt-4" />
+
         {/* Gutscheincode */}
         <form
           onSubmit={(event) => {
@@ -382,7 +389,7 @@ export function CartView() {
         </ButtonLink>
 
         <p className="mt-4 text-center text-xs leading-relaxed text-subtle">
-          Alle Preise sind Endpreise inklusive Umsatzsteuer. Es entstehen keine
+          Alle Preise sind Endpreise in Schweizer Franken. Es entstehen keine
           weiteren Kosten – Versandkosten sind oben ausgewiesen.
         </p>
       </aside>

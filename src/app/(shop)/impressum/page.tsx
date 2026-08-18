@@ -9,29 +9,32 @@ export const metadata: Metadata = {
 };
 
 export default function ImprintPage() {
+  const { contact } = siteConfig;
+
   return (
     <LegalPage
       title="Impressum"
-      intro="Angaben zum Anbieter dieses Onlineshops."
+      intro="Angaben zum Anbieter dieses Onlineshops nach Art. 3 Abs. 1 lit. s UWG."
+      notice="review"
     >
       <LegalSection title="Anbieter">
         <p>
           {siteConfig.legalName}
           <br />
-          {siteConfig.contact.street}
+          {contact.street}
           <br />
-          {siteConfig.contact.postalCode} {siteConfig.contact.city}
+          {contact.postalCode} {contact.city}
           <br />
-          {siteConfig.contact.country}
+          {contact.country}
         </p>
+        <p className="text-xs text-subtle">Rechtsform: {siteConfig.legalForm}</p>
       </LegalSection>
 
-      <LegalSection title="Vertretungsberechtigte Personen">
-        <p>{siteConfig.contact.representatives}</p>
+      <LegalSection title="Verantwortliche Person">
+        <p>{contact.representatives}</p>
         <p className="text-xs text-subtle">
-          Hinweis: Bei zwei Geschäftspartnern sind beide vollständig mit Vor-
-          und Nachnamen zu nennen. Die Rechtsform (z. B. Einzelunternehmen,
-          einfache Gesellschaft, GmbH) muss ebenfalls angegeben werden.
+          Inhaber und für den Inhalt dieser Website verantwortlich, Anschrift
+          wie oben.
         </p>
       </LegalSection>
 
@@ -41,13 +44,13 @@ export default function ImprintPage() {
             <>
               E-Mail:{" "}
               <a
-                href={`mailto:${siteConfig.contact.email}`}
+                href={`mailto:${contact.email}`}
                 className="text-gold underline underline-offset-2 hover:text-gold-light"
               >
-                {siteConfig.contact.email}
+                {contact.email}
               </a>
             </>,
-            <>Telefon: {siteConfig.contact.phone}</>,
+            ...(contact.phone ? [<>Telefon: {contact.phone}</>] : []),
             <>
               Instagram:{" "}
               <a
@@ -61,57 +64,62 @@ export default function ImprintPage() {
             </>,
           ]}
         />
-      </LegalSection>
-
-      <LegalSection title="Registereintrag und Steuernummern">
-        <LegalList
-          items={[
-            <>Handelsregister / UID: {siteConfig.contact.registrationNumber}</>,
-            <>Mehrwertsteuernummer: {siteConfig.contact.vatId}</>,
-          ]}
-        />
         <p className="text-xs text-subtle">
-          Bei Befreiung von der Mehrwertsteuerpflicht ist stattdessen ein
-          entsprechender Hinweis aufzunehmen. Die Umsatzsteuerangabe im Shop
-          (siehe <code>SHOP_TAX_RATE_BP</code>) muss dazu passen.
+          Anfragen beantworten wir {siteConfig.supportResponseTime}. Die
+          schnellste Antwort erhältst du per E-Mail.
         </p>
       </LegalSection>
 
-      <LegalSection title="Verantwortlich für den Inhalt">
-        <p>
-          {siteConfig.contact.representatives}, Anschrift wie oben.
+      <LegalSection title="Handelsregister und Mehrwertsteuer">
+        {contact.registrationNumber ? (
+          <p>Handelsregister / UID: {contact.registrationNumber}</p>
+        ) : (
+          <p>
+            Nicht im Handelsregister eingetragen. Ein Eintrag ist für
+            Einzelunternehmen erst ab einem Jahresumsatz von CHF 100&#39;000
+            vorgeschrieben.
+          </p>
+        )}
+
+        {contact.vatId ? (
+          <p>Mehrwertsteuernummer: {contact.vatId}</p>
+        ) : (
+          <p>
+            Nicht mehrwertsteuerpflichtig. Es wird keine Mehrwertsteuer
+            ausgewiesen und keine Mehrwertsteuer in Rechnung gestellt
+            (Art. 10 Abs. 2 lit. a MWSTG).
+          </p>
+        )}
+
+        <p className="text-xs text-subtle">
+          Sobald eine UID vergeben oder die Mehrwertsteuerpflicht eintritt,
+          müssen diese Angaben und die Preisauszeichnung im Shop angepasst
+          werden. Technisch genügt dafür ein Eintrag in{" "}
+          <code>src/config/site.ts</code> beziehungsweise die
+          Umgebungsvariable <code>SHOP_TAX_RATE_BP</code>.
         </p>
       </LegalSection>
 
       <LegalSection title="Streitbeilegung">
         <p>
-          Die Europäische Kommission stellt eine Plattform zur
-          Online-Streitbeilegung bereit:{" "}
-          <a
-            href="https://ec.europa.eu/consumers/odr/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gold underline underline-offset-2 hover:text-gold-light"
-          >
-            ec.europa.eu/consumers/odr
-          </a>
-          .
+          Wir sind nicht verpflichtet und nicht bereit, an
+          Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle
+          teilzunehmen. Melde dich bei Unstimmigkeiten bitte zuerst direkt bei
+          uns – wir finden fast immer eine unkomplizierte Lösung.
         </p>
-        <p>
-          PLATZHALTER: Hier ist anzugeben, ob eine Bereitschaft oder
-          Verpflichtung zur Teilnahme an einem Streitbeilegungsverfahren vor
-          einer Verbraucherschlichtungsstelle besteht. Für Anbieter mit Sitz in
-          der Schweiz gelten abweichende Vorgaben – bitte fachkundig prüfen
-          lassen.
+        <p className="text-xs text-subtle">
+          Hinweis für Bestellungen aus der EU: Die Plattform der Europäischen
+          Kommission zur Online-Streitbeilegung wurde am 20. Juli 2025
+          eingestellt. Eine Verlinkung ist deshalb nicht mehr vorgesehen.
         </p>
       </LegalSection>
 
       <LegalSection title="Haftung für Inhalte und Links">
         <p>
           Die Inhalte dieser Seiten wurden mit Sorgfalt erstellt. Für die
-          Richtigkeit, Vollständigkeit und Aktualität der Inhalte übernehmen wir
-          keine Gewähr. Für Inhalte externer Links sind ausschliesslich deren
-          Betreiber verantwortlich. Zum Zeitpunkt der Verlinkung waren keine
+          Richtigkeit, Vollständigkeit und Aktualität übernehmen wir keine
+          Gewähr. Für Inhalte externer Links sind ausschliesslich deren
+          Betreiber verantwortlich; zum Zeitpunkt der Verlinkung waren keine
           Rechtsverstösse erkennbar.
         </p>
       </LegalSection>
@@ -124,11 +132,12 @@ export default function ImprintPage() {
         </p>
         <p>
           Als „Duftalternative“ oder „inspiriert von einer Duftrichtung“
-          gekennzeichnete Produkte sind eigenständige Erzeugnisse. Sie stehen in
-          keiner Verbindung zu den Herstellern anderer Düfte; es besteht weder
-          eine Lizenz noch eine Zusammenarbeit. Gegebenenfalls genannte Marken
-          sind Eigentum ihrer jeweiligen Inhaber und dienen ausschliesslich der
-          beschreibenden Einordnung einer Duftrichtung.
+          gekennzeichnete Produkte sind eigenständige Erzeugnisse und keine
+          Originalware. Sie stehen in keiner Verbindung zu den Herstellern
+          anderer Düfte; es besteht weder eine Lizenz noch eine
+          Zusammenarbeit. Gegebenenfalls genannte Marken sind Eigentum ihrer
+          jeweiligen Inhaber und dienen ausschliesslich der beschreibenden
+          Einordnung einer Duftrichtung.
         </p>
       </LegalSection>
     </LegalPage>

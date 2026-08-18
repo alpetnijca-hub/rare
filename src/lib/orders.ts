@@ -1,6 +1,6 @@
 import type { Prisma, PrismaClient } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { reservationMinutes } from "@/config/site";
+import { reservationMinutes, siteConfig } from "@/config/site";
 import { generateOrderNumber } from "@/lib/utils";
 import type { Quote } from "@/lib/pricing";
 import type { AddressInput } from "@/lib/validation";
@@ -231,7 +231,7 @@ export async function createPendingOrder(
           status: "PENDING_PAYMENT",
           customerId: customer.id,
           email: params.email,
-          currency: "EUR",
+          currency: siteConfig.currency,
           subtotalCents: quote.subtotalCents,
           discountCents: quote.discountCents,
           shippingCents: quote.shippingCents,
