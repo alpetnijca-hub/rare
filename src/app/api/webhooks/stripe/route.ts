@@ -2,6 +2,7 @@ import type Stripe from "stripe";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { siteConfig } from "@/config/site";
+import { envValue } from "@/lib/env";
 import { getStripe } from "@/lib/stripe";
 import {
   fulfillPaidOrder,
@@ -49,7 +50,7 @@ function orderIdFrom(object: {
 
 export async function POST(request: NextRequest) {
   const signature = request.headers.get("stripe-signature");
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const webhookSecret = envValue(process.env.STRIPE_WEBHOOK_SECRET);
 
   if (!signature || !webhookSecret) {
     console.error("[stripe-webhook] Signatur oder Secret fehlt.");

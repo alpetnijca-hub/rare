@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { createHash, randomBytes } from "node:crypto";
+import { envText } from "@/lib/env";
 
 /** Tailwind-Klassen zusammenführen (Konflikte gewinnen rechts). */
 export function cn(...inputs: ClassValue[]) {
@@ -44,7 +45,7 @@ export function generateOrderNumber(date = new Date()): string {
  */
 export function hashIp(ip: string | null | undefined): string | null {
   if (!ip) return null;
-  const salt = process.env.AUTH_SECRET ?? "rare-scents";
+  const salt = envText(process.env.AUTH_SECRET, "rare-scents");
   return createHash("sha256").update(`${salt}:${ip}`).digest("hex").slice(0, 32);
 }
 

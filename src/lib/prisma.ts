@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { envValue } from "@/lib/env";
 
 /**
  * Prisma 7 verbindet sich über einen Treiber-Adapter. Der Adapter wird nur
@@ -11,7 +12,7 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient(): PrismaClient {
-  const connectionString = process.env.DATABASE_URL;
+  const connectionString = envValue(process.env.DATABASE_URL);
   if (!connectionString) {
     throw new Error("DATABASE_URL ist nicht gesetzt.");
   }

@@ -25,9 +25,15 @@
  *     SHOP_DISPLAY_RATES="EUR:1.07,USD:1.24,GBP:0.92"
  *
  * (Format: <ISO-Code>:<Einheiten je 1 CHF>, mit Komma getrennt.)
- * Wer keine gepflegten Kurse anbieten will, setzt `SHOP_DISPLAY_RATES=""` –
+ *
+ * Wer keine Fremdwährungen anbieten will, setzt `SHOP_DISPLAY_RATES="aus"` –
  * dann entfällt der Umschalter und der Shop zeigt ausschliesslich CHF.
+ * Ein **leerer** Wert schaltet bewusst nichts ab, sondern greift auf die
+ * Näherungskurse unten zurück: Beim Import in Vercel entstehen leicht
+ * versehentlich leere Variablen, und die sollen keine Funktion abschalten.
  */
+
+import { envValue } from "@/lib/env";
 
 export interface Currency {
   /** ISO-4217-Code, z. B. "CHF". */
@@ -65,11 +71,16 @@ const fallbackRates: Record<string, number> = {
   GBP: 0.92,
 };
 
+/** Werte, die den Umschalter bewusst abschalten. */
+const disableValues = new Set(["aus", "off", "none", "keine", "false", "0"]);
+
 /** Liest `SHOP_DISPLAY_RATES`. Ungültige Einträge werden still übergangen. */
 function parseConfiguredRates(): Record<string, number> | null {
-  const raw = process.env.SHOP_DISPLAY_RATES;
+  const raw = envValue(process.env.SHOP_DISPLAY_RATES);
+  // Nicht gesetzt oder leer -> Näherungskurse verwenden.
   if (raw === undefined) return null;
-  if (raw.trim() === "") return {};
+  // Ausdrücklich abgeschaltet -> gar keine Fremdwährungen.
+  if (disableValues.has(raw.toLowerCase())) return {};
 
   const rates: Record<string, number> = {};
   for (const entry of raw.split(",")) {

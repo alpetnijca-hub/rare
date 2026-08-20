@@ -1,4 +1,5 @@
 import { baseCurrency } from "@/config/currencies";
+import { envFlag, envInt, envText } from "@/lib/env";
 
 /**
  * Zentrale Shop-Konfiguration.
@@ -24,10 +25,10 @@ export const siteConfig = {
     "Ausgewählte Parfüms, Duftalternativen und Abfüllungen – sorgfältig kuratiert, ehrlich beschrieben und sicher versendet.",
 
   /** Öffentliche Basis-URL ohne abschliessenden Slash. */
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(
-    /\/$/,
-    "",
-  ),
+  url: envText(
+    process.env.NEXT_PUBLIC_SITE_URL,
+    "http://localhost:3000",
+  ).replace(/\/$/, ""),
 
   locale: "de-CH",
   language: "de",
@@ -88,8 +89,8 @@ export const siteConfig = {
  * enthaltene Steuer dann überall automatisch aus.
  */
 export const taxConfig = {
-  rateBp: Number.parseInt(process.env.SHOP_TAX_RATE_BP ?? "0", 10),
-  pricesIncludeTax: (process.env.SHOP_PRICES_INCLUDE_TAX ?? "true") === "true",
+  rateBp: envInt(process.env.SHOP_TAX_RATE_BP, 0),
+  pricesIncludeTax: envFlag(process.env.SHOP_PRICES_INCLUDE_TAX, true),
 } as const;
 
 /** true, sobald ein Steuersatz konfiguriert ist. */

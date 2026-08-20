@@ -6,6 +6,7 @@ import { rateLimit, rateLimits, tooManyRequests } from "@/lib/rate-limit";
 import { clientIpFromHeaders, hashIp, sanitizeText } from "@/lib/utils";
 import { sendEmail } from "@/lib/email";
 import { escapeHtml } from "@/emails/layout";
+import { envValue } from "@/lib/env";
 
 /**
  * Kontaktformular.
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     // Weiterleitung an die Geschäftsadresse. Antworten geht direkt an den Kunden.
     await sendEmail({
-      to: process.env.SHOP_NOTIFICATION_EMAIL ?? siteConfig.contact.email,
+      to: envValue(process.env.SHOP_NOTIFICATION_EMAIL) ?? siteConfig.contact.email,
       replyTo: parsed.data.email,
       subject: `Kontaktanfrage: ${subject}`,
       text: `Von: ${name} <${parsed.data.email}>\n\n${message}`,

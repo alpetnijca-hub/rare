@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { expireStaleReservations } from "@/lib/orders";
+import { envValue } from "@/lib/env";
 
 /**
  * Gibt abgelaufene Reservierungen frei.
@@ -10,7 +11,7 @@ import { expireStaleReservations } from "@/lib/orders";
 export const dynamic = "force-dynamic";
 
 async function run(request: NextRequest): Promise<Response> {
-  const secret = process.env.CRON_SECRET;
+  const secret = envValue(process.env.CRON_SECRET);
   const authorization = request.headers.get("authorization");
 
   if (!secret) {

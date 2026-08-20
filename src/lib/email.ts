@@ -14,6 +14,7 @@ import {
   type OrderEmailData,
   type RenderedEmail,
 } from "@/emails/templates";
+import { envValue } from "@/lib/env";
 
 /**
  * E-Mail-Versand über Resend.
@@ -27,14 +28,16 @@ let resend: Resend | null = null;
 
 function getResend(): Resend | null {
   if (resend) return resend;
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = envValue(process.env.RESEND_API_KEY);
   if (!apiKey) return null;
   resend = new Resend(apiKey);
   return resend;
 }
 
 export function isEmailConfigured(): boolean {
-  return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
+  return Boolean(
+    envValue(process.env.RESEND_API_KEY) && envValue(process.env.EMAIL_FROM),
+  );
 }
 
 export interface SendEmailParams {
@@ -55,7 +58,7 @@ export async function sendEmail(
   params: SendEmailParams,
 ): Promise<SendEmailResult> {
   const client = getResend();
-  const from = process.env.EMAIL_FROM;
+  const from = envValue(process.env.EMAIL_FROM);
 
   if (!client || !from) {
     // Im lokalen Betrieb ohne Resend-Key wird nur protokolliert.
@@ -219,7 +222,7 @@ export async function sendOrderConfirmationEmails(
   const customerResult = await deliver(data.email, orderConfirmationEmail(data));
 
   const notificationAddress =
-    process.env.SHOP_NOTIFICATION_EMAIL ?? siteConfig.contact.email;
+    envValue(process.env.SHOP_NOTIFICATION_EMAIL) ?? siteConfig.contact.email;
 
   await deliver(
     notificationAddress,

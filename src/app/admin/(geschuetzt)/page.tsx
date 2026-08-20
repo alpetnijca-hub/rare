@@ -9,6 +9,7 @@ import { availableStock } from "@/lib/availability";
 import { isEmailConfigured } from "@/lib/email";
 import { isStripeConfigured } from "@/lib/stripe";
 import { isCloudinaryConfigured } from "@/lib/cloudinary";
+import { envValue } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
 
@@ -100,7 +101,7 @@ export default async function AdminOverviewPage() {
     { label: "Cloudinary (Bilder)", ok: isCloudinaryConfigured() },
     {
       label: "Stripe-Webhook-Secret",
-      ok: Boolean(process.env.STRIPE_WEBHOOK_SECRET),
+      ok: Boolean(envValue(process.env.STRIPE_WEBHOOK_SECRET)),
     },
   ];
   const openSetup = setupChecks.filter((check) => !check.ok);

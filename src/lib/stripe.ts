@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { envValue } from "@/lib/env";
 
 /**
  * Stripe-Client. Der Secret Key wird ausschliesslich serverseitig gelesen –
@@ -10,7 +11,7 @@ let client: Stripe | null = null;
 export function getStripe(): Stripe {
   if (client) return client;
 
-  const secretKey = process.env.STRIPE_SECRET_KEY;
+  const secretKey = envValue(process.env.STRIPE_SECRET_KEY);
   if (!secretKey) {
     throw new Error(
       "STRIPE_SECRET_KEY ist nicht gesetzt. Zahlungen sind nicht möglich.",
@@ -29,7 +30,7 @@ export function getStripe(): Stripe {
 }
 
 export function isStripeConfigured(): boolean {
-  return Boolean(process.env.STRIPE_SECRET_KEY);
+  return Boolean(envValue(process.env.STRIPE_SECRET_KEY));
 }
 
 /**

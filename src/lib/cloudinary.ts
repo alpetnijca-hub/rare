@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { envText, envValue } from "@/lib/env";
 
 /**
  * Cloudinary-Anbindung für Produktbilder.
@@ -19,9 +20,9 @@ export interface CloudinarySignature {
 
 export function isCloudinaryConfigured(): boolean {
   return Boolean(
-    process.env.CLOUDINARY_CLOUD_NAME &&
-      process.env.CLOUDINARY_API_KEY &&
-      process.env.CLOUDINARY_API_SECRET,
+    envValue(process.env.CLOUDINARY_CLOUD_NAME) &&
+      envValue(process.env.CLOUDINARY_API_KEY) &&
+      envValue(process.env.CLOUDINARY_API_SECRET),
   );
 }
 
@@ -30,15 +31,18 @@ export function isCloudinaryConfigured(): boolean {
  * Parameter alphabetisch sortiert, mit dem API-Secret angehängt.
  */
 export function createUploadSignature(): CloudinarySignature {
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  const cloudName = envValue(process.env.CLOUDINARY_CLOUD_NAME);
+  const apiKey = envValue(process.env.CLOUDINARY_API_KEY);
+  const apiSecret = envValue(process.env.CLOUDINARY_API_SECRET);
 
   if (!cloudName || !apiKey || !apiSecret) {
     throw new Error("Cloudinary ist nicht vollständig konfiguriert.");
   }
 
-  const folder = process.env.CLOUDINARY_UPLOAD_FOLDER ?? "rare-scents/produkte";
+  const folder = envText(
+    process.env.CLOUDINARY_UPLOAD_FOLDER,
+    "rare-scents/produkte",
+  );
   const timestamp = Math.floor(Date.now() / 1000);
 
   const params: Record<string, string> = {
@@ -67,9 +71,9 @@ export function createUploadSignature(): CloudinarySignature {
 
 /** Löscht ein Bild anhand seiner public_id (serverseitig, signiert). */
 export async function deleteCloudinaryImage(publicId: string): Promise<boolean> {
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  const cloudName = envValue(process.env.CLOUDINARY_CLOUD_NAME);
+  const apiKey = envValue(process.env.CLOUDINARY_API_KEY);
+  const apiSecret = envValue(process.env.CLOUDINARY_API_SECRET);
 
   if (!cloudName || !apiKey || !apiSecret) return false;
 
