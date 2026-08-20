@@ -25,10 +25,15 @@ export const authConfig = {
      * gültigen Rolle dürfen den Adminbereich sehen.
      */
     authorized({ auth, request }) {
-      const isAdminArea = request.nextUrl.pathname.startsWith("/admin");
-      const isLoginPage = request.nextUrl.pathname === "/admin/anmelden";
+      const path = request.nextUrl.pathname;
+      const isAdminArea = path.startsWith("/admin");
+      // Anmeldung und Ersteinrichtung müssen ohne Sitzung erreichbar sein.
+      // Die Einrichtungsseite schützt sich selbst: Sie antwortet nur, solange
+      // noch kein einziges Konto existiert (siehe src/lib/setup.ts).
+      const isPublicAdminPage =
+        path === "/admin/anmelden" || path === "/admin/einrichtung";
 
-      if (!isAdminArea || isLoginPage) return true;
+      if (!isAdminArea || isPublicAdminPage) return true;
 
       const role = auth?.user?.role;
       return role === "ADMIN" || role === "STAFF";

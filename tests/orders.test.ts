@@ -5,6 +5,8 @@ import {
   cancelOrder,
   createPendingOrder,
   expireStaleReservations,
+  resetReservationSweepThrottle,
+  sweepExpiredReservations,
   fulfillPaidOrder,
   InsufficientStockError,
   releaseOrderStock,
@@ -552,6 +554,51 @@ describe("Freigabe und Storno", () => {
 
     const updated = await prisma.order.findUniqueOrThrow({ where: { id: order.id } });
     expect(updated.status).toBe("CANCELLED");
+  });
+
+  it("räumt auch ohne Cron-Job auf, sobald jemand bestellt", async () => {
+    // Auf dem Vercel-Hobby-Tarif läuft der Cron nur einmal täglich. Eine
+    // abgebrochene Bestellung darf die Ware trotzdem nicht bis zum nächsten
+    // Lauf blockieren – createPendingOrder räumt selbst auf.
+    const product = await prisma.product.findUniqueOrThrow({
+      where: { slug: SLUG },
+      include: { variants: { orderBy: { sortOrder: "asc" } } },
+    });
+    const variant = product.variants[0];
+
+    // Erste Kundin legt fast den ganzen Bestand in eine Bestellung und
+    // bezahlt nie.
+    const abandoned = await placeOrder(variant.id, 9, "vitest-n@example.com");
+    await prisma.order.update({
+      where: { id: abandoned.id },
+      data: { reservationExpiresAt: new Date(Date.now() - 60_000) },
+    });
+
+    expect((await variantState(variant.id)).reservedStock).toBe(9);
+
+    // Zweite Kundin bestellt mehr, als bei blockierter Reservierung übrig wäre.
+    resetReservationSweepThrottle();
+    const second = await placeOrder(variant.id, 5, "vitest-o@example.com");
+
+    expect(second.id).toBeTruthy();
+
+    const after = await variantState(variant.id);
+    expect(after.reservedStock).toBe(5);
+    expect(after.stock).toBe(10);
+
+    const cancelled = await prisma.order.findUniqueOrThrow({
+      where: { id: abandoned.id },
+    });
+    expect(cancelled.status).toBe("CANCELLED");
+  });
+
+  it("drosselt wiederholte Aufräumläufe", async () => {
+    resetReservationSweepThrottle();
+
+    // Erster Lauf darf arbeiten, unmittelbar folgende werden übersprungen.
+    await sweepExpiredReservations();
+    const skipped = await sweepExpiredReservations();
+    expect(skipped).toBe(0);
   });
 });
 

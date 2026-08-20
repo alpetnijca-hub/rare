@@ -13,6 +13,7 @@ import {
   type ShippingMethod,
 } from "@/lib/shipping";
 import { validateDiscountCode, type DiscountResult } from "@/lib/discount";
+import { sweepExpiredReservations } from "@/lib/orders";
 
 /**
  * Preisberechnung – die einzige Stelle, an der Summen entstehen.
@@ -101,6 +102,13 @@ const emptyDiscount: DiscountResult = {
  */
 export async function buildQuote(options: QuoteOptions): Promise<Quote> {
   const { items, shippingMethodKey, country, discountCode } = options;
+
+  // Abgelaufene Reservierungen freigeben, BEVOR die verfügbare Menge
+  // berechnet wird. Sonst erschiene Ware als vergriffen, die längst niemand
+  // mehr kauft – auf dem Vercel-Hobby-Tarif bis zu 24 Stunden lang, weil der
+  // Cron-Job dort nur einmal täglich laufen darf. Der Lauf ist gedrosselt und
+  // schluckt Fehler; er darf den Warenkorb nie blockieren.
+  await sweepExpiredReservations();
 
   // Doppelte Positionen zusammenführen.
   const merged = new Map<string, number>();

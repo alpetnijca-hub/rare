@@ -166,6 +166,10 @@ export async function createPendingOrder(
     throw new Error("Der Warenkorb ist nicht bestellbar.");
   }
 
+  // Letzte Absicherung. Den entscheidenden Lauf macht `buildQuote()`, bevor
+  // die verfügbare Menge berechnet wird – hier ist er meist schon gedrosselt.
+  await sweepExpiredReservations();
+
   const reservationExpiresAt = new Date(
     Date.now() + reservationMinutes * 60 * 1000,
   );
@@ -562,7 +566,7 @@ export async function restockOrder(
  * Gibt abgelaufene Reservierungen frei.
  * Wird vom Cron-Job `/api/cron/reservierungen` aufgerufen.
  */
-export async function expireStaleReservations(): Promise<number> {
+export async function expireStaleReservations(limit = 200): Promise<number> {
   const stale = await prisma.order.findMany({
     where: {
       status: "PENDING_PAYMENT",
@@ -571,7 +575,7 @@ export async function expireStaleReservations(): Promise<number> {
       reservationExpiresAt: { lt: new Date() },
     },
     select: { id: true },
-    take: 200,
+    take: limit,
   });
 
   let released = 0;
@@ -590,6 +594,49 @@ export async function expireStaleReservations(): Promise<number> {
   }
 
   return released;
+}
+
+/**
+ * Mindestabstand zwischen zwei opportunistischen Aufräumläufen je Instanz.
+ */
+const sweepIntervalMs = 60_000;
+let lastSweepAt = 0;
+
+/**
+ * Gibt abgelaufene Reservierungen nebenbei frei.
+ *
+ * Der Cron-Job in `vercel.json` läuft auf dem Hobby-Tarif nur einmal täglich.
+ * Ohne diese Ergänzung bliebe Ware eines abgebrochenen Bezahlvorgangs bis zu
+ * 24 Stunden blockiert und erschiene fälschlich als ausverkauft.
+ *
+ * Deshalb räumt der Shop zusätzlich dann auf, wenn es darauf ankommt – beim
+ * Anlegen einer Bestellung und beim Berechnen des Warenkorbs. Der Lauf ist je
+ * Instanz gedrosselt und schluckt Fehler bewusst: Ein misslungenes Aufräumen
+ * darf niemals eine laufende Bestellung verhindern.
+ */
+export async function sweepExpiredReservations(
+  options: { force?: boolean } = {},
+): Promise<number> {
+  const now = Date.now();
+  if (!options.force && now - lastSweepAt < sweepIntervalMs) return 0;
+  lastSweepAt = now;
+
+  try {
+    // Bewusst kleine Häppchen: Dieser Lauf hängt an einer Kundenanfrage und
+    // darf sie nicht ausbremsen. Den grossen Rest erledigt der Cron-Job.
+    return await expireStaleReservations(25);
+  } catch (error) {
+    console.error(
+      "[lager] Abgelaufene Reservierungen konnten nicht freigegeben werden:",
+      error instanceof Error ? error.message : "unbekannt",
+    );
+    return 0;
+  }
+}
+
+/** Nur für Tests: setzt die Drosselung zurück. */
+export function resetReservationSweepThrottle(): void {
+  lastSweepAt = 0;
 }
 
 /** Manuelle Bestandskorrektur aus dem Adminbereich. */

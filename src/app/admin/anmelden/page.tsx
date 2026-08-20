@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/admin/login-form";
 import { getAdminUser } from "@/lib/auth-guard";
+import { needsInitialSetup } from "@/lib/setup";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -19,6 +20,9 @@ export default async function AdminLoginPage({
   // Bereits angemeldet? Direkt ins Dashboard.
   const user = await getAdminUser();
   if (user) redirect(callbackUrl ?? "/admin");
+
+  // Noch gar kein Konto vorhanden? Dann zuerst die Ersteinrichtung.
+  if (await needsInitialSetup()) redirect("/admin/einrichtung");
 
   return (
     <div className="flex min-h-dvh items-center justify-center bg-ink px-5 py-16">

@@ -436,6 +436,28 @@ npx dotenv -e .env.production.local -- npx prisma migrate deploy
 
 Alternativ das Build Command auf `prisma migrate deploy && npm run build` setzen.
 
+### 8.4b Ersteinrichtung im Browser (ohne Terminal)
+
+Die Tabellen legt Vercel bei jedem Deployment selbst an – das Build-Kommando
+lautet `prisma generate && prisma migrate deploy && next build`. Ein separater
+Migrationslauf ist nicht nötig.
+
+Für den Zugang zum Adminbereich gibt es die Seite **`/admin/einrichtung`**.
+Sie ist nur erreichbar, **solange noch kein einziges Konto existiert**, und
+verschwindet danach spurlos (404). Dort legst du dein Administratorkonto an.
+
+> **Sofort nach dem ersten Deployment einrichten.** Solange kein Konto besteht,
+> könnte theoretisch jede Person, die die URL kennt, das erste Konto anlegen.
+> Danach ist die Seite dauerhaft dicht.
+
+`/admin/anmelden` leitet automatisch dorthin um, solange kein Konto besteht.
+
+Alternativ, wenn du ein Terminal hast:
+
+```bash
+npm run admin:create -- --email chef@deine-domain.ch --name "Vorname Nachname"
+```
+
 ### 8.5 Nach dem ersten Deployment
 
 1. **Adminkonto anlegen** (gegen die Produktionsdatenbank):
@@ -629,7 +651,7 @@ Bitte **nicht gegen die Produktionsdatenbank** ausführen.
 - [ ] `AUTH_SECRET` ist zufällig erzeugt und nicht der Beispielwert
 - [ ] `npm run build` und `npm run test` laufen fehlerfrei
 - [ ] Migrationen auf der Produktionsdatenbank angewendet
-- [ ] Seed-Adminkonto gelöscht oder Passwort geändert
+- [ ] Adminkonto über /admin/einrichtung angelegt; Seed-Adminkonto gelöscht oder Passwort geändert
 - [ ] `CRON_SECRET` gesetzt, Cron-Job in Vercel sichtbar
 - [ ] Rate-Limiting über Upstash Redis eingerichtet (bei mehreren Instanzen)
 
@@ -725,6 +747,28 @@ im Lager eintragen – der Rückstand wird automatisch verrechnet.
 ```bash
 npm run db:studio
 ```
+
+---
+
+## 14b. Cron-Job und Reservierungen
+
+Wird ein Bezahlvorgang abgebrochen, bleibt die Ware reserviert, bis die Frist
+abläuft (`reservationMinutes`, standardmässig 60 Minuten). Freigegeben wird sie
+auf zwei Wegen:
+
+1. **Cron-Job** – `vercel.json` ruft täglich um 3 Uhr `/api/cron/reservierungen`
+   auf. Häufiger geht auf dem Vercel-Hobby-Tarif nicht: Dort ist genau ein Lauf
+   pro Tag erlaubt. Mit dem Pro-Tarif kann die Zeile auf `*/15 * * * *`
+   zurückgestellt werden.
+2. **Nebenbei beim Rechnen** – `buildQuote()` gibt abgelaufene Reservierungen
+   frei, bevor es die verfügbare Menge ermittelt. Dadurch hängt die
+   Verfügbarkeit nicht am Cron-Takt: Sobald jemand den Warenkorb öffnet oder
+   bestellt, ist der Bestand aktuell. Der Lauf ist je Instanz auf einmal pro
+   Minute gedrosselt, arbeitet in Häppchen von 25 Bestellungen und schluckt
+   Fehler – er darf eine Bestellung nie blockieren.
+
+Der Cron-Job ist damit nur noch ein Sicherheitsnetz für Zeiten ohne Verkehr.
+`CRON_SECRET` muss gesetzt sein, sonst antwortet die Route mit 503.
 
 ---
 
