@@ -5,10 +5,15 @@ import Link from "next/link";
 import { idleState } from "@/app/admin/state";
 import { saveProductAction } from "@/app/admin/actions";
 import { FormMessage, SubmitButton } from "@/components/admin/ui";
-import { Card } from "@/components/admin/layout-parts";
+import { AdvancedCard, Card } from "@/components/admin/layout-parts";
 import { Checkbox, Field, Select, TextArea, TextInput } from "@/components/ui/field";
 import { familyLabels, fragranceFamilies, kindLabels, productKinds } from "@/lib/catalog";
 import { slugify } from "@/lib/utils";
+import {
+  alternativeNotice,
+  defaultUsage,
+  ingredientsTemplate,
+} from "@/config/product-defaults";
 
 export interface ProductFormValues {
   id?: string;
@@ -75,7 +80,7 @@ export function ProductForm({
     <form action={formAction} className="flex flex-col gap-6">
       <Card title="Grunddaten">
         <div className="flex flex-col gap-5">
-          <div className="grid gap-5 md:grid-cols-2">
+          <div>
             <Field id="name" label="Produktname" required error={state.fields?.name}>
               {(aria) => (
                 <TextInput
@@ -96,25 +101,7 @@ export function ProductForm({
               )}
             </Field>
 
-            <Field
-              id="slug"
-              label="URL-Kürzel (Slug)"
-              required
-              error={state.fields?.slug}
-              hint="Erscheint in der Adresse: /produkt/dein-slug"
-            >
-              {(aria) => (
-                <TextInput
-                  {...aria}
-                  name="slug"
-                  required
-                  defaultValue={values.slug}
-                  onInput={(event) => {
-                    event.currentTarget.dataset.touched = "true";
-                  }}
-                />
-              )}
-            </Field>
+
           </div>
 
           <Field
@@ -222,24 +209,45 @@ export function ProductForm({
           <Field
             id="ingredients"
             label="Inhaltsstoffe und Pflichtangaben"
-            hint="INCI-Liste sowie Warn- und Gefahrenhinweise"
+            hint="Vorausgefüllt mit den üblichen Warnhinweisen. Die INCI-Liste oben musst du je Duft von der Verpackung übernehmen."
           >
             {(aria) => (
-              <TextArea {...aria} name="ingredients" rows={6} defaultValue={values.ingredients} />
+              <TextArea
+                {...aria}
+                name="ingredients"
+                rows={7}
+                defaultValue={values.ingredients || (values.id ? "" : ingredientsTemplate)}
+              />
             )}
           </Field>
 
-          <Field id="usage" label="Anwendungshinweise">
-            {(aria) => <TextArea {...aria} name="usage" rows={4} defaultValue={values.usage} />}
+          <Field
+            id="usage"
+            label="Anwendungshinweise"
+            hint="Vorausgefüllt – passt für die meisten Düfte."
+          >
+            {(aria) => (
+              <TextArea
+                {...aria}
+                name="usage"
+                rows={4}
+                defaultValue={values.usage || (values.id ? "" : defaultUsage)}
+              />
+            )}
           </Field>
 
           <Field
             id="legalNotice"
             label="Rechtlicher Hinweis"
-            hint="Bei Duftalternativen zwingend ausfüllen – wird auf der Produktseite angezeigt."
+            hint="Vorausgefüllt mit dem Standardtext für Duftalternativen. Bei Originalware kannst du das Feld leeren."
           >
             {(aria) => (
-              <TextArea {...aria} name="legalNotice" rows={4} defaultValue={values.legalNotice} />
+              <TextArea
+                {...aria}
+                name="legalNotice"
+                rows={4}
+                defaultValue={values.legalNotice || (values.id ? "" : alternativeNotice)}
+              />
             )}
           </Field>
         </div>
@@ -275,47 +283,72 @@ export function ProductForm({
         </fieldset>
       </Card>
 
-      <Card title="Kennzeichnung und Sichtbarkeit">
-        <div className="flex flex-col gap-4">
-          <Checkbox
-            id="isActive"
-            name="isActive"
-            defaultChecked={values.isActive}
-            label="Im Shop sichtbar"
-          />
-          <Checkbox
-            id="isBestseller"
-            name="isBestseller"
-            defaultChecked={values.isBestseller}
-            label="Als Bestseller kennzeichnen (erscheint auf der Startseite)"
-          />
-          <Checkbox
-            id="isNew"
-            name="isNew"
-            defaultChecked={values.isNew}
-            label="Als „Neu“ kennzeichnen"
-          />
-          <Checkbox
-            id="isAlternative"
-            name="isAlternative"
-            defaultChecked={values.isAlternative}
-            label="Duftalternative – kein Originalprodukt (blendet den rechtlichen Hinweis auf der Produktseite ein)"
-          />
-          <Checkbox
-            id="isDemo"
-            name="isDemo"
-            defaultChecked={values.isDemo}
-            label="Demo-Datensatz (wird im Shop als Demo gekennzeichnet)"
-          />
-        </div>
-      </Card>
+      <AdvancedCard
+        title="Weitere Einstellungen"
+        description="Sichtbarkeit, Kennzeichnungen, Adresse und Suchmaschinen – alles hat sinnvolle Voreinstellungen."
+      >
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
+            <Checkbox
+              id="isActive"
+              name="isActive"
+              defaultChecked={values.isActive}
+              label="Im Shop sichtbar"
+              hint="Ausgeschaltet bleibt der Duft nur für dich sichtbar – praktisch, solange du noch Fotos oder Preise nachträgst."
+            />
+            <Checkbox
+              id="isAlternative"
+              name="isAlternative"
+              defaultChecked={values.isAlternative}
+              label="Duftalternative – kein Originalprodukt"
+              hint="Blendet auf der Produktseite den rechtlichen Hinweis ein, dass es sich um ein eigenständiges Erzeugnis handelt."
+            />
+            <Checkbox
+              id="isBestseller"
+              name="isBestseller"
+              defaultChecked={values.isBestseller}
+              label="Als Bestseller kennzeichnen"
+              hint="Erscheint dann auf der Startseite."
+            />
+            <Checkbox
+              id="isNew"
+              name="isNew"
+              defaultChecked={values.isNew}
+              label="Als „Neu“ kennzeichnen"
+            />
+            <Checkbox
+              id="isDemo"
+              name="isDemo"
+              defaultChecked={values.isDemo}
+              label="Demo-Datensatz"
+              hint="Nur für Beispielinhalte. Solche Produkte lassen sich auf der Übersicht gesammelt entfernen."
+            />
+          </div>
 
-      <Card title="Suchmaschinen (SEO)">
-        <div className="flex flex-col gap-5">
+          <Field
+            id="slug"
+            label="Adresse der Produktseite"
+            required
+            error={state.fields?.slug}
+            hint="Wird automatisch aus dem Namen gebildet: /produkt/dein-slug"
+          >
+            {(aria) => (
+              <TextInput
+                {...aria}
+                name="slug"
+                required
+                defaultValue={values.slug}
+                onInput={(event) => {
+                  event.currentTarget.dataset.touched = "true";
+                }}
+              />
+            )}
+          </Field>
+
           <Field
             id="metaTitle"
-            label="Seitentitel"
-            hint="Leer lassen, um den Produktnamen zu verwenden. Ideal bis 60 Zeichen."
+            label="Seitentitel für Suchmaschinen"
+            hint="Leer lassen, um den Produktnamen zu verwenden."
           >
             {(aria) => (
               <TextInput {...aria} name="metaTitle" maxLength={70} defaultValue={values.metaTitle} />
@@ -324,15 +357,15 @@ export function ProductForm({
 
           <Field
             id="metaDesc"
-            label="Meta-Beschreibung"
-            hint="Erscheint in den Suchergebnissen. Ideal 120–160 Zeichen."
+            label="Beschreibung für Suchmaschinen"
+            hint="Erscheint in den Suchergebnissen. Leer lassen ist in Ordnung."
           >
             {(aria) => (
               <TextArea {...aria} name="metaDesc" maxLength={180} rows={3} defaultValue={values.metaDesc} />
             )}
           </Field>
         </div>
-      </Card>
+      </AdvancedCard>
 
       <FormMessage state={state} />
 

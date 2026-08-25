@@ -145,3 +145,56 @@ export function EmptyRow({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
+/**
+ * Zusammenklappbarer Bereich für Einstellungen, die man selten braucht.
+ *
+ * Bewusst ein natives <details>: Der Inhalt bleibt im Formular und wird
+ * mitgesendet, auch wenn er zugeklappt ist. Eine Lösung, die zugeklappte
+ * Felder ausblendet, würde beim Speichern stillschweigend Werte verlieren.
+ */
+export function AdvancedCard({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: ReactNode;
+}) {
+  return (
+    <details className="group border border-line bg-charcoal">
+      <summary
+        className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4
+          transition-colors hover:bg-ink/40
+          focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-gold"
+      >
+        <div>
+          <h2 className="text-lg">{title}</h2>
+          {description && (
+            <p className="mt-0.5 text-sm leading-relaxed text-muted">
+              {description}
+            </p>
+          )}
+        </div>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          aria-hidden="true"
+          className="shrink-0 text-muted transition-transform duration-200 group-open:rotate-180"
+        >
+          <path
+            d="M3 6l5 5 5-5"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </summary>
+      <div className="border-t border-line px-5 py-5">{children}</div>
+    </details>
+  );
+}

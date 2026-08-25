@@ -599,6 +599,24 @@ Erreichbar unter `/admin`, Anmeldung unter `/admin/anmelden`.
 | **Rabattcodes** | Prozent, Festbetrag oder Gratisversand; Mindestbestellwert, Höchstzahl an Einlösungen, Zeitraum |
 | **Demo-Inhalte** | Auf der Übersicht: Demo-Produkte mit einem Klick einspielen und wieder entfernen |
 
+**Duft anlegen.** Unter `/admin/produkte/neu` sind nur die Felder sichtbar, die
+man wirklich braucht: Name, Beschreibung, Duftfamilie, Duftnoten,
+Pflichtangaben und Kategorien. Sichtbarkeit, Kennzeichnungen, Adresse der
+Produktseite und die Suchmaschinen-Felder liegen zusammengeklappt unter
+«Weitere Einstellungen» und haben brauchbare Voreinstellungen. Die Adresse
+bildet sich automatisch aus dem Namen.
+
+Anwendungshinweise und die üblichen Warnhinweise sind bei neuen Produkten
+vorausgefüllt (siehe `src/config/product-defaults.ts`). Die INCI-Liste bleibt
+bewusst ein Platzhalter zum Überschreiben – sie steht auf der Verpackung und
+unterscheidet sich je Duft; ein plausibel aussehender Vorgabetext würde dort
+niemand mehr prüfen.
+
+In der Größenverwaltung füllt ein Klick auf «2 ml», «10 ml», «50 ml» usw.
+Größe, Volumen, Artikelnummer und die Probenmarkierung auf einmal. Die
+Artikelnummer entsteht aus Produktkürzel und Volumen (`amber-nuit` + 10 ml →
+`AN-010`) und weicht aus, wenn sie schon vergeben ist.
+
 **Probengrößen.** Proben und Abfüllungen sind keine eigenen Produkte, sondern
 Größen desselben Dufts. In der Größenverwaltung markiert das Häkchen
 «Probe oder Abfüllung zum Testen» eine Größe als Probe (`isSample`). Auf der

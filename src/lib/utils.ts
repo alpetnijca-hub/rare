@@ -91,3 +91,42 @@ export function sanitizeText(input: string, maxLength = 2000): string {
     .trim()
     .slice(0, maxLength);
 }
+
+/**
+ * Bildet einen Vorschlag für die Artikelnummer aus Produkt-Slug und Volumen.
+ *
+ * Beispiel: ("golden-amber", 10) -> "GA-010"
+ *
+ * Ist der Vorschlag schon vergeben, wird durchnummeriert. Die Nummer muss
+ * eindeutig sein – der Server weist Dubletten sonst ab, und das mitten im
+ * Anlegen einer Größe ist unnötig ärgerlich.
+ */
+export function buildSku(
+  productSlug: string,
+  volumeMl: number,
+  existingSkus: string[] = [],
+): string {
+  // Nur Zeichen, die der Server in einer Artikelnummer zulässt. Slugs kommen
+  // normalerweise aus slugify(), können aber von Hand überschrieben werden –
+  // ein "é" oder "&" würde die Nummer sonst unbrauchbar machen.
+  const kuerzel =
+    productSlug
+      .split(/[-\s]+/)
+      .map((teil) => teil.charAt(0))
+      .join("")
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "")
+      .slice(0, 4) || "RS";
+
+  const menge = String(Math.max(0, Math.trunc(volumeMl))).padStart(3, "0");
+  const basis = `${kuerzel}-${menge}`;
+
+  const vergeben = new Set(existingSkus.map((sku) => sku.toUpperCase()));
+  if (!vergeben.has(basis)) return basis;
+
+  for (let lauf = 2; lauf < 100; lauf += 1) {
+    const kandidat = `${basis}-${lauf}`;
+    if (!vergeben.has(kandidat)) return kandidat;
+  }
+  return `${basis}-${Date.now().toString().slice(-4)}`;
+}

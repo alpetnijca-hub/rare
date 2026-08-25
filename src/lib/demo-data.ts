@@ -11,6 +11,11 @@
  * Beträge sind Integer in Rappen.
  */
 
+import {
+  alternativeNotice,
+  defaultUsage,
+} from "@/config/product-defaults";
+
 export function inDays(days: number): Date {
   const date = new Date();
   date.setDate(date.getDate() + days);
@@ -103,11 +108,6 @@ export interface SeedProduct {
   variants: SeedVariant[];
 }
 
-const STANDARD_USAGE =
-  "Auf die Haut an Puls- und Wärmepunkten auftragen: Handgelenke, Halsseiten und " +
-  "hinter den Ohren. Nicht verreiben – das zerstört die feinen Kopfnoten. " +
-  "Bei empfindlicher Haut zuerst an einer kleinen Stelle testen. " +
-  "Kühl, trocken und vor direktem Sonnenlicht geschützt lagern.";
 
 const STANDARD_INGREDIENTS =
   "Alcohol Denat., Parfum (Fragrance), Aqua, Limonene, Linalool, Coumarin, " +
@@ -117,11 +117,6 @@ const STANDARD_INGREDIENTS =
   "Von Zündquellen fernhalten – nicht rauchen. Bei Augenkontakt gründlich mit " +
   "Wasser spülen. Angaben ohne Gewähr; massgeblich ist stets die Verpackung.";
 
-const ALTERNATIVE_NOTICE =
-  "Dieses Produkt ist eine eigenständige Duftalternative und keine Originalware. " +
-  "Es besteht keine Verbindung, Lizenzierung oder Zusammenarbeit mit den Herstellern " +
-  "anderer Düfte. Alle gegebenenfalls genannten Marken sind Eigentum ihrer jeweiligen " +
-  "Inhaber und dienen ausschliesslich der Beschreibung einer Duftrichtung.";
 
 export const products: SeedProduct[] = [
   // -------------------------------------------------------------------------
@@ -142,7 +137,7 @@ export const products: SeedProduct[] = [
     heartNotes: ["Amber", "Labdanum", "Pflaume"],
     baseNotes: ["Vanille", "Tonkabohne", "Zedernholz"],
     ingredients: STANDARD_INGREDIENTS,
-    usage: STANDARD_USAGE,
+    usage: defaultUsage,
     isAlternative: false,
     isBestseller: true,
     isNew: false,
@@ -179,8 +174,8 @@ export const products: SeedProduct[] = [
     heartNotes: ["Rose", "Oudholz", "Zeder"],
     baseNotes: ["Patchouli", "Leder", "Weisser Moschus"],
     ingredients: STANDARD_INGREDIENTS,
-    usage: STANDARD_USAGE,
-    legalNotice: ALTERNATIVE_NOTICE,
+    usage: defaultUsage,
+    legalNotice: alternativeNotice,
     isAlternative: true,
     isBestseller: true,
     isNew: true,
@@ -217,7 +212,7 @@ export const products: SeedProduct[] = [
     heartNotes: ["Rose", "Pfingstrose", "Veilchen"],
     baseNotes: ["Weisser Moschus", "Zedernholz", "Amber"],
     ingredients: STANDARD_INGREDIENTS,
-    usage: STANDARD_USAGE,
+    usage: defaultUsage,
     isAlternative: false,
     isBestseller: false,
     isNew: false,
@@ -254,8 +249,8 @@ export const products: SeedProduct[] = [
     heartNotes: ["Tabakblatt", "Kaffee", "Zimt"],
     baseNotes: ["Bourbon-Vanille", "Tonkabohne", "Sandelholz"],
     ingredients: STANDARD_INGREDIENTS,
-    usage: STANDARD_USAGE,
-    legalNotice: ALTERNATIVE_NOTICE,
+    usage: defaultUsage,
+    legalNotice: alternativeNotice,
     isAlternative: true,
     isBestseller: false,
     isNew: true,
@@ -292,7 +287,7 @@ export const products: SeedProduct[] = [
     heartNotes: ["Neroli", "Petitgrain", "Grüner Tee"],
     baseNotes: ["Vetiver", "Weisser Moschus", "Zedernholz"],
     ingredients: STANDARD_INGREDIENTS,
-    usage: STANDARD_USAGE,
+    usage: defaultUsage,
     isAlternative: false,
     isBestseller: true,
     isNew: false,
@@ -331,7 +326,7 @@ export const products: SeedProduct[] = [
     usage:
       "Jede Abfüllung ist einzeln beschriftet. Wir empfehlen, pro Tag nur einen Duft zu testen – " +
       "die Nase gewöhnt sich schnell und vergleicht sonst ungenau.\n\n" +
-      STANDARD_USAGE,
+      defaultUsage,
     isAlternative: false,
     isBestseller: false,
     isNew: true,

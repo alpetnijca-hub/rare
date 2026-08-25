@@ -103,7 +103,11 @@ export default async function EditProductPage({
           title="Größen, Preise und Lagerbestand"
           description="Jede Größe hat einen eigenen Preis, Bestand und eine eigene Lieferzeit."
         >
-          <VariantManager productId={product.id} variants={variantRows} />
+          <VariantManager
+            productId={product.id}
+            productSlug={product.slug}
+            variants={variantRows}
+          />
         </Card>
 
         <Card
