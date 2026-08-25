@@ -44,14 +44,6 @@ export const categories = [
     heroImageUrl: "/produkte/kategorie-unisex.svg",
   },
   {
-    slug: "abfuellungen",
-    name: "Abfüllungen",
-    kind: "TYPE" as const,
-    description: "Von Hand abgefüllte Proben ab 2 ml – erst testen, dann entscheiden.",
-    sortOrder: 4,
-    heroImageUrl: "/produkte/kategorie-abfuellungen.svg",
-  },
-  {
     slug: "sets",
     name: "Sets",
     kind: "TYPE" as const,
@@ -62,6 +54,8 @@ export const categories = [
 ];
 
 export interface SeedVariant {
+  /** Kleine Größe zum Ausprobieren – erscheint in der Auswahl unter "Zum Testen". */
+  isSample?: boolean;
   sku: string;
   size: string;
   volumeMl: number;
@@ -153,15 +147,15 @@ export const products: SeedProduct[] = [
     isBestseller: true,
     isNew: false,
     popularity: 980,
-    categorySlugs: ["unisex", "abfuellungen"],
+    categorySlugs: ["unisex"],
     images: [
       { url: "/produkte/golden-amber-1.svg", alt: "Golden Amber – Flakon in warmem Gold vor dunklem Hintergrund" },
       { url: "/produkte/golden-amber-2.svg", alt: "Golden Amber – seitliche Ansicht des Flakons" },
     ],
     variants: [
-      { sku: "RS-GA-002", size: "2 ml", volumeMl: 2, priceCents: 490, stock: 64, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 1 },
-      { sku: "RS-GA-005", size: "5 ml", volumeMl: 5, priceCents: 990, stock: 41, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 2 },
-      { sku: "RS-GA-010", size: "10 ml", volumeMl: 10, priceCents: 1790, compareAtPriceCents: 1990, stock: 28, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 3 },
+      { sku: "RS-GA-002", isSample: true, size: "2 ml", volumeMl: 2, priceCents: 490, stock: 64, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 1 },
+      { sku: "RS-GA-005", isSample: true, size: "5 ml", volumeMl: 5, priceCents: 990, stock: 41, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 2 },
+      { sku: "RS-GA-010", isSample: true, size: "10 ml", volumeMl: 10, priceCents: 1790, compareAtPriceCents: 1990, stock: 28, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 3 },
       { sku: "RS-GA-030", size: "30 ml", volumeMl: 30, priceCents: 4490, stock: 12, deliveryMinDays: 1, deliveryMaxDays: 3, sortOrder: 4 },
       { sku: "RS-GA-050", size: "50 ml", volumeMl: 50, priceCents: 6900, stock: 6, deliveryMinDays: 1, deliveryMaxDays: 3, sortOrder: 5 },
     ],
@@ -191,16 +185,16 @@ export const products: SeedProduct[] = [
     isBestseller: true,
     isNew: true,
     popularity: 870,
-    categorySlugs: ["herren", "unisex", "abfuellungen"],
+    categorySlugs: ["herren", "unisex"],
     images: [
       { url: "/produkte/midnight-oud-1.svg", alt: "Midnight Oud – schlanker Flakon mit violettem Schimmer" },
       { url: "/produkte/midnight-oud-2.svg", alt: "Midnight Oud – Detailansicht des Flakons" },
     ],
     variants: [
-      { sku: "RS-MO-002", size: "2 ml", volumeMl: 2, priceCents: 690, stock: 38, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 1 },
-      { sku: "RS-MO-005", size: "5 ml", volumeMl: 5, priceCents: 1490, stock: 22, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 2 },
+      { sku: "RS-MO-002", isSample: true, size: "2 ml", volumeMl: 2, priceCents: 690, stock: 38, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 1 },
+      { sku: "RS-MO-005", isSample: true, size: "5 ml", volumeMl: 5, priceCents: 1490, stock: 22, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 2 },
       // Knapper Bestand: zeigt "Nur noch X Stück verfügbar".
-      { sku: "RS-MO-010", size: "10 ml", volumeMl: 10, priceCents: 2790, stock: 3, lowStockThreshold: 5, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 3 },
+      { sku: "RS-MO-010", isSample: true, size: "10 ml", volumeMl: 10, priceCents: 2790, stock: 3, lowStockThreshold: 5, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 3 },
       { sku: "RS-MO-030", size: "30 ml", volumeMl: 30, priceCents: 7490, stock: 2, lowStockThreshold: 3, deliveryMinDays: 2, deliveryMaxDays: 4, sortOrder: 4 },
     ],
   },
@@ -228,14 +222,14 @@ export const products: SeedProduct[] = [
     isBestseller: false,
     isNew: false,
     popularity: 640,
-    categorySlugs: ["damen", "abfuellungen"],
+    categorySlugs: ["damen"],
     images: [
       { url: "/produkte/velvet-rose-1.svg", alt: "Velvet Rose – runder Flakon mit rosafarbenem Schimmer" },
       { url: "/produkte/velvet-rose-2.svg", alt: "Velvet Rose – zweite Ansicht des Flakons" },
     ],
     variants: [
-      { sku: "RS-VR-002", size: "2 ml", volumeMl: 2, priceCents: 450, stock: 25, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 1 },
-      { sku: "RS-VR-005", size: "5 ml", volumeMl: 5, priceCents: 890, stock: 14, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 2 },
+      { sku: "RS-VR-002", isSample: true, size: "2 ml", volumeMl: 2, priceCents: 450, stock: 25, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 1 },
+      { sku: "RS-VR-005", isSample: true, size: "5 ml", volumeMl: 5, priceCents: 890, stock: 14, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 2 },
       // Ausverkauft, aber mit Datum: "Nicht auf Lager – wieder verfügbar ab …".
       { sku: "RS-VR-030", size: "30 ml", volumeMl: 30, priceCents: 3990, stock: 0, preorderEnabled: false, restockDate: inDays(21), deliveryMinDays: 1, deliveryMaxDays: 3, sortOrder: 3 },
       { sku: "RS-VR-050", size: "50 ml", volumeMl: 50, priceCents: 5990, stock: 0, preorderEnabled: false, restockDate: inDays(21), deliveryMinDays: 1, deliveryMaxDays: 3, sortOrder: 4 },
@@ -266,14 +260,14 @@ export const products: SeedProduct[] = [
     isBestseller: false,
     isNew: true,
     popularity: 720,
-    categorySlugs: ["unisex", "abfuellungen"],
+    categorySlugs: ["unisex"],
     images: [
       { url: "/produkte/noir-vanilla-1.svg", alt: "Noir Vanilla – bauchiger Flakon in warmem Braunton" },
       { url: "/produkte/noir-vanilla-2.svg", alt: "Noir Vanilla – zweite Ansicht des Flakons" },
     ],
     variants: [
-      { sku: "RS-NV-002", size: "2 ml", volumeMl: 2, priceCents: 590, stock: 30, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 1 },
-      { sku: "RS-NV-005", size: "5 ml", volumeMl: 5, priceCents: 1190, stock: 9, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 2 },
+      { sku: "RS-NV-002", isSample: true, size: "2 ml", volumeMl: 2, priceCents: 590, stock: 30, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 1 },
+      { sku: "RS-NV-005", isSample: true, size: "5 ml", volumeMl: 5, priceCents: 1190, stock: 9, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 2 },
       // Vorbestellbar: kein Bestand, aber bestellbar mit längerer Lieferzeit.
       { sku: "RS-NV-030", size: "30 ml", volumeMl: 30, priceCents: 5490, stock: 0, preorderEnabled: true, restockDate: inDays(14), deliveryMinDays: 10, deliveryMaxDays: 18, sortOrder: 3 },
       { sku: "RS-NV-100", size: "100 ml", volumeMl: 100, priceCents: 11900, stock: 0, preorderEnabled: true, restockDate: inDays(14), deliveryMinDays: 10, deliveryMaxDays: 18, sortOrder: 4 },
@@ -303,14 +297,14 @@ export const products: SeedProduct[] = [
     isBestseller: true,
     isNew: false,
     popularity: 810,
-    categorySlugs: ["unisex", "damen", "abfuellungen"],
+    categorySlugs: ["unisex", "damen"],
     images: [
       { url: "/produkte/citrus-elan-1.svg", alt: "Citrus Élan – heller Flakon mit gelbem Schimmer" },
       { url: "/produkte/citrus-elan-2.svg", alt: "Citrus Élan – zweite Ansicht des Flakons" },
     ],
     variants: [
-      { sku: "RS-CE-002", size: "2 ml", volumeMl: 2, priceCents: 390, stock: 52, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 1 },
-      { sku: "RS-CE-010", size: "10 ml", volumeMl: 10, priceCents: 1490, compareAtPriceCents: 1890, stock: 33, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 2 },
+      { sku: "RS-CE-002", isSample: true, size: "2 ml", volumeMl: 2, priceCents: 390, stock: 52, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 1 },
+      { sku: "RS-CE-010", isSample: true, size: "10 ml", volumeMl: 10, priceCents: 1490, compareAtPriceCents: 1890, stock: 33, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 2 },
       { sku: "RS-CE-050", size: "50 ml", volumeMl: 50, priceCents: 5490, compareAtPriceCents: 6490, stock: 17, deliveryMinDays: 1, deliveryMaxDays: 3, sortOrder: 3 },
       { sku: "RS-CE-100", size: "100 ml", volumeMl: 100, priceCents: 8900, stock: 8, deliveryMinDays: 1, deliveryMaxDays: 3, sortOrder: 4 },
     ],
@@ -348,10 +342,10 @@ export const products: SeedProduct[] = [
       { url: "/produkte/royal-essence-2.svg", alt: "Royal Essence – zweite Ansicht des Sets" },
     ],
     variants: [
-      { sku: "RS-RE-SET5", size: "Set mit 5 × 2 ml", volumeMl: 10, priceCents: 2490, compareAtPriceCents: 2610, stock: 19, deliveryMinDays: 2, deliveryMaxDays: 4, sortOrder: 1 },
-      { sku: "RS-RE-SET3", size: "Set mit 3 × 2 ml", volumeMl: 6, priceCents: 1590, stock: 4, lowStockThreshold: 5, deliveryMinDays: 2, deliveryMaxDays: 4, sortOrder: 2 },
+      { sku: "RS-RE-SET5", isSample: true, size: "Set mit 5 × 2 ml", volumeMl: 10, priceCents: 2490, compareAtPriceCents: 2610, stock: 19, deliveryMinDays: 2, deliveryMaxDays: 4, sortOrder: 1 },
+      { sku: "RS-RE-SET3", isSample: true, size: "Set mit 3 × 2 ml", volumeMl: 6, priceCents: 1590, stock: 4, lowStockThreshold: 5, deliveryMinDays: 2, deliveryMaxDays: 4, sortOrder: 2 },
       // Deaktiviert: zeigt "Derzeit nicht bestellbar" im Adminbereich.
-      { sku: "RS-RE-SET10", size: "Set mit 10 × 2 ml", volumeMl: 20, priceCents: 4490, stock: 0, isActive: false, deliveryMinDays: 3, deliveryMaxDays: 6, sortOrder: 3 },
+      { sku: "RS-RE-SET10", isSample: true, size: "Set mit 10 × 2 ml", volumeMl: 20, priceCents: 4490, stock: 0, isActive: false, deliveryMinDays: 3, deliveryMaxDays: 6, sortOrder: 3 },
     ],
   },
 ];

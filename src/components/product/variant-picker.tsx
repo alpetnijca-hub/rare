@@ -33,9 +33,99 @@ export interface VariantOption {
   purchasable: boolean;
   maxQuantity: number;
   isPreorder: boolean;
+  /** Kleine Größe zum Ausprobieren – wird gesondert gruppiert. */
+  isSample: boolean;
   deliveryLabel: string;
   restockDateLabel: string | null;
   availableStock: number;
+}
+
+/** Eine Reihe Größenkacheln. */
+function VariantTiles({
+  variants,
+  selectedId,
+  onSelect,
+  format,
+}: {
+  variants: VariantOption[];
+  selectedId: string;
+  onSelect: (id: string) => void;
+  format: (cents: number) => string;
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+      {variants.map((variant) => {
+        const isSelected = variant.id === selectedId;
+        return (
+          <button
+            key={variant.id}
+            type="button"
+            onClick={() => onSelect(variant.id)}
+            aria-pressed={isSelected}
+            className={cn(
+              "flex min-h-16 flex-col items-start justify-center gap-0.5 border px-3 py-2 text-left transition-all duration-200",
+              isSelected
+                ? "border-gold bg-gold/10"
+                : "border-line hover:border-line-strong",
+              !variant.purchasable && "opacity-55",
+            )}
+          >
+            <span
+              className={cn(
+                "text-sm font-medium",
+                isSelected ? "text-gold-light" : "text-cream",
+              )}
+            >
+              {variant.size}
+            </span>
+            <span className="text-xs text-muted">
+              {format(variant.priceCents)}
+            </span>
+            {!variant.purchasable && (
+              <span className="text-[10px] uppercase tracking-wide text-subtle">
+                nicht bestellbar
+              </span>
+            )}
+            {variant.purchasable && variant.isPreorder && (
+              <span className="text-[10px] uppercase tracking-wide text-sky-400">
+                Vorbestellung
+              </span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Überschriebene Gruppe von Größen, z. B. "Zum Testen". */
+function VariantGroup({
+  title,
+  hint,
+  variants,
+  selectedId,
+  onSelect,
+  format,
+}: {
+  title: string;
+  hint: string;
+  variants: VariantOption[];
+  selectedId: string;
+  onSelect: (id: string) => void;
+  format: (cents: number) => string;
+}) {
+  return (
+    <div>
+      <p className="mb-1 text-sm font-medium text-cream">{title}</p>
+      <p className="mb-2.5 text-xs leading-relaxed text-subtle">{hint}</p>
+      <VariantTiles
+        variants={variants}
+        selectedId={selectedId}
+        onSelect={onSelect}
+        format={format}
+      />
+    </div>
+  );
 }
 
 export function VariantPicker({
@@ -115,6 +205,9 @@ export function VariantPicker({
     });
   }
 
+  const sampleVariants = variants.filter((variant) => variant.isSample);
+  const fullVariants = variants.filter((variant) => !variant.isSample);
+
   const basePrice = formatBase(selected.priceCents, selected.volumeMl);
   const hasDiscount =
     selected.compareAtPriceCents !== null &&
@@ -161,48 +254,37 @@ export function VariantPicker({
           </span>
         </legend>
 
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-          {variants.map((variant) => {
-            const isSelected = variant.id === selected.id;
-            return (
-              <button
-                key={variant.id}
-                type="button"
-                onClick={() => selectVariant(variant.id)}
-                aria-pressed={isSelected}
-                className={cn(
-                  "flex min-h-16 flex-col items-start justify-center gap-0.5 border px-3 py-2 text-left transition-all duration-200",
-                  isSelected
-                    ? "border-gold bg-gold/10"
-                    : "border-line hover:border-line-strong",
-                  !variant.purchasable && "opacity-55",
-                )}
-              >
-                <span
-                  className={cn(
-                    "text-sm font-medium",
-                    isSelected ? "text-gold-light" : "text-cream",
-                  )}
-                >
-                  {variant.size}
-                </span>
-                <span className="text-xs text-muted">
-                  {formatPrice(variant.priceCents)}
-                </span>
-                {!variant.purchasable && (
-                  <span className="text-[10px] uppercase tracking-wide text-subtle">
-                    nicht bestellbar
-                  </span>
-                )}
-                {variant.purchasable && variant.isPreorder && (
-                  <span className="text-[10px] uppercase tracking-wide text-sky-400">
-                    Vorbestellung
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
+        {/* Proben und Flakons werden getrennt gezeigt. Ein 2-ml-Fläschchen
+            und ein 50-ml-Flakon sind unterschiedliche Kaufentscheidungen –
+            nebeneinander in einer Reihe wirkt der Probenpreis wie ein
+            Schnäppchen für dasselbe Produkt. */}
+        {sampleVariants.length > 0 && fullVariants.length > 0 ? (
+          <div className="flex flex-col gap-5">
+            <VariantGroup
+              title="Zum Testen"
+              hint="Kleine Menge, gleicher Duft – ideal, bevor du dich für einen Flakon entscheidest."
+              variants={sampleVariants}
+              selectedId={selected.id}
+              onSelect={selectVariant}
+              format={formatPrice}
+            />
+            <VariantGroup
+              title="Flakon"
+              hint="Die reguläre Größe für den täglichen Gebrauch."
+              variants={fullVariants}
+              selectedId={selected.id}
+              onSelect={selectVariant}
+              format={formatPrice}
+            />
+          </div>
+        ) : (
+          <VariantTiles
+            variants={variants}
+            selectedId={selected.id}
+            onSelect={selectVariant}
+            format={formatPrice}
+          />
+        )}
       </fieldset>
 
       {/* Verfügbarkeit und Lieferzeit */}

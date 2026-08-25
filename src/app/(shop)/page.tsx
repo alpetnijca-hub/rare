@@ -38,12 +38,6 @@ const categories = [
     image: "/produkte/kategorie-unisex.svg",
   },
   {
-    slug: "abfuellungen",
-    name: "Abfüllungen",
-    description: "Ab 2 ml – erst testen, dann entscheiden",
-    image: "/produkte/kategorie-abfuellungen.svg",
-  },
-  {
     slug: "sets",
     name: "Sets",
     description: "Geschenkfertig zusammengestellt",
@@ -187,8 +181,8 @@ export default async function HomePage() {
               <ButtonLink href="/shop" size="lg">
                 Düfte entdecken
               </ButtonLink>
-              <ButtonLink href="/shop?kategorie=abfuellungen" variant="secondary" size="lg">
-                Abfüllungen ansehen
+              <ButtonLink href="/shop?probe=1" variant="secondary" size="lg">
+                Düfte mit Probengröße
               </ButtonLink>
             </div>
 

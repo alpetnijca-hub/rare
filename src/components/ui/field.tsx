@@ -105,10 +105,19 @@ export function Checkbox({
   id,
   label,
   error,
+  hint,
   className,
   ...props
-}: ComponentProps<"input"> & { id: string; label: ReactNode; error?: string }) {
+}: ComponentProps<"input"> & {
+  id: string;
+  label: ReactNode;
+  error?: string;
+  /** Erklärender Zusatz unter der Beschriftung. */
+  hint?: string;
+}) {
   const errorId = error ? `${id}-error` : undefined;
+  const hintId = hint ? `${id}-hint` : undefined;
+  const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
 
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
@@ -117,7 +126,7 @@ export function Checkbox({
           id={id}
           type="checkbox"
           aria-invalid={Boolean(error)}
-          aria-describedby={errorId}
+          aria-describedby={describedBy}
           className="mt-1 size-4.5 shrink-0 cursor-pointer appearance-none border border-line-strong bg-charcoal
             checked:border-gold checked:bg-gold
             checked:after:block checked:after:h-full checked:after:w-full
@@ -127,9 +136,19 @@ export function Checkbox({
             aria-[invalid=true]:border-red-800"
           {...props}
         />
-        <label htmlFor={id} className="cursor-pointer text-sm leading-relaxed text-cream">
-          {label}
-        </label>
+        <div className="flex flex-col gap-0.5">
+          <label
+            htmlFor={id}
+            className="cursor-pointer text-sm leading-relaxed text-cream"
+          >
+            {label}
+          </label>
+          {hint && (
+            <p id={hintId} className="text-xs leading-relaxed text-subtle">
+              {hint}
+            </p>
+          )}
+        </div>
       </div>
       {error && (
         <p id={errorId} role="alert" className="pl-7.5 text-xs font-medium text-red-400">

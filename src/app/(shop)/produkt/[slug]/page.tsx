@@ -150,6 +150,7 @@ export default async function ProductPage({ params }: PageProps) {
     return {
       id: variant.id,
       sku: variant.sku,
+      isSample: variant.isSample,
       size: variant.size,
       volumeMl: variant.volumeMl,
       priceCents: variant.priceCents,

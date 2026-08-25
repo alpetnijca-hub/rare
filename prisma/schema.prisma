@@ -175,6 +175,13 @@ model ProductVariant {
   /// Volumen in Millilitern – Basis für den Grundpreis je 100 ml
   volumeMl  Int
 
+  /// Kleine Größe zum Ausprobieren (Probe oder Abfüllung).
+  /// Steuert die Gruppierung in der Größenauswahl und den Shopfilter
+  /// "Mit Probengröße". Bewusst an der Größe und nicht am Produkt: Ein Duft
+  /// bietet meist beides an – eine Probe zum Testen und einen Flakon zum
+  /// Behalten.
+  isSample  Boolean @default(false)
+
   priceCents          Int
   /// Optionaler Streichpreis (UVP / vorheriger Preis)
   compareAtPriceCents Int?

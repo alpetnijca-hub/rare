@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 const suggestions = [
   { href: "/shop", label: "Alle Düfte", hint: "Das komplette Sortiment" },
   {
-    href: "/shop?kategorie=abfuellungen",
-    label: "Abfüllungen",
+    href: "/shop?probe=1",
+    label: "Düfte mit Probengröße",
     hint: "Ab 2 ml zum Testen",
   },
   { href: "/shop?kategorie=sets", label: "Geschenksets", hint: "Fertig zusammengestellt" },

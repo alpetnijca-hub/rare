@@ -57,6 +57,7 @@ export default async function EditProductPage({
       reservedStock: variant.reservedStock,
       lowStockThreshold: variant.lowStockThreshold,
       isActive: variant.isActive,
+      isSample: variant.isSample,
       preorderEnabled: variant.preorderEnabled,
       restockDate: toDateInput(variant.restockDate),
       deliveryMinDays: variant.deliveryMinDays,

@@ -21,6 +21,7 @@ export interface VariantRow {
   reservedStock: number;
   lowStockThreshold: number;
   isActive: boolean;
+  isSample: boolean;
   preorderEnabled: boolean;
   restockDate: string | null;
   deliveryMinDays: number;
@@ -212,6 +213,13 @@ function VariantForm({
           name="isActive"
           defaultChecked={variant?.isActive ?? true}
           label="Größe im Shop anbieten"
+        />
+        <Checkbox
+          id={`isSample-${variant?.id ?? "neu"}`}
+          name="isSample"
+          defaultChecked={variant?.isSample ?? false}
+          label="Probe oder Abfüllung zum Testen"
+          hint="Erscheint auf der Produktseite unter „Zum Testen“ statt bei den Flakons. Der Duft lässt sich damit auch über den Shopfilter „Mit Probengröße“ finden."
         />
         <Checkbox
           id={`preorderEnabled-${variant?.id ?? "neu"}`}

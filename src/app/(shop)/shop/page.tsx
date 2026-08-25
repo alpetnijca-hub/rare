@@ -189,6 +189,7 @@ export default async function ShopPage({
     minPriceCents: asNumber(resolved["preis-min"]),
     maxPriceCents: asNumber(resolved["preis-max"]),
     onlyAvailable: resolved.verfuegbar === "1",
+    onlySamples: resolved.probe === "1",
     sort,
     page: asNumber(resolved.seite) ?? 1,
     perPage: 12,
@@ -225,7 +226,8 @@ export default async function ShopPage({
     filters.volumes.length > 0 ||
     filters.minPriceCents !== undefined ||
     filters.maxPriceCents !== undefined ||
-    filters.onlyAvailable;
+    filters.onlyAvailable ||
+    filters.onlySamples;
 
   return (
     <div className="container-shop py-12 md:py-16">

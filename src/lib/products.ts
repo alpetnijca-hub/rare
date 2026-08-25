@@ -50,6 +50,7 @@ export const productCardSelect = {
       id: true,
       size: true,
       volumeMl: true,
+      isSample: true,
       priceCents: true,
       compareAtPriceCents: true,
       stock: true,
@@ -90,6 +91,8 @@ export interface ProductFilters {
   minPriceCents?: number;
   maxPriceCents?: number;
   onlyAvailable?: boolean;
+  /** Nur Düfte, die es auch in einer Probengröße gibt. */
+  onlySamples?: boolean;
   sort?: SortKey;
   page?: number;
   perPage?: number;
@@ -189,6 +192,10 @@ function buildWhere(filters: ProductFilters): Prisma.ProductWhereInput {
     variantConditions.volumeMl = { in: filters.volumes };
   }
 
+  if (filters.onlySamples) {
+    variantConditions.isSample = true;
+  }
+
   if (filters.minPriceCents !== undefined || filters.maxPriceCents !== undefined) {
     variantConditions.priceCents = {
       ...(filters.minPriceCents !== undefined ? { gte: filters.minPriceCents } : {}),
@@ -249,6 +256,7 @@ export async function listProducts(
           deliveryMinDays: true,
           deliveryMaxDays: true,
           volumeMl: true,
+          isSample: true,
         },
       },
     },

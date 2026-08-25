@@ -599,6 +599,13 @@ Erreichbar unter `/admin`, Anmeldung unter `/admin/anmelden`.
 | **Rabattcodes** | Prozent, Festbetrag oder Gratisversand; Mindestbestellwert, Höchstzahl an Einlösungen, Zeitraum |
 | **Demo-Inhalte** | Auf der Übersicht: Demo-Produkte mit einem Klick einspielen und wieder entfernen |
 
+**Probengrößen.** Proben und Abfüllungen sind keine eigenen Produkte, sondern
+Größen desselben Dufts. In der Größenverwaltung markiert das Häkchen
+«Probe oder Abfüllung zum Testen» eine Größe als Probe (`isSample`). Auf der
+Produktseite erscheinen solche Größen dann gruppiert unter «Zum Testen»,
+getrennt von den Flakons, und der Shopfilter «Mit Probengröße erhältlich»
+(`/shop?probe=1`) findet gezielt Düfte, die es in kleiner Menge gibt.
+
 **Demo-Inhalte.** Auf einem frisch aufgesetzten Shop steht auf der
 Übersichtsseite ein Kasten, über den sich die sechs erfundenen Demo-Produkte
 samt Kategorien und Rabattcodes einspielen lassen – nützlich, um den Shop

@@ -5,6 +5,11 @@ import {
   installDemoData,
   removeDemoData,
 } from "@/lib/demo-seed";
+import {
+  categories as demoCategories,
+  discountCodes as demoDiscountCodes,
+  products as demoProducts,
+} from "@/lib/demo-data";
 
 /**
  * Demo-Inhalte.
@@ -56,13 +61,15 @@ describe("installDemoData", () => {
   it("spielt Kategorien, Produkte, Größen und Rabattcodes ein", async () => {
     const result = await installDemoData(prisma);
 
-    expect(result.products).toBe(6);
-    expect(result.categories).toBe(5);
-    expect(result.discountCodes).toBe(3);
+    // Gegen die Datenquelle prüfen statt gegen feste Zahlen: Inhalte ändern
+    // sich, die Zusicherung "alles wird eingespielt" bleibt.
+    expect(result.products).toBe(demoProducts.length);
+    expect(result.categories).toBe(demoCategories.length);
+    expect(result.discountCodes).toBe(demoDiscountCodes.length);
     expect(result.variants).toBeGreaterThan(0);
 
     const gespeichert = await prisma.product.count({ where: { isDemo: true } });
-    expect(gespeichert).toBe(6);
+    expect(gespeichert).toBe(demoProducts.length);
   });
 
   it("kennzeichnet jedes Produkt als Demo-Inhalt", async () => {
@@ -82,7 +89,7 @@ describe("installDemoData", () => {
     const nachZweitem = await prisma.productVariant.count();
 
     expect(nachZweitem).toBe(nachErstem);
-    expect(await prisma.product.count()).toBe(6);
+    expect(await prisma.product.count()).toBe(demoProducts.length);
   });
 });
 
@@ -98,7 +105,7 @@ describe("removeDemoData", () => {
     const echt = await legeEchtesProduktAn();
     await installDemoData(prisma);
 
-    expect(await prisma.product.count()).toBe(7);
+    expect(await prisma.product.count()).toBe(demoProducts.length + 1);
 
     await removeDemoData(prisma);
 
@@ -145,7 +152,7 @@ describe("demoDataStatus", () => {
     await installDemoData(prisma);
 
     const status = await demoDataStatus(prisma);
-    expect(status.demoProducts).toBe(6);
+    expect(status.demoProducts).toBe(demoProducts.length);
     expect(status.realProducts).toBe(1);
   });
 });

@@ -221,6 +221,7 @@ export const adminVariantSchema = z.object({
   stock: z.coerce.number().int().min(0).max(1_000_000),
   lowStockThreshold: z.coerce.number().int().min(0).max(1000).default(3),
   isActive: z.coerce.boolean().default(true),
+  isSample: z.coerce.boolean().default(false),
   preorderEnabled: z.coerce.boolean().default(false),
   restockDate: z
     .string()

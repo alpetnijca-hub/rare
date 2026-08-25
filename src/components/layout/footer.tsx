@@ -10,7 +10,6 @@ const shopLinks = [
   { href: "/shop?kategorie=damen", label: "Damen" },
   { href: "/shop?kategorie=herren", label: "Herren" },
   { href: "/shop?kategorie=unisex", label: "Unisex" },
-  { href: "/shop?kategorie=abfuellungen", label: "Abfüllungen" },
   { href: "/shop?kategorie=sets", label: "Geschenksets" },
 ];
 
