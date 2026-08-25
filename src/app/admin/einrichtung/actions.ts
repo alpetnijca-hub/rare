@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
+import type { SetupState } from "@/app/admin/einrichtung/state";
 
 /**
  * Legt das allererste Administratorkonto an.
@@ -12,14 +13,6 @@ import { hashPassword } from "@/lib/auth";
  * hier – Server Actions sind ein eigener Einstiegspunkt und dürfen sich
  * niemals darauf verlassen, dass vorher eine Seite gerendert wurde.
  */
-
-export interface SetupState {
-  ok: boolean;
-  message?: string;
-  fields?: Record<string, string>;
-}
-
-export const idleSetupState: SetupState = { ok: false };
 
 const minPasswordLength = 12;
 

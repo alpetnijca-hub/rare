@@ -4,10 +4,8 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Field, TextInput } from "@/components/ui/field";
-import {
-  createFirstAdmin,
-  idleSetupState,
-} from "@/app/admin/einrichtung/actions";
+import { createFirstAdmin } from "@/app/admin/einrichtung/actions";
+import { idleSetupState } from "@/app/admin/einrichtung/state";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
