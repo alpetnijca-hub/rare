@@ -100,11 +100,26 @@ export default async function AdminOverviewPage() {
   );
 
   const setupChecks = [
-    { label: "Stripe (Zahlungen)", ok: isStripeConfigured() },
-    { label: "Resend (E-Mails)", ok: isEmailConfigured() },
-    { label: "Cloudinary (Bilder)", ok: isCloudinaryConfigured() },
+    {
+      label: "Stripe (Zahlungen)",
+      folge: "Es lässt sich nichts bezahlen.",
+      ok: isStripeConfigured(),
+    },
+    {
+      label: "Resend (E-Mails)",
+      folge: "Es werden keine Bestätigungsmails versendet.",
+      ok: isEmailConfigured(),
+    },
+    {
+      label: "Cloudinary (Bilder)",
+      folge:
+        "Bilder lassen sich nicht hochladen. Bild-Adressen von Hand einzutragen funktioniert weiterhin.",
+      ok: isCloudinaryConfigured(),
+    },
     {
       label: "Stripe-Webhook-Secret",
+      folge:
+        "Zahlungen werden nie als bestätigt erkannt – Bestellungen bleiben auf «Zahlung ausstehend» stehen.",
       ok: Boolean(envValue(process.env.STRIPE_WEBHOOK_SECRET)),
     },
   ];
@@ -129,11 +144,22 @@ export default async function AdminOverviewPage() {
           <p className="text-sm font-medium text-amber-200">
             Einrichtung noch nicht abgeschlossen
           </p>
-          <p className="mt-1 text-sm leading-relaxed text-amber-100/85">
-            Folgende Dienste sind nicht konfiguriert:{" "}
-            {openSetup.map((check) => check.label).join(", ")}. Ohne sie
-            funktionieren Zahlungen, E-Mails oder Bild-Uploads nicht. Die
-            benötigten Werte stehen in der Datei <code>.env.example</code>.
+          <ul className="mt-2 flex flex-col gap-1.5">
+            {openSetup.map((check) => (
+              <li
+                key={check.label}
+                className="text-sm leading-relaxed text-amber-100/85"
+              >
+                <span className="font-medium text-amber-200">
+                  {check.label}
+                </span>{" "}
+                – {check.folge}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 text-xs leading-relaxed text-amber-100/70">
+            Die benötigten Werte stehen in der Datei <code>.env.example</code>.
+            Alles Übrige funktioniert unabhängig davon.
           </p>
         </div>
       )}

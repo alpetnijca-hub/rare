@@ -3,7 +3,7 @@
 import { useFormStatus } from "react-dom";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import type { ActionState } from "@/app/admin/actions";
+import type { ActionState } from "@/app/admin/state";
 import { cn } from "@/lib/utils";
 
 /** Absende-Button, der den Ladezustand des Formulars anzeigt. */

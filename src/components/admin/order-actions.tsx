@@ -1,12 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import {
-  createShipmentAction,
-  idleState,
-  resendConfirmationAction,
-  updateOrderStatusAction,
-} from "@/app/admin/actions";
+import { idleState } from "@/app/admin/state";
+import { createShipmentAction, resendConfirmationAction, updateOrderStatusAction } from "@/app/admin/actions";
 import { FormMessage, SubmitButton } from "@/components/admin/ui";
 import { Field, Select, TextInput } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/field";

@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { adjustStockAction, idleState } from "@/app/admin/actions";
+import { idleState } from "@/app/admin/state";
+import { adjustStockAction } from "@/app/admin/actions";
 import { SubmitButton } from "@/components/admin/ui";
 
 /**

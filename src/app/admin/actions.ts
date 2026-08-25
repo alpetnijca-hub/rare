@@ -23,6 +23,7 @@ import {
   fieldErrors,
 } from "@/lib/validation";
 import { parsePriceToCents } from "@/lib/money";
+import type { ActionState } from "@/app/admin/state";
 import {
   demoDataStatus,
   installDemoData,
@@ -37,13 +38,7 @@ import {
  * Einstiegspunkte und werden deshalb erneut geprüft.
  */
 
-export interface ActionState {
-  ok: boolean;
-  message?: string;
-  fields?: Record<string, string>;
-}
 
-export const idleState: ActionState = { ok: false };
 
 function fail(message: string, fields?: Record<string, string>): ActionState {
   return { ok: false, message, fields };

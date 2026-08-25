@@ -1,11 +1,8 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import {
-  deleteVariantAction,
-  idleState,
-  saveVariantAction,
-} from "@/app/admin/actions";
+import { idleState } from "@/app/admin/state";
+import { deleteVariantAction, saveVariantAction } from "@/app/admin/actions";
 import { ConfirmSubmit, FormMessage, SubmitButton } from "@/components/admin/ui";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, TextInput } from "@/components/ui/field";

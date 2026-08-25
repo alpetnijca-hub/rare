@@ -1,11 +1,8 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import {
-  deleteCategoryAction,
-  idleState,
-  saveCategoryAction,
-} from "@/app/admin/actions";
+import { idleState } from "@/app/admin/state";
+import { deleteCategoryAction, saveCategoryAction } from "@/app/admin/actions";
 import { ConfirmSubmit, FormMessage, SubmitButton } from "@/components/admin/ui";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

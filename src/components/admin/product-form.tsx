@@ -2,7 +2,8 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
-import { idleState, saveProductAction } from "@/app/admin/actions";
+import { idleState } from "@/app/admin/state";
+import { saveProductAction } from "@/app/admin/actions";
 import { FormMessage, SubmitButton } from "@/components/admin/ui";
 import { Card } from "@/components/admin/layout-parts";
 import { Checkbox, Field, Select, TextArea, TextInput } from "@/components/ui/field";

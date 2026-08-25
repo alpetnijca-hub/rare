@@ -2,11 +2,8 @@
 
 import Image from "next/image";
 import { useActionState, useRef, useState } from "react";
-import {
-  addProductImageAction,
-  deleteProductImageAction,
-  idleState,
-} from "@/app/admin/actions";
+import { idleState } from "@/app/admin/state";
+import { addProductImageAction, deleteProductImageAction } from "@/app/admin/actions";
 import { ConfirmSubmit, FormMessage, SubmitButton } from "@/components/admin/ui";
 import { Button } from "@/components/ui/button";
 import { Field, TextInput } from "@/components/ui/field";

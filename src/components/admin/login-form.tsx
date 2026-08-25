@@ -53,6 +53,12 @@ export function LoginForm({
   return (
     <form
       onSubmit={onSubmit}
+      // method="post" ist eine reine Sicherheitsmassnahme für den Moment
+      // zwischen Seitenaufbau und dem Zeitpunkt, an dem React übernimmt.
+      // Ohne sie würde ein Absenden in dieser Lücke ein natives GET auslösen –
+      // Passwort und E-Mail stünden dann in der Adresszeile, im Browserverlauf
+      // und in den Zugriffsprotokollen. Mit POST bleiben sie im Rumpf.
+      method="post"
       noValidate
       className="flex flex-col gap-5 border border-line bg-charcoal p-7"
     >
