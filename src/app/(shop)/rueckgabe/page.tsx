@@ -39,13 +39,12 @@ export default function ReturnsPage() {
         <p>
           Ungeöffnete und originalversiegelte Artikel kannst du innerhalb von{" "}
           {returnsPolicy.voluntaryDays} Tagen ab Erhalt zurückgeben. Die
-          rechtlichen Einzelheiten – und das gesetzliche Widerrufsrecht für
-          Bestellungen aus der EU – stehen unter{" "}
+          rechtlichen Einzelheiten stehen unter{" "}
           <Link
             href="/widerruf"
             className="text-gold underline underline-offset-2 hover:text-gold-light"
           >
-            Rückgabe &amp; Widerruf
+            Rückgaberecht
           </Link>
           .
         </p>
@@ -72,7 +71,7 @@ export default function ReturnsPage() {
           Wir erstatten immer auf das ursprünglich verwendete Zahlungsmittel.
           Die Bearbeitung starten wir nach Eingang und Prüfung der Rücksendung,
           spätestens innerhalb von {returnsPolicy.refundDays} Tagen nach Zugang
-          deiner Rückgabe- oder Widerrufserklärung.
+          deiner Rückgabemeldung.
         </p>
         <p>
           Je nach Bank oder Zahlungsanbieter dauert es anschliessend weitere 5

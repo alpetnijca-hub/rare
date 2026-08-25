@@ -108,9 +108,9 @@ export default function ImprintPage() {
           uns – wir finden fast immer eine unkomplizierte Lösung.
         </p>
         <p className="text-xs text-subtle">
-          Hinweis für Bestellungen aus der EU: Die Plattform der Europäischen
-          Kommission zur Online-Streitbeilegung wurde am 20. Juli 2025
-          eingestellt. Eine Verlinkung ist deshalb nicht mehr vorgesehen.
+          Wir liefern ausschliesslich in die Schweiz. Die frühere Plattform der
+          Europäischen Kommission zur Online-Streitbeilegung ist hier ohnehin
+          nicht einschlägig und wurde zudem im Juli 2025 eingestellt.
         </p>
       </LegalSection>
 

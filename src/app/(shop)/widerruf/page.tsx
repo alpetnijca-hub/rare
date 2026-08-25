@@ -9,267 +9,175 @@ import {
 import { returnsPolicy, siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Rückgabe & Widerruf",
+  title: "Rückgaberecht",
   description:
-    "Unser freiwilliges Rückgaberecht sowie das gesetzliche Widerrufsrecht für Verbraucherinnen und Verbraucher in der EU.",
+    "Unser freiwilliges Rückgaberecht: Fristen, Voraussetzungen und Ablauf.",
   alternates: { canonical: "/widerruf" },
 };
 
 const returnShippingByCustomer = returnsPolicy.returnShippingPaidBy === "customer";
 
-export default function WithdrawalPage() {
+export default function ReturnRightPage() {
   const { contact } = siteConfig;
-
-  const address = (
-    <p>
-      {siteConfig.legalName}
-      <br />
-      {contact.street}
-      <br />
-      {contact.postalCode} {contact.city}, {contact.country}
-      <br />
-      E-Mail:{" "}
-      <a
-        href={`mailto:${contact.email}`}
-        className="text-gold underline underline-offset-2 hover:text-gold-light"
-      >
-        {contact.email}
-      </a>
-    </p>
-  );
 
   return (
     <LegalPage
-      title="Rückgabe & Widerruf"
-      intro="Was gilt, wenn du eine Bestellung zurückgeben möchtest – für die Schweiz und für Bestellungen aus der EU."
-      lastUpdated="18. August 2026"
+      title="Rückgaberecht"
+      intro="Was gilt, wenn du eine Bestellung zurückgeben möchtest."
+      lastUpdated="20. August 2026"
       notice="review"
     >
       <LegalSection title="Kurz gesagt">
         <LegalList
           items={[
             <>
-              <strong className="font-medium text-cream">Schweiz und Liechtenstein:</strong>{" "}
-              Es gibt kein gesetzliches Widerrufsrecht bei Onlinebestellungen.
-              Wir räumen dir freiwillig {returnsPolicy.voluntaryDays} Tage
-              Rückgaberecht für ungeöffnete, originalversiegelte Artikel ein.
+              <strong className="font-medium text-cream">
+                {returnsPolicy.voluntaryDays} Tage Rückgaberecht
+              </strong>{" "}
+              auf ungeöffnete, originalversiegelte Artikel – freiwillig von uns
+              zugesagt.
             </>,
             <>
-              <strong className="font-medium text-cream">Deutschland und Österreich:</strong>{" "}
-              Als Verbraucherin oder Verbraucher hast du das gesetzliche
-              Widerrufsrecht von {returnsPolicy.euWithdrawalDays} Tagen. Die
-              vollständige Belehrung steht weiter unten.
+              <strong className="font-medium text-cream">
+                Geöffnete Parfüms und Abfüllungen
+              </strong>{" "}
+              können wir aus Hygienegründen nicht zurücknehmen.
             </>,
             <>
-              <strong className="font-medium text-cream">Immer ausgeschlossen:</strong>{" "}
-              geöffnete Parfüms und Abfüllungen. Sobald die Versiegelung
-              entfernt ist, können wir sie aus Hygienegründen nicht mehr
-              zurücknehmen.
+              <strong className="font-medium text-cream">
+                Bei Mängeln, Transportschäden oder Falschlieferung
+              </strong>{" "}
+              gilt das nicht – da findest du immer eine Lösung mit uns, und die
+              Rücksendung geht auf uns.
             </>,
           ]}
         />
       </LegalSection>
 
-      <LegalSection title="1. Freiwilliges Rückgaberecht (Schweiz und Liechtenstein)">
+      <LegalSection title="Kein gesetzliches Widerrufsrecht – warum wir trotzdem eines geben">
         <p>
-          Bestellungen über einen Onlineshop fallen in der Schweiz nicht unter
-          das gesetzliche Widerrufsrecht nach Art. 40a ff. OR – dieses gilt nur
-          für Haustür- und Telefongeschäfte. Wir wollen trotzdem, dass du ohne
-          Risiko bestellen kannst, und sagen dir deshalb vertraglich Folgendes
-          zu:
+          Bestellungen über einen Onlineshop fallen in der Schweiz{" "}
+          <strong className="font-medium text-cream">
+            nicht unter ein gesetzliches Widerrufsrecht
+          </strong>
+          . Das in Art. 40a ff. OR geregelte Widerrufsrecht gilt nur für
+          Haustür- und ähnliche Geschäfte sowie für telefonisch geschlossene
+          Verträge – nicht für Bestellungen im Internet.
         </p>
+        <p>
+          Wir halten das für keine gute Grundlage für eine Kundenbeziehung.
+          Deshalb sagen wir dir vertraglich ein Rückgaberecht zu. Es ist
+          freiwillig, aber verbindlich: Was hier steht, gilt.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="Voraussetzungen">
         <LegalList
           items={[
             <>
-              Du kannst Artikel innerhalb von{" "}
-              {returnsPolicy.voluntaryDays} Tagen ab Erhalt der Lieferung an
-              uns zurücksenden.
+              Die Rückgabe erfolgt innerhalb von{" "}
+              {returnsPolicy.voluntaryDays} Tagen ab Erhalt der Lieferung.
+              Massgeblich ist das Datum deiner Nachricht an uns.
             </>,
-            "Die Artikel müssen ungeöffnet, unbenutzt und in der ungeöffneten Originalversiegelung sein.",
-            <>
-              Melde die Rücksendung vorher kurz per E-Mail an{" "}
-              <a
-                href={`mailto:${contact.email}`}
-                className="text-gold underline underline-offset-2 hover:text-gold-light"
-              >
-                {contact.email}
-              </a>{" "}
-              an, damit wir sie zuordnen können.
-            </>,
-            returnShippingByCustomer
-              ? "Die Kosten der Rücksendung trägst du."
-              : "Die Kosten der Rücksendung übernehmen wir.",
-            <>
-              Nach Eingang und Prüfung erstatten wir den Kaufpreis innerhalb von{" "}
-              {returnsPolicy.refundDays} Tagen auf dasselbe Zahlungsmittel,
-              mit dem du bezahlt hast.
-            </>,
+            "Die Artikel sind unbenutzt und die Originalversiegelung ist unversehrt.",
+            "Die Umverpackung ist so weit erhalten, dass ein Weiterverkauf möglich bleibt.",
+            "Du meldest die Rücksendung vorher kurz per E-Mail an – so können wir sie zuordnen und dir die richtige Adresse nennen.",
           ]}
         />
-        <p>
-          Dieses Rückgaberecht kommt zusätzlich zu deinen gesetzlichen
-          Rechten bei mangelhafter Ware. Diese schränken wir damit nicht ein.
-        </p>
       </LegalSection>
 
-      <LegalSection title="2. Gesetzliches Widerrufsrecht für Verbraucher in der EU">
-        <p>
-          Bestellst du als Verbraucherin oder Verbraucher mit Wohnsitz in der
-          Europäischen Union – wir liefern nach Deutschland und Österreich –,
-          gilt für dich zusätzlich das zwingende EU-Fernabsatzrecht. Die
-          folgende Belehrung ist für diesen Fall massgeblich.
-        </p>
-      </LegalSection>
-
-      <LegalSection title="Widerrufsrecht">
-        <p>
-          Du hast das Recht, binnen {returnsPolicy.euWithdrawalDays} Tagen ohne
-          Angabe von Gründen diesen Vertrag zu widerrufen.
-        </p>
-        <p>
-          Die Widerrufsfrist beträgt {returnsPolicy.euWithdrawalDays} Tage ab
-          dem Tag, an dem du oder eine von dir benannte dritte Person, die
-          nicht der Beförderer ist, die Waren in Besitz genommen hast
-          beziehungsweise hat. Bei einer Bestellung mehrerer Waren, die
-          getrennt geliefert werden, läuft die Frist ab Erhalt der letzten
-          Ware.
-        </p>
-        <p>
-          Um dein Widerrufsrecht auszuüben, musst du uns mittels einer
-          eindeutigen Erklärung (z. B. ein mit der Post versandter Brief oder
-          eine E-Mail) über deinen Entschluss informieren:
-        </p>
-        {address}
-        <p>
-          Du kannst dafür das unten stehende Muster-Widerrufsformular
-          verwenden, das aber nicht vorgeschrieben ist. Zur Wahrung der
-          Widerrufsfrist reicht es aus, dass du die Mitteilung über die
-          Ausübung des Widerrufsrechts vor Ablauf der Frist absendest.
-        </p>
-      </LegalSection>
-
-      <LegalSection title="Folgen des Widerrufs">
-        <p>
-          Wenn du diesen Vertrag widerrufst, haben wir dir alle Zahlungen, die
-          wir von dir erhalten haben, einschliesslich der Lieferkosten (mit
-          Ausnahme der zusätzlichen Kosten, die sich daraus ergeben, dass du
-          eine andere Art der Lieferung als die von uns angebotene, günstigste
-          Standardlieferung gewählt hast), unverzüglich und spätestens binnen{" "}
-          {returnsPolicy.refundDays} Tagen ab dem Tag zurückzuzahlen, an dem
-          die Mitteilung über deinen Widerruf bei uns eingegangen ist.
-        </p>
-        <p>
-          Für diese Rückzahlung verwenden wir dasselbe Zahlungsmittel, das du
-          bei der ursprünglichen Transaktion eingesetzt hast, es sei denn, es
-          wurde ausdrücklich etwas anderes vereinbart. In keinem Fall werden
-          dir wegen dieser Rückzahlung Entgelte berechnet.
-        </p>
-        <p>
-          Wir können die Rückzahlung verweigern, bis wir die Waren wieder
-          zurückerhalten haben oder bis du den Nachweis erbracht hast, dass du
-          die Waren zurückgesandt hast – je nachdem, welches der frühere
-          Zeitpunkt ist.
-        </p>
-        <p>
-          Du hast die Waren unverzüglich und in jedem Fall spätestens binnen{" "}
-          {returnsPolicy.euWithdrawalDays} Tagen ab dem Tag, an dem du uns über
-          den Widerruf unterrichtest, an uns zurückzusenden oder zu übergeben.
-          Die Frist ist gewahrt, wenn du die Waren vor Ablauf der Frist
-          absendest.
-        </p>
-        <p>
-          {returnShippingByCustomer ? (
-            <>
-              <strong className="font-medium text-cream">Rücksendekosten:</strong>{" "}
-              Du trägst die unmittelbaren Kosten der Rücksendung der Waren.
-            </>
-          ) : (
-            <>
-              <strong className="font-medium text-cream">Rücksendekosten:</strong>{" "}
-              Wir tragen die unmittelbaren Kosten der Rücksendung der Waren.
-            </>
-          )}
-        </p>
-        <p>
-          Du musst für einen etwaigen Wertverlust der Waren nur aufkommen, wenn
-          dieser auf einen zur Prüfung der Beschaffenheit, Eigenschaften und
-          Funktionsweise der Waren nicht notwendigen Umgang mit ihnen
-          zurückzuführen ist.
-        </p>
-        <p className="text-xs text-subtle">
-          Hinweis zu Zoll und Einfuhr: Bei Rücksendungen aus der EU in die
-          Schweiz können Zoll- und Einfuhrformalitäten anfallen. Melde die
-          Rücksendung deshalb bitte vorher kurz an – wir nennen dir dann das
-          korrekte Vorgehen und die richtige Anschrift.
-        </p>
-      </LegalSection>
-
-      <LegalSection title="Ausschluss und vorzeitiges Erlöschen des Widerrufsrechts">
-        <p>Das Widerrufsrecht besteht insbesondere nicht bei:</p>
+      <LegalSection title="Wovon wir keine Rückgabe annehmen können">
         <LegalList
           items={[
             <>
               <strong className="font-medium text-cream">
-                versiegelten Waren, die aus Gründen des Gesundheitsschutzes
-                oder der Hygiene nicht zur Rückgabe geeignet sind
-              </strong>
-              , wenn die Versiegelung nach der Lieferung entfernt wurde. Das
-              betrifft geöffnete Parfüms, Abfüllungen und Proben.
+                Geöffnete Parfüms, Abfüllungen und Proben.
+              </strong>{" "}
+              Sobald die Versiegelung entfernt ist, lässt sich nicht mehr
+              ausschliessen, dass der Inhalt verändert wurde. Aus Gründen des
+              Gesundheitsschutzes und der Hygiene ist eine Rückgabe deshalb
+              ausgeschlossen.
             </>,
-            "Waren, die nicht vorgefertigt sind und für deren Herstellung eine individuelle Auswahl oder Bestimmung durch dich massgeblich ist – etwa individuell nach deinen Vorgaben zusammengestellte Sets.",
-            "Waren, die nach der Lieferung aufgrund ihrer Beschaffenheit untrennbar mit anderen Gütern vermischt wurden.",
+            "Individuell nach deinen Vorgaben zusammengestellte Sets.",
+            "Artikel, die sichtbar benutzt oder beschädigt wurden.",
           ]}
         />
         <p>
           Alle Flakons und Abfüllungen verlassen unser Lager versiegelt. Prüfe
           bitte zuerst am ungeöffneten Artikel, ob die Bestellung stimmt.
-          Möchtest du einen Duft vorher riechen, sind unsere Proben der
-          richtige Weg – sie sind genau dafür da.
+          Möchtest du einen Duft vorher riechen, sind unsere Abfüllungen ab
+          2&nbsp;ml genau dafür da – deutlich günstiger als ein Fehlkauf.
         </p>
       </LegalSection>
 
-      <LegalBox title="Muster-Widerrufsformular">
-        <p className="text-xs text-subtle">
-          Wenn du den Vertrag widerrufen willst, fülle bitte dieses Formular
-          aus und sende es zurück. Die Verwendung ist freiwillig.
+      <LegalSection title="Kosten">
+        <p>
+          {returnShippingByCustomer
+            ? "Die Kosten der Rücksendung trägst du. Wir empfehlen einen versicherten Versand mit Sendungsverfolgung – bis die Ware bei uns ankommt, liegt das Risiko bei dir."
+            : "Die Kosten der Rücksendung übernehmen wir. Melde die Rücksendung an, dann erhältst du von uns ein Retourenetikett."}
+        </p>
+        <p>
+          Bei berechtigten Beanstandungen – Transportschaden, Falschlieferung
+          oder Mangel – übernehmen wir die Rücksendekosten in jedem Fall.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="Erstattung">
+        <p>
+          Nach Eingang und Prüfung der Rücksendung erstatten wir den Kaufpreis
+          innerhalb von {returnsPolicy.refundDays} Tagen auf dasselbe
+          Zahlungsmittel, mit dem du bezahlt hast. Je nach Bank dauert es
+          anschliessend weitere fünf bis zehn Werktage, bis der Betrag
+          sichtbar ist.
+        </p>
+        <p>
+          Die ursprünglichen Versandkosten erstatten wir bei einer vollständigen
+          Rückgabe mit. Bei einer Teilrückgabe bleiben sie bestehen.
+        </p>
+      </LegalSection>
+
+      <LegalBox title="So meldest du eine Rückgabe an">
+        <p>
+          Eine formlose E-Mail genügt. Damit es schnell geht, nenn uns bitte:
         </p>
         <div className="mt-3 whitespace-pre-line border-l-2 border-gold/40 pl-4 text-sm leading-relaxed">
-          {`An:
-${siteConfig.legalName}
-${contact.street}
-${contact.postalCode} ${contact.city}
-${contact.email}
+          {`An: ${contact.email}
+Betreff: Rückgabe Bestellung <Bestellnummer>
 
-Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag
-über den Kauf der folgenden Waren:
-
-_______________________________________________
-
-Bestellnummer: ________________________________
-Bestellt am (*) / erhalten am (*): ____________
-Name der/des Verbraucher(s): __________________
-Anschrift der/des Verbraucher(s): _____________
-
-_______________________________________________
-Unterschrift (nur bei Mitteilung auf Papier)
-
-Datum: ________________________________________
-
-(*) Unzutreffendes streichen`}
+Bestellnummer:
+Artikel, die zurückgehen sollen:
+Grund (freiwillig):
+Name und Adresse:`}
         </div>
+        <p className="mt-4">
+          <a
+            href={`mailto:${contact.email}?subject=${encodeURIComponent("Rückgabe Bestellung")}`}
+            className="text-gold underline underline-offset-2 hover:text-gold-light"
+          >
+            {contact.email}
+          </a>
+        </p>
       </LegalBox>
 
-      <LegalSection title="Wie es praktisch abläuft">
+      <LegalSection title="Deine Rechte bei mangelhafter Ware">
         <p>
-          Den Ablauf einer Rücksendung – Anmeldung, Verpackung, Erstattung –
-          haben wir Schritt für Schritt unter{" "}
+          Unabhängig von diesem freiwilligen Rückgaberecht gelten deine
+          gesetzlichen Gewährleistungsrechte nach Art. 197 ff. OR. Die
+          schränken wir mit keiner Bestimmung dieser Seite ein.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="Ablauf im Detail">
+        <p>
+          Wie eine Rücksendung praktisch abläuft – Verpackung, Adresse,
+          Erstattung – steht Schritt für Schritt unter{" "}
           <Link
             href="/rueckgabe"
             className="text-gold underline underline-offset-2 hover:text-gold-light"
           >
             Rückgabe &amp; Erstattung
-          </Link>{" "}
-          beschrieben.
+          </Link>
+          .
         </p>
       </LegalSection>
     </LegalPage>

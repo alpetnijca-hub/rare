@@ -111,7 +111,7 @@ const groups: Array<{ title: string; entries: FaqEntry[] }> = [
       {
         question: "Kann ich einen Duft zurückgeben, der mir nicht gefällt?",
         answer:
-          `Ungeöffnete und originalversiegelte Artikel ja – wir räumen dir freiwillig ${returnsPolicy.voluntaryDays} Tage Rückgaberecht ein. Bei geöffneten Parfüms und Abfüllungen ist eine Rückgabe aus Hygienegründen ausgeschlossen. Genau deshalb gibt es unsere Abfüllungen ab 2 ml – teste erst günstig, entscheide dann. Bestellst du aus der EU, gilt zusätzlich das gesetzliche Widerrufsrecht von ${returnsPolicy.euWithdrawalDays} Tagen.`,
+          `Ungeöffnete und originalversiegelte Artikel ja – wir räumen dir freiwillig ${returnsPolicy.voluntaryDays} Tage Rückgaberecht ein. Bei geöffneten Parfüms und Abfüllungen ist eine Rückgabe aus Hygienegründen ausgeschlossen. Genau deshalb gibt es unsere Abfüllungen ab 2 ml – teste erst günstig, entscheide dann.`,
       },
       {
         question: "Der Artikel ist beschädigt angekommen – was nun?",

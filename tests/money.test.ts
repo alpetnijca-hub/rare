@@ -224,13 +224,16 @@ describe("calculateShippingCents", () => {
 });
 
 describe("isSupportedCountry", () => {
-  it("erkennt Lieferländer", () => {
+  it("erkennt die Schweiz als Lieferland", () => {
     expect(isSupportedCountry("CH")).toBe(true);
-    expect(isSupportedCountry("DE")).toBe(true);
   });
 
-  it("weist nicht belieferte Länder ab", () => {
-    expect(isSupportedCountry("US")).toBe(false);
-    expect(isSupportedCountry("")).toBe(false);
+  it("weist alle übrigen Länder ab", () => {
+    // Wir liefern bewusst nur innerhalb der Schweiz. Würde hier ein weiteres
+    // Land durchrutschen, fehlten dazu die Zoll- und Widerrufshinweise in den
+    // Rechtstexten – deshalb ist das hier ausdrücklich abgesichert.
+    for (const code of ["DE", "AT", "LI", "US", "FR", "IT", ""]) {
+      expect(isSupportedCountry(code)).toBe(false);
+    }
   });
 });

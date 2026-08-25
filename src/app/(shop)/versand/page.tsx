@@ -70,20 +70,15 @@ export default function ShippingPage() {
         <p>Wir liefern derzeit in folgende Länder:</p>
         <LegalList items={shippingCountries.map((country) => country.name)} />
         <p>
-          <strong className="font-medium text-cream">
-            Lieferungen in die EU (Deutschland und Österreich):
-          </strong>{" "}
-          Wir versenden aus der Schweiz. Bei der Einfuhr in die EU fallen
-          Einfuhrumsatzsteuer und je nach Warenwert Zollabgaben an,
-          gegebenenfalls zuzüglich einer Verzollungsgebühr des
-          Transportunternehmens. Diese Abgaben werden direkt bei dir erhoben,
-          sind nicht im Kaufpreis enthalten und trägst du. Sie fallen auch dann
-          an, wenn die Sendung bei uns versandkostenfrei ist.
+          Wir versenden ausschliesslich innerhalb der Schweiz. Damit fallen
+          keine Zollabgaben, keine Einfuhrsteuern und keine
+          Verzollungsgebühren an – der Betrag im Bestellvorgang ist der
+          Endbetrag.
         </p>
         <p className="text-xs text-subtle">
-          Vor dem Livegang prüfen: die aktuellen Freigrenzen und Zollsätze für
-          Parfümerieartikel sowie die Verzollungsgebühren des tatsächlich
-          gewählten Transportunternehmens hier konkret beziffern.
+          Lieferungen ins Ausland bieten wir derzeit nicht an. Wenn du aus dem
+          grenznahen Ausland bestellen möchtest, schreib uns – wir schauen, ob
+          sich etwas machen lässt.
         </p>
       </LegalSection>
 

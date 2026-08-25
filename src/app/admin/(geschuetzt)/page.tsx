@@ -10,6 +10,8 @@ import { isEmailConfigured } from "@/lib/email";
 import { isStripeConfigured } from "@/lib/stripe";
 import { isCloudinaryConfigured } from "@/lib/cloudinary";
 import { envValue } from "@/lib/env";
+import { demoDataStatus } from "@/lib/demo-seed";
+import { DemoDataPanel } from "@/components/admin/demo-data-panel";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +30,8 @@ export default async function AdminOverviewPage() {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  const demoStatus = await demoDataStatus(prisma);
 
   const [
     revenueMonth,
@@ -112,6 +116,13 @@ export default async function AdminOverviewPage() {
         title="Übersicht"
         description="Aktueller Stand von Bestellungen, Umsatz und Lagerbestand."
       />
+
+      <div className="mb-8">
+        <DemoDataPanel
+          demoProducts={demoStatus.demoProducts}
+          realProducts={demoStatus.realProducts}
+        />
+      </div>
 
       {openSetup.length > 0 && (
         <div className="mb-8 border border-amber-800/60 bg-amber-950/25 px-5 py-4">

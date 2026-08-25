@@ -55,9 +55,11 @@ export default function PrivacyPage() {
       <LegalSection title="2. Geltende Gesetze und Grundsatz">
         <p>
           Wir bearbeiten Personendaten nach dem revidierten Schweizer
-          Datenschutzgesetz (revDSG). Soweit wir Waren nach Deutschland oder
-          Österreich liefern und uns damit an Personen in der EU richten, gilt
-          zusätzlich die Datenschutz-Grundverordnung (DSGVO).
+          Datenschutzgesetz (revDSG). Wir liefern ausschliesslich in die
+          Schweiz und richten unser Angebot nicht an Personen in der EU; die
+          DSGVO ist deshalb in der Regel nicht anwendbar. Einzelne unserer
+          Dienstleister unterliegen ihr jedoch, weshalb wir sie an den
+          betreffenden Stellen mit nennen.
         </p>
         <p>
           Wir bearbeiten nur Daten, die wir wirklich brauchen: für die
@@ -151,11 +153,6 @@ export default function PrivacyPage() {
           Avisierung nötig – E-Mail-Adresse oder Telefonnummer an das
           beauftragte Transportunternehmen weiter. Diese Übermittlung ist zur
           Vertragserfüllung erforderlich.
-        </p>
-        <p>
-          Bei Lieferungen in die EU müssen wir für die Zollanmeldung zusätzlich
-          Angaben zum Inhalt und Wert der Sendung an die Zollbehörden
-          übermitteln. Grundlage ist die Erfüllung einer gesetzlichen Pflicht.
         </p>
         <p className="text-xs text-subtle">
           Vor dem Livegang zu ergänzen: das tatsächlich eingesetzte
@@ -298,7 +295,7 @@ export default function PrivacyPage() {
             "Hosting- und Datenbankanbieter – zum Betrieb der Website (Bearbeitung in der EU/Schweiz)",
             "Bildhosting (Cloudinary) – zur Auslieferung der Produktbilder",
             "Transportunternehmen – zur Zustellung deiner Bestellung",
-            "Behörden – soweit wir dazu gesetzlich verpflichtet sind, etwa gegenüber dem Zoll",
+            "Behörden – soweit wir dazu gesetzlich verpflichtet sind",
           ]}
         />
         <p>

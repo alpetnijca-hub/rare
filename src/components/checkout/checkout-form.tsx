@@ -749,7 +749,7 @@ export function CheckoutForm() {
               <>
                 Ich habe die{" "}
                 <Link href="/widerruf" target="_blank" className="text-gold underline underline-offset-2">
-                  Rückgabe- und Widerrufsinformationen
+                  Rückgabebedingungen
                 </Link>{" "}
                 zur Kenntnis genommen.
               </>

@@ -30,7 +30,7 @@ export const shippingMethods: ShippingMethod[] = [
     freeFromCents: 6000,
     minDays: 1,
     maxDays: 3,
-    countries: ["CH", "LI", "DE", "AT"],
+    countries: ["CH"],
     isActive: true,
   },
   {
@@ -41,18 +41,24 @@ export const shippingMethods: ShippingMethod[] = [
     freeFromCents: null,
     minDays: 1,
     maxDays: 1,
-    countries: ["CH", "LI", "DE", "AT"],
+    countries: ["CH"],
     isActive: true,
   },
 ];
 
-/** Lieferländer für die Adressauswahl im Checkout. */
-export const shippingCountries = [
-  { code: "CH", name: "Schweiz" },
-  { code: "LI", name: "Liechtenstein" },
-  { code: "DE", name: "Deutschland" },
-  { code: "AT", name: "Österreich" },
-] as const;
+/**
+ * Lieferländer für die Adressauswahl im Checkout.
+ *
+ * Wir liefern ausschliesslich innerhalb der Schweiz. Das ist eine bewusste
+ * Entscheidung und vereinfacht vieles: keine Zollanmeldung, keine
+ * Einfuhrabgaben für Kundinnen und Kunden, kein zwingendes
+ * EU-Fernabsatzrecht und damit deutlich kürzere Rechtstexte.
+ *
+ * Soll später ins Ausland geliefert werden, genügt hier kein neuer Eintrag –
+ * dann müssen zusätzlich die Rechtstexte (Zoll, Widerrufsrecht) und die
+ * Versandkosten angepasst werden. Siehe README, Abschnitt 1.
+ */
+export const shippingCountries = [{ code: "CH", name: "Schweiz" }] as const;
 
 export type ShippingCountryCode = (typeof shippingCountries)[number]["code"];
 

@@ -73,7 +73,14 @@ Weitere Punkte, die zwingend zu erledigen sind:
   „inspiriert von einer Duftrichtung“ ist bereits im System vorgesehen.
 - **Wechselkurse pflegen:** `SHOP_DISPLAY_RATES` enthält die Kurse für den
   Währungsumschalter. Sie veralten – regelmässig aktualisieren oder den
-  Umschalter mit `SHOP_DISPLAY_RATES=""` ganz abschalten (siehe Abschnitt 15).
+  Umschalter mit `SHOP_DISPLAY_RATES="aus"` abschalten (siehe Abschnitt 15).
+- **Liefergebiet:** Der Shop liefert ausschliesslich in die **Schweiz**
+  (`shippingCountries` in `src/lib/shipping.ts`). Das ist eine bewusste
+  Entscheidung: kein Zoll, keine Einfuhrabgaben für Kundinnen und Kunden, kein
+  zwingendes EU-Fernabsatzrecht und dadurch kürzere Rechtstexte. Eine
+  Erweiterung ins Ausland ist **nicht** mit einem neuen Eintrag getan – dann
+  müssen zusätzlich eine echte Widerrufsbelehrung, Zollhinweise und die
+  Versandkosten ergänzt werden.
 
 ---
 
@@ -590,6 +597,17 @@ Erreichbar unter `/admin`, Anmeldung unter `/admin/anmelden`.
 | **Lager** | Bestände je Größe, Reservierungen, Rückstände, direkte Korrektur, vollständiges Lagerjournal |
 | **Kategorien** | Zielgruppen und Produktarten verwalten |
 | **Rabattcodes** | Prozent, Festbetrag oder Gratisversand; Mindestbestellwert, Höchstzahl an Einlösungen, Zeitraum |
+| **Demo-Inhalte** | Auf der Übersicht: Demo-Produkte mit einem Klick einspielen und wieder entfernen |
+
+**Demo-Inhalte.** Auf einem frisch aufgesetzten Shop steht auf der
+Übersichtsseite ein Kasten, über den sich die sechs erfundenen Demo-Produkte
+samt Kategorien und Rabattcodes einspielen lassen – nützlich, um den Shop
+einmal vollständig zu sehen, bevor eigene Produkte erfasst werden. Sobald
+echte Produkte vorhanden sind, verweigert die Funktion das Einspielen.
+Entfernt werden ausschliesslich Produkte mit `isDemo: true`; eigene Produkte
+und bereits erfasste Bestellungen bleiben unberührt (`OrderItem` speichert
+Name und Grösse als Schnappschuss). Dieselbe Logik nutzt auch
+`npm run db:seed` – siehe `src/lib/demo-seed.ts`.
 
 **Bestellstatus:** Zahlung ausstehend · Bezahlt · In Bearbeitung · Versandbereit ·
 Versendet · Zugestellt · Storniert · Erstattet
@@ -633,7 +651,7 @@ Bitte **nicht gegen die Produktionsdatenbank** ausführen.
 - [ ] Datenschutzerklärung an tatsächlich eingesetzte Dienste angepasst, Transportunternehmen namentlich ergänzt
 - [ ] AGB geprüft, insbesondere Haftung, Gerichtsstand und Zollhinweise
 - [ ] Rückgabe- und Widerrufsseite geprüft: freiwillige Frist Schweiz, gesetzliche Frist EU, Rücksendekosten
-- [ ] Zollhinweise für Lieferungen in die EU konkret beziffert (`/versand`)
+- [ ] Liefergebiet geprüft (aktuell nur Schweiz; bei Erweiterung Rechtstexte anpassen)
 - [ ] Alle Rechtstexte von einer fachkundigen Person freigegeben
 - [ ] Duftalternativen korrekt gekennzeichnet, keine geschützten Marken im Produktnamen
 - [ ] Keine fremden Produktbilder oder Markenlogos ohne Genehmigung
@@ -641,7 +659,7 @@ Bitte **nicht gegen die Produktionsdatenbank** ausführen.
 - [ ] Grundpreis je 100 ml wird korrekt angezeigt
 - [ ] Steuersatz (`SHOP_TAX_RATE_BP`) stimmt mit der steuerlichen Situation überein (aktuell `0` = nicht MwSt-pflichtig)
 - [ ] Wechselkurse in `SHOP_DISPLAY_RATES` aktuell, oder Umschalter abgeschaltet
-- [ ] Demo-Produkte gelöscht, `isDemo` bei echten Produkten nicht gesetzt
+- [ ] Demo-Inhalte über den Adminbereich entfernt, `isDemo` bei echten Produkten nicht gesetzt
 - [ ] Demo-Bilder in `public/produkte/` durch eigene Fotos ersetzt
 
 ### Technik

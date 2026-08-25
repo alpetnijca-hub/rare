@@ -23,6 +23,11 @@ import {
   fieldErrors,
 } from "@/lib/validation";
 import { parsePriceToCents } from "@/lib/money";
+import {
+  demoDataStatus,
+  installDemoData,
+  removeDemoData,
+} from "@/lib/demo-seed";
 
 /**
  * Server Actions des Adminbereichs.
@@ -767,4 +772,43 @@ export async function resendConfirmationAction(
 
   revalidatePath(`/admin/bestellungen/${orderId}`);
   return success("Bestätigungsmail wurde erneut versendet.");
+}
+
+// ---------------------------------------------------------------------------
+// Demo-Inhalte
+// ---------------------------------------------------------------------------
+
+/**
+ * Spielt die Demo-Produkte ein.
+ *
+ * Gedacht für den ersten Blick auf einen frisch aufgesetzten Shop. Sobald
+ * echte Produkte erfasst sind, wird abgelehnt – niemand soll versehentlich
+ * Demo-Inhalte in einen laufenden Shop kippen.
+ */
+export async function loadDemoData(): Promise<void> {
+  await requireAdmin();
+
+  const { realProducts } = await demoDataStatus(prisma);
+  if (realProducts > 0) {
+    throw new Error(
+      "Es sind bereits echte Produkte erfasst. Demo-Inhalte werden deshalb nicht eingespielt.",
+    );
+  }
+
+  await installDemoData(prisma);
+  revalidatePath("/admin");
+  revalidatePath("/admin/produkte");
+  revalidatePath("/");
+  revalidatePath("/shop");
+}
+
+/** Entfernt sämtliche Demo-Inhalte wieder. Echte Produkte bleiben unberührt. */
+export async function deleteDemoData(): Promise<void> {
+  await requireAdmin();
+
+  await removeDemoData(prisma);
+  revalidatePath("/admin");
+  revalidatePath("/admin/produkte");
+  revalidatePath("/");
+  revalidatePath("/shop");
 }

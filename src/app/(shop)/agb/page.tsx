@@ -13,7 +13,7 @@ import {
   siteConfig,
   taxConfig,
 } from "@/config/site";
-import { shippingCountries, shippingMethods } from "@/lib/shipping";
+import { shippingMethods } from "@/lib/shipping";
 import { formatPrice, formatTaxRate } from "@/lib/money";
 
 export const metadata: Metadata = {
@@ -26,7 +26,6 @@ const returnShippingByCustomer = returnsPolicy.returnShippingPaidBy === "custome
 
 export default function TermsPage() {
   const { contact } = siteConfig;
-  const countryNames = shippingCountries.map((country) => country.name);
 
   return (
     <LegalPage
@@ -141,13 +140,10 @@ export default function TermsPage() {
           ))}
         />
         <p>
-          Bei Lieferungen aus der Schweiz in die Europäische Union können
-          zusätzlich Einfuhrumsatzsteuer, Zollabgaben und Bearbeitungsgebühren
-          des Transportunternehmens anfallen. Diese Abgaben werden von den
-          Behörden beziehungsweise vom Transportunternehmen direkt bei dir
-          erhoben, sind nicht im Kaufpreis enthalten und trägst du. Bitte
-          informiere dich vor der Bestellung über die in deinem Land geltenden
-          Freigrenzen.
+          Wir liefern ausschliesslich innerhalb der Schweiz. Es fallen deshalb
+          keine Zollabgaben, keine Einfuhrsteuern und keine
+          Verzollungsgebühren an. Der im Bestellvorgang angezeigte Betrag ist
+          der Betrag, den du bezahlst – weitere Kosten entstehen nicht.
         </p>
       </LegalSection>
 
@@ -178,8 +174,8 @@ export default function TermsPage() {
 
       <LegalSection title="5. Lieferung, Lieferfristen und Vorbestellungen">
         <p>
-          Wir liefern nach {countryNames.join(", ")}. Eine Lieferung an
-          Packstationen oder Postfächer ist nicht möglich.
+          Wir liefern ausschliesslich an Adressen in der Schweiz. Eine
+          Lieferung ins Ausland sowie an Postfächer ist nicht möglich.
         </p>
         <p>
           Die bei jedem Artikel angegebene Lieferzeit ist eine Schätzung in
@@ -228,15 +224,12 @@ export default function TermsPage() {
             : "Die Kosten der Rücksendung übernehmen wir."}
         </p>
         <p>
-          Für Verbraucherinnen und Verbraucher mit Wohnsitz in der
-          Europäischen Union gilt zusätzlich das gesetzliche Widerrufsrecht von{" "}
-          {returnsPolicy.euWithdrawalDays} Tagen. Alle Einzelheiten,
-          Ausnahmen und das Muster-Widerrufsformular findest du unter{" "}
+          Alle Einzelheiten, Voraussetzungen und Ausnahmen findest du unter{" "}
           <Link
             href="/widerruf"
             className="text-gold underline underline-offset-2 hover:text-gold-light"
           >
-            Rückgabe &amp; Widerruf
+            Rückgaberecht
           </Link>
           .
         </p>
@@ -372,12 +365,10 @@ export default function TermsPage() {
           internationalen Warenkauf (CISG).
         </p>
         <p>
-          Gerichtsstand ist – soweit gesetzlich zulässig –{" "}
-          {contact.city}. Bestellst du als Verbraucherin oder Verbraucher mit
-          Wohnsitz in der EU, bleiben die zwingenden Verbraucherschutzvorschriften
-          und der Gerichtsstand deines Wohnsitzstaats unberührt; das
-          anwendbare Recht darf dir den Schutz zwingender Bestimmungen deines
-          Aufenthaltsstaats nicht entziehen.
+          Gerichtsstand ist – soweit gesetzlich zulässig – {contact.city}. Die
+          zwingenden Zuständigkeiten zum Schutz von Konsumentinnen und
+          Konsumenten nach Art. 32 ZPO bleiben davon unberührt: Du kannst uns
+          in jedem Fall auch an deinem Wohnsitz einklagen.
         </p>
       </LegalSection>
 

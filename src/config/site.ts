@@ -97,24 +97,22 @@ export const taxConfig = {
 export const isVatRegistered = taxConfig.rateBp > 0;
 
 /**
- * Rückgabe- und Widerrufsbedingungen.
+ * Rückgabebedingungen.
  *
  * Wichtig zum Verständnis: In der Schweiz gibt es für Bestellungen über einen
  * Onlineshop **kein gesetzliches Widerrufsrecht**. Art. 40a ff. OR gilt nur
- * für Haustür- und Telefongeschäfte. Was wir Schweizer Kundinnen und Kunden
- * anbieten, ist deshalb ein freiwilliges, vertraglich zugesagtes
- * Rückgaberecht – und daran sind wir gebunden, sobald wir es hier zusagen.
+ * für Haustür- und Telefongeschäfte. Was wir anbieten, ist deshalb ein
+ * freiwilliges, vertraglich zugesagtes Rückgaberecht – und daran sind wir
+ * gebunden, sobald wir es auf der Seite /widerruf zusagen.
  *
- * Für Verbraucherinnen und Verbraucher mit Wohnsitz in der EU (wir liefern
- * nach Deutschland und Österreich) gilt zusätzlich das zwingende
- * EU-Fernabsatzrecht mit 14-tägigem Widerrufsrecht. Beides steht deshalb
- * getrennt auf der Seite /widerruf.
+ * Wir liefern ausschliesslich in die Schweiz (siehe `shippingCountries` in
+ * src/lib/shipping.ts). Deshalb kommt zwingendes EU-Fernabsatzrecht hier
+ * nicht zur Anwendung. Sollte das Liefergebiet je erweitert werden, müssen
+ * die Rechtstexte um eine echte Widerrufsbelehrung ergänzt werden.
  */
 export const returnsPolicy = {
-  /** Freiwillige Rückgabefrist in Tagen ab Erhalt (Schweiz/Liechtenstein). */
+  /** Freiwillige Rückgabefrist in Tagen ab Erhalt der Lieferung. */
   voluntaryDays: 14,
-  /** Gesetzliche Widerrufsfrist in Tagen für Verbraucher in der EU. */
-  euWithdrawalDays: 14,
   /**
    * Wer trägt die Rücksendekosten?
    * "customer" ist zulässig, solange – wie hier – vor der Bestellung klar

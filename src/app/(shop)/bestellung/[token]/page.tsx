@@ -28,8 +28,6 @@ interface PageProps {
 const countryNames: Record<string, string> = {
   CH: "Schweiz",
   LI: "Liechtenstein",
-  DE: "Deutschland",
-  AT: "Österreich",
 };
 
 const statusTones: Record<

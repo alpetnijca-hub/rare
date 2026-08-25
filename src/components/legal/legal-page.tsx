@@ -139,7 +139,7 @@ export function LegalList({ items }: { items: ReactNode[] }) {
   );
 }
 
-/** Hervorgehobener Kasten, z. B. für das Muster-Widerrufsformular. */
+/** Hervorgehobener Kasten, z. B. für Formulare und Musteranschreiben. */
 export function LegalBox({
   title,
   children,
