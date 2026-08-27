@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { AdminPageHeader } from "@/components/admin/layout-parts";
 import { ProductForm, emptyProduct } from "@/components/admin/product-form";
+import { isCloudinaryConfigured } from "@/lib/cloudinary";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,11 @@ export default async function NewProductPage() {
         ]}
       />
 
-      <ProductForm values={emptyProduct} categories={categories} />
+      <ProductForm
+        values={emptyProduct}
+        categories={categories}
+        cloudinaryEnabled={isCloudinaryConfigured()}
+      />
     </>
   );
 }

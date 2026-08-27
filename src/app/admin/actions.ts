@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import { requireAdmin } from "@/lib/auth-guard";
 import { adjustStock, cancelOrder, restockOrder } from "@/lib/orders";
 import {
@@ -23,6 +24,8 @@ import {
   fieldErrors,
 } from "@/lib/validation";
 import { parsePriceToCents } from "@/lib/money";
+import { buildSku } from "@/lib/utils";
+import { variantDefaults } from "@/config/product-defaults";
 import type { ActionState } from "@/app/admin/state";
 import {
   demoDataStatus,
@@ -69,6 +72,94 @@ function priceCents(formData: FormData, name: string): number | null {
 // ---------------------------------------------------------------------------
 // Produkte
 // ---------------------------------------------------------------------------
+
+/**
+ * Liest die Bilder, die beim Anlegen im Browser gesammelt wurden.
+ *
+ * Die Reihenfolge bestimmt, welches Bild das Hauptbild ist – deshalb wird
+ * sie über `sortOrder` festgehalten und nicht der Datenbank überlassen.
+ */
+function collectNewImages(
+  formData: FormData,
+): Array<{ url: string; alt: string; publicId: string | null; sortOrder: number }> {
+  const urls = formData.getAll("newImageUrl").map(String);
+  const alts = formData.getAll("newImageAlt").map(String);
+  const publicIds = formData.getAll("newImagePublicId").map(String);
+
+  return urls
+    .map((url, index) => ({
+      url: url.trim(),
+      alt: (alts[index] ?? "").trim(),
+      publicId: (publicIds[index] ?? "").trim() || null,
+      sortOrder: index,
+    }))
+    .filter((image) => image.url.startsWith("http"));
+}
+
+/**
+ * Liest die optionale erste Größe aus dem Anlegen-Formular.
+ *
+ * Bleiben die Felder leer, wird keine Größe angelegt – der Duft ist dann
+ * einfach noch nicht bestellbar. Sind sie teilweise gefüllt, ist das ein
+ * Versehen und wird gemeldet, statt stillschweigend etwas Halbfertiges
+ * anzulegen.
+ */
+function collectFirstVariant(
+  formData: FormData,
+  slug: string,
+):
+  | { variant: null; error: null }
+  | {
+      variant: Prisma.ProductVariantCreateWithoutProductInput;
+      error: null;
+    }
+  | {
+      variant: null;
+      error: { message: string; fields: Record<string, string> };
+    } {
+  const size = text(formData, "firstSize");
+  const volume = text(formData, "firstVolumeMl");
+  const priceInput = text(formData, "firstPrice");
+  const stock = text(formData, "firstStock");
+
+  if (!size && !volume && !priceInput) return { variant: null, error: null };
+
+  const fields: Record<string, string> = {};
+  if (!size) fields.firstSize = "Bitte die Größe angeben, z. B. „50 ml“.";
+  if (!volume) fields.firstVolumeMl = "Bitte das Volumen in ml angeben.";
+
+  const priceCents = priceInput ? parsePriceToCents(priceInput) : null;
+  if (priceCents === null) fields.firstPrice = "Bitte einen Preis angeben, z. B. 49.90.";
+
+  const volumeMl = Number.parseInt(volume, 10);
+  if (volume && (!Number.isFinite(volumeMl) || volumeMl < 1)) {
+    fields.firstVolumeMl = "Volumen muss eine Zahl grösser als 0 sein.";
+  }
+
+  if (Object.keys(fields).length > 0) {
+    return {
+      variant: null,
+      error: { message: "Bitte die erste Größe vervollständigen.", fields },
+    };
+  }
+
+  const stockCount = Number.parseInt(stock, 10);
+
+  return {
+    variant: {
+      sku: buildSku(slug, volumeMl),
+      size,
+      volumeMl,
+      priceCents: priceCents as number,
+      stock: Number.isFinite(stockCount) && stockCount > 0 ? stockCount : 0,
+      isSample: checkbox(formData, "firstIsSample"),
+      lowStockThreshold: variantDefaults.lowStockThreshold,
+      deliveryMinDays: variantDefaults.deliveryMinDays,
+      deliveryMaxDays: variantDefaults.deliveryMaxDays,
+    },
+    error: null,
+  };
+}
 
 export async function saveProductAction(
   productId: string | null,
@@ -154,10 +245,24 @@ export async function saveProductAction(
       },
     });
   } else {
+    // Bilder und die erste Größe kommen aus demselben Formular. Sie werden
+    // gemeinsam mit dem Produkt angelegt, damit ein Duft nach einem einzigen
+    // Speichern vollständig ist.
+    const bilder = collectNewImages(formData);
+    const ersteGroesse = collectFirstVariant(formData, data.slug);
+
+    if (ersteGroesse.error) {
+      return fail(ersteGroesse.error.message, ersteGroesse.error.fields);
+    }
+
     const created = await prisma.product.create({
       data: {
         ...payload,
         categories: { connect: data.categoryIds.map((id) => ({ id })) },
+        ...(bilder.length > 0 ? { images: { create: bilder } } : {}),
+        ...(ersteGroesse.variant
+          ? { variants: { create: ersteGroesse.variant } }
+          : {}),
       },
       select: { id: true },
     });

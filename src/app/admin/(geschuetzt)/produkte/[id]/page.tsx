@@ -127,6 +127,7 @@ export default async function EditProductPage({
         </Card>
 
         <ProductForm
+          cloudinaryEnabled={isCloudinaryConfigured()}
           values={{
             id: product.id,
             name: product.name,

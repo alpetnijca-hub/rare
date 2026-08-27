@@ -617,6 +617,13 @@ Größe, Volumen, Artikelnummer und die Probenmarkierung auf einmal. Die
 Artikelnummer entsteht aus Produktkürzel und Volumen (`amber-nuit` + 10 ml →
 `AN-010`) und weicht aus, wenn sie schon vergeben ist.
 
+Bilder und die erste Größe lassen sich direkt beim Anlegen erfassen, sodass
+ein Duft nach einem einzigen Speichern vollständig und bestellbar ist. Der
+Upload zu Cloudinary hängt an keiner Produkt-ID und funktioniert deshalb
+schon, bevor das Produkt existiert; die Adressen werden über verborgene
+Formularfelder mitgesendet. Ohne Cloudinary lässt sich stattdessen eine
+Bild-Adresse eintragen.
+
 **Probengrößen.** Proben und Abfüllungen sind keine eigenen Produkte, sondern
 Größen desselben Dufts. In der Größenverwaltung markiert das Häkchen
 «Probe oder Abfüllung zum Testen» eine Größe als Probe (`isSample`). Auf der

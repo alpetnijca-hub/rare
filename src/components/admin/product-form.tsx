@@ -6,6 +6,8 @@ import { idleState } from "@/app/admin/state";
 import { saveProductAction } from "@/app/admin/actions";
 import { FormMessage, SubmitButton } from "@/components/admin/ui";
 import { AdvancedCard, Card } from "@/components/admin/layout-parts";
+import { NewProductImages } from "@/components/admin/new-product-images";
+import { commonSizes } from "@/config/product-defaults";
 import { Checkbox, Field, Select, TextArea, TextInput } from "@/components/ui/field";
 import { familyLabels, fragranceFamilies, kindLabels, productKinds } from "@/lib/catalog";
 import { slugify } from "@/lib/utils";
@@ -69,9 +71,12 @@ export const emptyProduct: ProductFormValues = {
 export function ProductForm({
   values,
   categories,
+  cloudinaryEnabled,
 }: {
   values: ProductFormValues;
   categories: Array<{ id: string; name: string; kind: string }>;
+  /** Steuert, ob der Direktupload angeboten wird. */
+  cloudinaryEnabled: boolean;
 }) {
   const action = saveProductAction.bind(null, values.id ?? null);
   const [state, formAction] = useActionState(action, idleState);
@@ -282,6 +287,116 @@ export function ProductForm({
           </div>
         </fieldset>
       </Card>
+
+      {/* Bilder und erste Größe nur beim Anlegen. Beim Bearbeiten gibt es
+          dafür weiter unten die vollständigen Verwaltungen. */}
+      {!values.id && (
+        <>
+          <Card
+            title="Bilder"
+            description="Das erste Bild ist das Hauptbild und erscheint auf der Produktkarte."
+          >
+            <NewProductImages cloudinaryEnabled={cloudinaryEnabled} />
+          </Card>
+
+          <Card
+            title="Erste Größe"
+            description="Damit ist der Duft sofort bestellbar. Weitere Größen kannst du direkt danach ergänzen."
+          >
+            <div className="flex flex-col gap-5">
+              <div>
+                <p className="mb-2 text-xs font-medium uppercase tracking-[0.14em] text-muted">
+                  Gängige Größen
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {commonSizes.map((vorgabe) => (
+                    <button
+                      key={vorgabe.label}
+                      type="button"
+                      onClick={() => {
+                        const setze = (id: string, wert: string) => {
+                          const feld =
+                            document.querySelector<HTMLInputElement>(`#${id}`);
+                          if (feld) feld.value = wert;
+                        };
+                        setze("firstSize", vorgabe.label);
+                        setze("firstVolumeMl", String(vorgabe.volumeMl));
+                        const probe =
+                          document.querySelector<HTMLInputElement>(
+                            "#firstIsSample",
+                          );
+                        if (probe) probe.checked = vorgabe.isSample;
+                      }}
+                      className="border border-line px-3 py-1.5 text-xs text-cream transition-colors
+                        hover:border-gold hover:text-gold-light
+                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+                    >
+                      {vorgabe.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <Field id="firstSize" label="Größe" error={state.fields?.firstSize}>
+                  {(aria) => (
+                    <TextInput {...aria} name="firstSize" placeholder="50 ml" />
+                  )}
+                </Field>
+
+                <Field
+                  id="firstVolumeMl"
+                  label="Volumen in ml"
+                  error={state.fields?.firstVolumeMl}
+                >
+                  {(aria) => (
+                    <TextInput
+                      {...aria}
+                      name="firstVolumeMl"
+                      inputMode="numeric"
+                      placeholder="50"
+                    />
+                  )}
+                </Field>
+
+                <Field
+                  id="firstPrice"
+                  label="Preis in CHF"
+                  error={state.fields?.firstPrice}
+                >
+                  {(aria) => (
+                    <TextInput {...aria} name="firstPrice" placeholder="49.90" />
+                  )}
+                </Field>
+
+                <Field id="firstStock" label="Bestand">
+                  {(aria) => (
+                    <TextInput
+                      {...aria}
+                      name="firstStock"
+                      inputMode="numeric"
+                      placeholder="0"
+                    />
+                  )}
+                </Field>
+              </div>
+
+              <Checkbox
+                id="firstIsSample"
+                name="firstIsSample"
+                label="Probe oder Abfüllung zum Testen"
+                hint="Erscheint auf der Produktseite unter „Zum Testen“ statt bei den Flakons."
+              />
+
+              <p className="text-xs leading-relaxed text-subtle">
+                Die Felder dürfen leer bleiben – dann legst du die Größen im
+                nächsten Schritt an. Die Artikelnummer vergibt der Shop
+                automatisch.
+              </p>
+            </div>
+          </Card>
+        </>
+      )}
 
       <AdvancedCard
         title="Weitere Einstellungen"
