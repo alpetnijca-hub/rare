@@ -12,6 +12,7 @@ import { estimatedDeliveryWindow, formatDeliveryRange } from "@/lib/availability
 import { formatDate, formatDateTime } from "@/lib/utils";
 import { describePaymentMethod } from "@/lib/stripe";
 import { orderStatusLabel } from "@/lib/email";
+import { productThumbUrl } from "@/lib/product-image";
 
 export const metadata: Metadata = {
   title: "Deine Bestellung",
@@ -244,7 +245,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
                 <div className="relative size-16 shrink-0 overflow-hidden border border-line bg-ink">
                   {item.imageUrl && (
                     <Image
-                      src={item.imageUrl}
+                      src={productThumbUrl(item.imageUrl)}
                       alt=""
                       aria-hidden="true"
                       fill

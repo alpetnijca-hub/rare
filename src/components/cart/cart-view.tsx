@@ -12,6 +12,7 @@ import { CurrencyNotice } from "@/components/currency/currency-switcher";
 import { formatTaxRate } from "@/lib/money";
 import { formatDeliveryRange } from "@/lib/availability";
 import { cn } from "@/lib/utils";
+import { productThumbUrl } from "@/lib/product-image";
 
 /** Zeile im Warenkorb mit Mengensteuerung. */
 function CartLine({
@@ -33,7 +34,7 @@ function CartLine({
       >
         {line.imageUrl ? (
           <Image
-            src={line.imageUrl}
+            src={productThumbUrl(line.imageUrl)}
             alt={line.imageAlt ?? line.productName}
             fill
             sizes="112px"

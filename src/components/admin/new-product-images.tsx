@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, TextInput } from "@/components/ui/field";
 import { useCloudinaryUpload } from "@/components/admin/use-cloudinary-upload";
+import { productImageUrl } from "@/lib/product-image";
 
 interface DraftImage {
   url: string;
@@ -90,7 +91,7 @@ export function NewProductImages({
             <li key={`${image.url}-${index}`} className="flex flex-col gap-2">
               <div className="relative aspect-4/5 overflow-hidden border border-line bg-ink">
                 <Image
-                  src={image.url}
+                  src={productImageUrl(image.url, "detail")}
                   alt={image.alt || "Vorschau"}
                   fill
                   sizes="200px"

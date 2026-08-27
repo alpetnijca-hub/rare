@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { productImageUrl, productThumbUrl } from "@/lib/product-image";
 
 export interface GalleryImage {
   url: string;
@@ -48,7 +49,7 @@ export function ProductGallery({
       <div className="relative aspect-4/5 overflow-hidden border border-line bg-charcoal">
         <Image
           key={active.url}
-          src={active.url}
+          src={productImageUrl(active.url, "detail")}
           alt={active.alt}
           fill
           priority
@@ -80,7 +81,7 @@ export function ProductGallery({
                   Ansicht {index + 1} von {images.length} anzeigen
                 </span>
                 <Image
-                  src={image.url}
+                  src={productThumbUrl(image.url)}
                   alt=""
                   aria-hidden="true"
                   fill

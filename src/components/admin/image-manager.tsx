@@ -7,6 +7,7 @@ import { addProductImageAction, deleteProductImageAction } from "@/app/admin/act
 import { ConfirmSubmit, FormMessage, SubmitButton } from "@/components/admin/ui";
 import { Button } from "@/components/ui/button";
 import { Field, TextInput } from "@/components/ui/field";
+import { productImageUrl } from "@/lib/product-image";
 
 export interface ImageRow {
   id: string;
@@ -113,7 +114,7 @@ export function ImageManager({
             <li key={image.id} className="flex flex-col gap-2">
               <div className="relative aspect-4/5 overflow-hidden border border-line bg-ink">
                 <Image
-                  src={image.url}
+                  src={productImageUrl(image.url, "detail")}
                   alt={image.alt}
                   fill
                   sizes="200px"

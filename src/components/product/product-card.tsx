@@ -5,6 +5,7 @@ import { BasePrice, Money } from "@/components/currency/money";
 import { basePricePer100Ml, discountPercent } from "@/lib/money";
 import { familyLabels, kindLabels, type ProductListItem } from "@/lib/products";
 import { cn } from "@/lib/utils";
+import { productImageUrl } from "@/lib/product-image";
 
 /**
  * Produktkarte für Startseite, Shop und Empfehlungen.
@@ -46,7 +47,7 @@ export function ProductCard({
         {image ? (
           <>
             <Image
-              src={image.url}
+              src={productImageUrl(image.url, "card")}
               alt={image.alt}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -58,7 +59,7 @@ export function ProductCard({
             />
             {hoverImage && (
               <Image
-                src={hoverImage.url}
+                src={productImageUrl(hoverImage.url, "card")}
                 alt=""
                 aria-hidden="true"
                 fill

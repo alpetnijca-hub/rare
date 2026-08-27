@@ -8,6 +8,7 @@ import { ProductRowActions } from "@/components/admin/product-row-actions";
 import { formatPrice } from "@/lib/money";
 import { availableStock } from "@/lib/availability";
 import { familyLabels, kindLabels } from "@/lib/catalog";
+import { productImageUrl } from "@/lib/product-image";
 
 export const dynamic = "force-dynamic";
 
@@ -159,7 +160,7 @@ export default async function AdminProductsPage({
                           <div className="relative size-12 shrink-0 overflow-hidden border border-line bg-ink">
                             {product.images[0] && (
                               <Image
-                                src={product.images[0].url}
+                                src={productImageUrl(product.images[0].url, "detail")}
                                 alt=""
                                 aria-hidden="true"
                                 fill

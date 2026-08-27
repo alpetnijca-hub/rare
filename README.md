@@ -644,6 +644,20 @@ schon, bevor das Produkt existiert; die Adressen werden über verborgene
 Formularfelder mitgesendet. Ohne Cloudinary lässt sich stattdessen eine
 Bild-Adresse eintragen.
 
+**Bilder werden automatisch vereinheitlicht.** Fotos kommen in allen
+Formaten herein – hochkant, quer, heller oder dunkler Hintergrund. Damit der
+Shop trotzdem ruhig wirkt, formt Cloudinary jedes Bild beim Ausliefern in ein
+einheitliches 4:5-Hochformat um (`src/lib/product-image.ts`).
+
+Bewusst mit `c_pad` statt `c_fill`: Gefüllt würde zugeschnitten und dabei
+Flakonhälse oder Sockel abgeschnitten. Gepolstert bleibt der Flakon
+vollständig sichtbar, und der Rand wird in der Hintergrundfarbe der jeweiligen
+Fläche aufgefüllt (`#080808` auf Produktkarten, `#151515` auf der
+Produktseite) – dadurch fällt die Polsterung nicht auf.
+
+Du musst Fotos also **nicht vorbereiten**: Lade sie so hoch, wie sie sind.
+Bilder von fremden Adressen bleiben unverändert.
+
 **Probengrößen.** Proben und Abfüllungen sind keine eigenen Produkte, sondern
 Größen desselben Dufts. In der Größenverwaltung markiert das Häkchen
 «Probe oder Abfüllung zum Testen» eine Größe als Probe (`isSample`). Auf der

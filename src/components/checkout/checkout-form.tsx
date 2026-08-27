@@ -14,6 +14,7 @@ import { formatPrice as formatBasePriceCents, formatTaxRate } from "@/lib/money"
 import { formatDeliveryRange } from "@/lib/availability";
 import { shippingCountries } from "@/lib/shipping";
 import { cn } from "@/lib/utils";
+import { productThumbUrl } from "@/lib/product-image";
 
 /**
  * Kasse (Gastbestellung ohne Konto).
@@ -587,7 +588,7 @@ export function CheckoutForm() {
               <div className="relative size-14 shrink-0 overflow-hidden border border-line bg-ink">
                 {line.imageUrl && (
                   <Image
-                    src={line.imageUrl}
+                    src={productThumbUrl(line.imageUrl)}
                     alt=""
                     aria-hidden="true"
                     fill
