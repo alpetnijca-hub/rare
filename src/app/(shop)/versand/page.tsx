@@ -84,9 +84,18 @@ export default function ShippingPage() {
 
       <LegalSection title="Lieferzeit">
         <p>
-          Die Lieferzeit setzt sich aus der Bearbeitungszeit des jeweiligen
-          Artikels und der Transportzeit zusammen. Beide Angaben findest du
-          direkt am Produkt und noch einmal im Warenkorb.
+          <strong className="font-medium text-cream">
+            Je nach Bestandteil 3 Tage bis 2 Wochen.
+          </strong>{" "}
+          Die Spanne ist so gross, weil nicht jeder Duft dieselben Zutaten
+          braucht. Was wir vorrätig haben, füllen wir sofort ab und versenden
+          es innerhalb weniger Tage. Bei anderen Düften warten wir zuerst auf
+          eine Zutat – dann dauert es entsprechend länger.
+        </p>
+        <p>
+          Die genaue Angabe steht bei jedem Duft und noch einmal im Warenkorb.
+          Wir schätzen dort lieber vorsichtig, als eine Frist zu nennen, die
+          wir nicht halten können.
         </p>
         <p>
           Die Frist beginnt mit dem bestätigten Zahlungseingang. Werktage sind

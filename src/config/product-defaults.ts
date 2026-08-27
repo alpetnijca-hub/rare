@@ -37,10 +37,18 @@ export const alternativeNotice =
   "anderer Düfte. Alle gegebenenfalls genannten Marken sind Eigentum ihrer jeweiligen " +
   "Inhaber und dienen ausschliesslich der Beschreibung einer Duftrichtung.";
 
-/** Voreinstellungen für eine neue Größe. */
+/**
+ * Voreinstellungen für eine neue Größe.
+ *
+ * Die Lieferzeit ist bewusst weit gefasst: Manche Düfte sind vorrätig und
+ * innerhalb von Tagen abgefüllt, bei anderen wartet man zuerst auf eine
+ * Zutat. Wer eine Größe sofort verfügbar hat, setzt die Werte beim Anlegen
+ * einfach herunter – vorsichtig schätzen ist besser als eine Frist zu
+ * versprechen, die nicht zu halten ist.
+ */
 export const variantDefaults = {
-  deliveryMinDays: 1,
-  deliveryMaxDays: 3,
+  deliveryMinDays: 3,
+  deliveryMaxDays: 14,
   lowStockThreshold: 3,
 } as const;
 

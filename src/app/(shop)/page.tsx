@@ -195,9 +195,11 @@ export default async function HomePage() {
               </div>
               <div>
                 <dt className="text-[11px] uppercase tracking-[0.14em] text-subtle">
-                  Versand
+                  Lieferung
                 </dt>
-                <dd className="mt-1 font-display text-xl text-cream">1–2 Tage</dd>
+                <dd className="mt-1 font-display text-xl text-cream">
+                  3 Tage – 2 Wochen
+                </dd>
               </div>
               <div>
                 <dt className="text-[11px] uppercase tracking-[0.14em] text-subtle">
