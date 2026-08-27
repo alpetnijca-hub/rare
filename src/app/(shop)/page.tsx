@@ -7,6 +7,8 @@ import { siteConfig } from "@/config/site";
 import { getBestsellers, getNewArrivals } from "@/lib/products";
 import { amountUntilFreeShipping } from "@/lib/shipping";
 import { Money } from "@/components/currency/money";
+import { prisma } from "@/lib/prisma";
+import { demoDataStatus } from "@/lib/demo-seed";
 
 export const metadata: Metadata = {
   title: `${siteConfig.name} – Parfüms, Duftalternativen & Abfüllungen`,
@@ -131,10 +133,12 @@ function SectionHeading({
 }
 
 export default async function HomePage() {
-  const [bestsellers, newArrivals] = await Promise.all([
+  const [bestsellers, newArrivals, demoStatus] = await Promise.all([
     getBestsellers(4),
     getNewArrivals(4),
+    demoDataStatus(prisma),
   ]);
+  const demoProducts = demoStatus.demoProducts;
 
   const freeShippingFrom = amountUntilFreeShipping(0, "standard");
 
@@ -146,7 +150,7 @@ export default async function HomePage() {
       <section className="relative isolate overflow-hidden border-b border-line">
         <div className="absolute inset-0 -z-10">
           <Image
-            src="/produkte/hero.svg"
+            src="/produkte/hero.jpg"
             alt=""
             aria-hidden="true"
             fill
@@ -406,20 +410,22 @@ export default async function HomePage() {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      {/* Demo-Hinweis                                                      */}
+      {/* Demo-Hinweis – nur solange erfundene Produkte im Shop stehen.     */}
+      {/* Er verschwindet von selbst, sobald die Demo-Inhalte entfernt sind, */}
+      {/* und käme zurück, falls sie je wieder eingespielt werden.          */}
       {/* ---------------------------------------------------------------- */}
-      <section className="container-shop py-14">
-        <div className="border border-gold/25 bg-gold/5 p-6 md:p-8">
-          <p className="eyebrow mb-2">Hinweis zur Demo-Fassung</p>
-          <p className="text-sm leading-relaxed text-muted">
-            Dieser Shop ist voll funktionsfähig, enthält aber noch
-            Demo-Produkte mit erfundenen Namen und selbst gezeichneten
-            Abbildungen. Rechtstexte, Firmenangaben, Produktbeschreibungen und
-            Preise müssen vor der Veröffentlichung ersetzt und fachlich geprüft
-            werden.
-          </p>
-        </div>
-      </section>
+      {demoProducts > 0 && (
+        <section className="container-shop py-14">
+          <div className="border border-gold/25 bg-gold/5 p-6 md:p-8">
+            <p className="eyebrow mb-2">Hinweis zur Demo-Fassung</p>
+            <p className="text-sm leading-relaxed text-muted">
+              Dieser Shop enthält noch Demo-Produkte mit erfundenen Namen und
+              selbst gezeichneten Abbildungen. Sie lassen sich im internen
+              Bereich mit einem Klick entfernen.
+            </p>
+          </div>
+        </section>
+      )}
     </>
   );
 }
