@@ -336,10 +336,30 @@ Beide werden von Stripe Checkout automatisch angeboten, sobald das Gerät sie
 unterstützt. Voraussetzung: Unter **Einstellungen → Zahlungsmethoden →
 Apple Pay** muss die Live-Domain registriert sein.
 
-### 5.4 PayPal (optional)
+### 5.4 TWINT, PayPal und weitere Zahlungsarten
 
-1. In Stripe unter **Einstellungen → Zahlungsmethoden** PayPal aktivieren.
-2. `STRIPE_ENABLE_PAYPAL="true"` setzen.
+Der Shop gibt Stripe **keine** feste Liste vor. Es gelten die Zahlungsarten,
+die im Dashboard unter **Einstellungen → Zahlungsmethoden** freigeschaltet
+sind. Eine neue Methode zu aktivieren ist damit ein Haken im Dashboard – ohne
+Codeänderung und ohne neues Deployment.
+
+Für einen Schweizer Shop lohnt sich vor allem **TWINT**: Es ist hierzulande
+weit verbreitet, und wer es nicht anbietet, verliert Bestellungen an der
+Kasse. Voraussetzung sind ein Schweizer Stripe-Konto und CHF als Währung –
+beides ist gegeben.
+
+Stripe blendet automatisch aus, was nicht passt: TWINT erscheint nur bei
+CHF-Zahlungen, PayPal nur dort, wo es zugelassen ist.
+
+Nur wer die Auswahl fest verdrahten will, setzt:
+
+```bash
+STRIPE_PAYMENT_METHODS="card,twint"
+```
+
+Leerer Wert oder `"auto"` bedeutet: Dashboard entscheidet. Eine leere Liste
+fällt bewusst auf das Dashboard zurück – eine Session ganz ohne Zahlungsart
+würde Stripe ablehnen und den Bezahlvorgang für alle Kundinnen totlegen.
 
 ---
 

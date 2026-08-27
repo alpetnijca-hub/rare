@@ -8,7 +8,11 @@ import {
   InsufficientStockError,
   releaseOrderStock,
 } from "@/lib/orders";
-import { checkoutPaymentMethods, getStripe, isStripeConfigured } from "@/lib/stripe";
+import {
+  checkoutPaymentMethodConfig,
+  getStripe,
+  isStripeConfigured,
+} from "@/lib/stripe";
 import { rateLimit, rateLimits, tooManyRequests } from "@/lib/rate-limit";
 import { clientIpFromHeaders } from "@/lib/utils";
 import { formatPrice } from "@/lib/money";
@@ -203,7 +207,7 @@ export async function POST(request: NextRequest) {
     const session = await stripe.checkout.sessions.create(
       {
         mode: "payment",
-        payment_method_types: checkoutPaymentMethods(),
+        ...checkoutPaymentMethodConfig(),
         line_items: lineItems,
         discounts,
         customer_email: input.email,

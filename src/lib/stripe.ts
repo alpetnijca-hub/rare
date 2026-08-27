@@ -34,19 +34,41 @@ export function isStripeConfigured(): boolean {
 }
 
 /**
- * Zahlungsmethoden für die Checkout-Session.
+ * Zahlungsarten für die Checkout-Session.
  *
- * "card" deckt Kredit- und Debitkarten ab; Apple Pay und Google Pay werden von
- * Stripe Checkout automatisch angeboten, sobald das Gerät sie unterstützt und
- * die Domain in Stripe registriert ist. PayPal wird nur aktiviert, wenn es im
- * Stripe-Konto freigeschaltet und STRIPE_ENABLE_PAYPAL=true gesetzt ist.
+ * Standardfall ist "auto": Wir geben Stripe **keine** Liste vor, sondern
+ * lassen die Zahlungsarten aus dem Dashboard gelten. Das hat einen handfesten
+ * Vorteil: TWINT, PayPal oder eine künftige Methode schaltet man dort mit
+ * einem Haken frei – ohne Codeänderung und ohne neues Deployment. Stripe
+ * blendet dabei automatisch aus, was zur Währung oder zum Land der Kundin
+ * nicht passt.
+ *
+ * Wer die Auswahl fest verdrahten will, setzt `STRIPE_PAYMENT_METHODS` auf
+ * eine Liste, z. B. "card,twint". Dann gilt ausschliesslich diese.
+ *
+ * Apple Pay und Google Pay erscheinen in beiden Fällen automatisch, sobald
+ * das Gerät sie unterstützt und die Domain in Stripe hinterlegt ist – sie
+ * laufen technisch unter "card".
  */
-export function checkoutPaymentMethods(): Stripe.Checkout.SessionCreateParams.PaymentMethodType[] {
-  const methods: Stripe.Checkout.SessionCreateParams.PaymentMethodType[] = [
-    "card",
-  ];
-  if (process.env.STRIPE_ENABLE_PAYPAL === "true") methods.push("paypal");
-  return methods;
+export function checkoutPaymentMethodConfig(): Pick<
+  Stripe.Checkout.SessionCreateParams,
+  "payment_method_types"
+> {
+  const raw = envValue(process.env.STRIPE_PAYMENT_METHODS);
+
+  // Nicht gesetzt oder ausdrücklich "auto" -> Dashboard entscheidet.
+  if (raw === undefined || raw.toLowerCase() === "auto") return {};
+
+  const methods = raw
+    .split(",")
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean) as Stripe.Checkout.SessionCreateParams.PaymentMethodType[];
+
+  // Eine leere Liste wäre eine Session ohne jede Zahlungsart – Stripe würde
+  // sie ablehnen. Dann lieber zurück auf das Dashboard.
+  if (methods.length === 0) return {};
+
+  return { payment_method_types: methods };
 }
 
 /** Lesbare Bezeichnung der verwendeten Zahlungsmethode für E-Mails. */
@@ -62,11 +84,19 @@ export function describePaymentMethod(
         : "Karte";
       return last4 ? `${brandLabel} •••• ${last4}` : brandLabel;
     }
+    case "twint":
+      return "TWINT";
     case "paypal":
       return "PayPal";
     case "link":
       return "Link (Stripe)";
+    case "klarna":
+      return "Klarna";
+    case "revolut_pay":
+      return "Revolut Pay";
     default:
+      // Unbekannte Methode: lieber neutral benennen als raten. Der Text steht
+      // in Bestellbestätigungen und im Adminbereich.
       return "Onlinezahlung";
   }
 }
