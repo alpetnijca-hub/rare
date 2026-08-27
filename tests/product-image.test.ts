@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { productImageUrl, productThumbUrl } from "@/lib/product-image";
 
 /**
@@ -75,5 +75,60 @@ describe("productThumbUrl", () => {
 
   it("lässt fremde Adressen unverändert", () => {
     expect(productThumbUrl("/produkte/demo.svg")).toBe("/produkte/demo.svg");
+  });
+});
+
+describe("Hintergrund im Foto", () => {
+  const original = process.env.SHOP_IMAGE_BACKGROUND;
+  const originalTol = process.env.SHOP_IMAGE_BACKGROUND_TOLERANCE;
+
+  afterEach(() => {
+    if (original === undefined) delete process.env.SHOP_IMAGE_BACKGROUND;
+    else process.env.SHOP_IMAGE_BACKGROUND = original;
+    if (originalTol === undefined) delete process.env.SHOP_IMAGE_BACKGROUND_TOLERANCE;
+    else process.env.SHOP_IMAGE_BACKGROUND_TOLERANCE = originalTol;
+  });
+
+  it("lässt das Foto ohne Einstellung unangetastet", () => {
+    delete process.env.SHOP_IMAGE_BACKGROUND;
+    const result = productImageUrl(cloudinary);
+    expect(result).not.toContain("e_make_transparent");
+    expect(result).not.toContain("e_background_removal");
+  });
+
+  it("entfernt eine einfarbige Fläche, wenn eingeschaltet", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "transparent";
+    const result = productImageUrl(cloudinary);
+    expect(result).toContain("e_make_transparent:30/");
+    // Die Reihenfolge zählt: erst freistellen, dann polstern.
+    expect(result.indexOf("e_make_transparent")).toBeLessThan(
+      result.indexOf("c_pad"),
+    );
+  });
+
+  it("übernimmt eine eigene Toleranz", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "transparent";
+    process.env.SHOP_IMAGE_BACKGROUND_TOLERANCE = "55";
+    expect(productImageUrl(cloudinary)).toContain("e_make_transparent:55/");
+  });
+
+  it("weist unsinnige Toleranzen ab, statt ein kaputtes Bild zu erzeugen", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "transparent";
+    for (const wert of ["0", "-5", "500", "viel", ""]) {
+      process.env.SHOP_IMAGE_BACKGROUND_TOLERANCE = wert;
+      expect(productImageUrl(cloudinary)).toContain("e_make_transparent:30/");
+    }
+  });
+
+  it("nutzt das Freistellen per KI, wenn eingeschaltet", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "ai";
+    expect(productImageUrl(cloudinary)).toContain("e_background_removal/");
+  });
+
+  it("fällt bei unbekannter Einstellung auf 'unverändert' zurück", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "irgendwas";
+    const result = productImageUrl(cloudinary);
+    expect(result).not.toContain("e_make_transparent");
+    expect(result).not.toContain("e_background_removal");
   });
 });

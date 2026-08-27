@@ -20,6 +20,55 @@
  * Bilder sollen weiterhin funktionieren.
  */
 
+import { envValue } from "@/lib/env";
+
+/**
+ * Umgang mit dem Hintergrund im Foto selbst.
+ *
+ *   "keep"        – Foto bleibt wie es ist. Standard.
+ *   "transparent" – Eine gleichmässige Fläche (z. B. weisser Tisch) wird
+ *                   entfernt und durch die Shop-Farbe ersetzt. Funktioniert
+ *                   in jedem Cloudinary-Tarif, verlangt aber einen ruhigen,
+ *                   einfarbigen Hintergrund.
+ *   "ai"          – Cloudinary schneidet den Gegenstand frei, auch bei
+ *                   unruhigem Hintergrund. Setzt das kostenpflichtige
+ *                   Zusatzmodul "Background Removal" voraus.
+ *
+ * Umschaltbar über SHOP_IMAGE_BACKGROUND. Bewusst "keep" als Standard: Ein
+ * automatisches Freistellen, das danebengeht, ruiniert jedes Produktbild auf
+ * einen Schlag – und zwar unbemerkt, weil niemand alle Bilder nachkontrolliert.
+ */
+export type BackgroundMode = "keep" | "transparent" | "ai";
+
+function backgroundMode(): BackgroundMode {
+  const raw = envValue(process.env.SHOP_IMAGE_BACKGROUND)?.toLowerCase();
+  if (raw === "transparent" || raw === "ai") return raw;
+  return "keep";
+}
+
+/**
+ * Toleranz beim Entfernen einer einfarbigen Fläche (0–100).
+ * Höher entfernt mehr, greift aber irgendwann den Flakon an.
+ */
+function transparencyTolerance(): number {
+  const raw = envValue(process.env.SHOP_IMAGE_BACKGROUND_TOLERANCE);
+  const value = raw ? Number.parseInt(raw, 10) : NaN;
+  if (!Number.isFinite(value) || value < 1 || value > 100) return 30;
+  return value;
+}
+
+/** Vorgeschaltete Bearbeitung, bevor auf das Zielformat gepolstert wird. */
+function backgroundStep(): string {
+  switch (backgroundMode()) {
+    case "transparent":
+      return `e_make_transparent:${transparencyTolerance()}/`;
+    case "ai":
+      return "e_background_removal/";
+    default:
+      return "";
+  }
+}
+
 /** Seitenverhältnis der Bildflächen im Shop (4:5, hochkant). */
 export const productImageRatio = { width: 1000, height: 1250 } as const;
 
@@ -73,7 +122,7 @@ export function productImageUrl(
     "dpr_auto",
   ].join(",");
 
-  return `${prefix}${cloudinaryMarker}${transformation}/${rest}`;
+  return `${prefix}${cloudinaryMarker}${backgroundStep()}${transformation}/${rest}`;
 }
 
 /** Quadratischer Ausschnitt für die kleinen Vorschaubilder unter der Galerie. */
@@ -94,5 +143,5 @@ export function productThumbUrl(url: string, size = 240): string {
     "q_auto",
   ].join(",");
 
-  return `${prefix}${cloudinaryMarker}${transformation}/${rest}`;
+  return `${prefix}${cloudinaryMarker}${backgroundStep()}${transformation}/${rest}`;
 }

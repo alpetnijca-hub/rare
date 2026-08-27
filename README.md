@@ -658,6 +658,26 @@ Produktseite) – dadurch fällt die Polsterung nicht auf.
 Du musst Fotos also **nicht vorbereiten**: Lade sie so hoch, wie sie sind.
 Bilder von fremden Adressen bleiben unverändert.
 
+**Hintergrund im Foto ersetzen.** Wer Fotos auf hellem Untergrund macht, kann
+den Hintergrund automatisch durch die Shop-Farbe ersetzen lassen:
+
+```bash
+SHOP_IMAGE_BACKGROUND="transparent"   # einfarbige Fläche entfernen
+SHOP_IMAGE_BACKGROUND="ai"            # freistellen (kostenpflichtiges Modul)
+SHOP_IMAGE_BACKGROUND="keep"          # Standard: Foto bleibt unverändert
+```
+
+`transparent` läuft in jedem Cloudinary-Tarif, verlangt aber einen ruhigen,
+einfarbigen Hintergrund ohne starke Schatten; die Empfindlichkeit steuert
+`SHOP_IMAGE_BACKGROUND_TOLERANCE` (1–100, Vorgabe 30). `ai` kommt auch mit
+unruhigem Hintergrund zurecht, setzt aber das Zusatzmodul
+«Background Removal» im Cloudinary-Konto voraus.
+
+Standard ist bewusst `keep`: Die Einstellung wirkt auf **alle** Bilder
+gleichzeitig, und ein Freistellen, das danebengeht, ruiniert das ganze
+Sortiment auf einen Schlag – unbemerkt, weil niemand alle Bilder
+nachkontrolliert. Nach dem Umstellen also ein paar Produktseiten ansehen.
+
 **Probengrößen.** Proben und Abfüllungen sind keine eigenen Produkte, sondern
 Größen desselben Dufts. In der Größenverwaltung markiert das Häkchen
 «Probe oder Abfüllung zum Testen» eine Größe als Probe (`isSample`). Auf der
