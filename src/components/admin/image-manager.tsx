@@ -8,11 +8,16 @@ import { ConfirmSubmit, FormMessage, SubmitButton } from "@/components/admin/ui"
 import { Button } from "@/components/ui/button";
 import { Field, TextInput } from "@/components/ui/field";
 import { useCloudinaryUpload } from "@/components/admin/use-cloudinary-upload";
-import { productImageUrl } from "@/lib/product-image";
 
 export interface ImageRow {
   id: string;
   url: string;
+  /**
+   * Fertige Vorschauadresse, **auf dem Server** gebaut. Im Browser wäre die
+   * Einstellung SHOP_IMAGE_BACKGROUND nicht lesbar, und der Adminbereich
+   * zeigte ein anderes Bild als der Shop.
+   */
+  previewUrl: string;
   alt: string;
   publicId: string | null;
 }
@@ -28,16 +33,13 @@ export function ImageManager({
   productId,
   images,
   cloudinaryEnabled,
-  fragranceFamily,
+  sceneHint,
 }: {
   productId: string;
   images: ImageRow[];
   cloudinaryEnabled: boolean;
-  /**
-   * Bestimmt die Kulisse, wenn SHOP_IMAGE_BACKGROUND auf "scene" steht – so
-   * siehst du im Adminbereich dasselbe Bild wie deine Kundschaft im Shop.
-   */
-  fragranceFamily?: string | null;
+  /** Ein Satz darüber, was im Hintergrund der Bilder landet. */
+  sceneHint?: string | null;
 }) {
   const [state, formAction] = useActionState(addProductImageAction, idleState);
   const { upload, uploading, error: uploadError } = useCloudinaryUpload();
@@ -60,13 +62,19 @@ export function ImageManager({
 
   return (
     <div className="flex flex-col gap-6">
+      {sceneHint && (
+        <p className="border border-line bg-charcoal px-4 py-3 text-xs leading-relaxed text-muted">
+          {sceneHint}
+        </p>
+      )}
+
       {images.length > 0 ? (
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {images.map((image, index) => (
             <li key={image.id} className="flex flex-col gap-2">
               <div className="relative aspect-4/5 overflow-hidden border border-line bg-ink">
                 <Image
-                  src={productImageUrl(image.url, "detail", 1, fragranceFamily)}
+                  src={image.previewUrl}
                   alt={image.alt}
                   fill
                   sizes="200px"

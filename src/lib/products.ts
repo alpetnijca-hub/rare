@@ -31,6 +31,10 @@ export const productCardSelect = {
   subtitle: true,
   scentProfile: true,
   fragranceFamily: true,
+  // Kopf- und Herznoten bestimmen die Kulisse hinter dem Flakon, siehe
+  // src/config/scent-scenes.ts.
+  topNotes: true,
+  heartNotes: true,
   kind: true,
   isAlternative: true,
   isDemo: true,

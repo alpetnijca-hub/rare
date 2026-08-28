@@ -20,7 +20,11 @@
  * Bilder sollen weiterhin funktionieren.
  */
 
-import { sceneMotif } from "@/config/scent-scenes";
+import {
+  sceneMotif,
+  usedNotes,
+  type SceneSource,
+} from "@/config/scent-scenes";
 import { envValue } from "@/lib/env";
 
 /**
@@ -35,10 +39,12 @@ import { envValue } from "@/lib/env";
  *                   unruhigem Hintergrund. Setzt das Zusatzmodul
  *                   "Background Removal" voraus.
  *   "scene"       – Wie "ai", stellt den Flakon danach aber vor eine erzeugte
- *                   Kulisse, die zur Duftfamilie passt (Zitrus → Früchte,
- *                   Holzig → Oud). Die Motive stehen in
- *                   `src/config/scent-scenes.ts`. Verbraucht pro Bild einmalig
- *                   Guthaben für erzeugende Umformungen.
+ *                   Kulisse aus den Kopf- und Herznoten des Dufts: „Zitrone,
+ *                   Pfirsich“ ergibt Zitronen und Pfirsiche. Ohne
+ *                   darstellbare Note entscheidet die Duftfamilie. Die
+ *                   Zuordnung steht in `src/config/scent-scenes.ts`.
+ *                   Verbraucht pro Bild einmalig Guthaben für erzeugende
+ *                   Umformungen.
  *
  * Umschaltbar über SHOP_IMAGE_BACKGROUND. Bewusst "keep" als Standard: Ein
  * automatisches Freistellen, das danebengeht, ruiniert jedes Produktbild auf
@@ -127,7 +133,11 @@ export function productImageUrl(
   url: string,
   context: ImageContext = "card",
   scale = 1,
-  family?: string | null,
+  /**
+   * Duftnoten und Duftfamilie des Produkts. Daraus entsteht die Kulisse,
+   * wenn SHOP_IMAGE_BACKGROUND auf "scene" steht.
+   */
+  scene?: SceneSource | null,
 ): string {
   if (!url.includes("res.cloudinary.com") || !url.includes(cloudinaryMarker)) {
     return url;
@@ -142,7 +152,7 @@ export function productImageUrl(
   const width = Math.round(productImageRatio.width * scale);
   const height = Math.round(productImageRatio.height * scale);
 
-  const motif = backgroundMode() === "scene" ? sceneMotif(family) : null;
+  const motif = backgroundMode() === "scene" ? sceneMotif(scene) : null;
 
   if (motif) {
     // Reihenfolge ist hier entscheidend: erst auf 4:5 polstern, dann die
@@ -200,4 +210,38 @@ export function productThumbUrl(url: string, size = 240): string {
   ].join(",");
 
   return `${prefix}${cloudinaryMarker}${backgroundStep()}${transformation}/${rest}`;
+}
+
+/**
+ * Ein Satz für den Adminbereich: Was landet im Hintergrund dieses Produkts?
+ *
+ * Ohne diese Anzeige müsste man raten. Wer „Moschus“ als Kopfnote einträgt und
+ * im Bild nichts davon sieht, soll erfahren, dass es dafür kein Motiv gibt –
+ * und nicht denken, die Funktion sei kaputt.
+ *
+ * Nur serverseitig aufrufen: Im Browser ist SHOP_IMAGE_BACKGROUND nicht lesbar
+ * und die Antwort wäre immer `null`.
+ */
+export function sceneHint(source: SceneSource): string | null {
+  if (backgroundMode() !== "scene") return null;
+
+  const notes = [...(source.topNotes ?? []), ...(source.heartNotes ?? [])];
+  const genutzt = usedNotes(notes);
+
+  if (genutzt.length > 0) {
+    return `Im Hintergrund erscheint: ${genutzt.join(", ")} – aus deinen Kopf- und Herznoten.`;
+  }
+
+  if (sceneMotif(source)) {
+    return (
+      "Keine deiner Kopf- und Herznoten lässt sich abbilden (Moschus, Ambroxan " +
+      "und Ähnliches haben kein Aussehen). Der Hintergrund richtet sich " +
+      "deshalb nach der Duftfamilie."
+    );
+  }
+
+  return (
+    "Der Flakon wird nur freigestellt. Trag eine Kopf- oder Herznote wie " +
+    "„Zitrone“, „Rose“ oder „Vanille“ ein, damit sie im Hintergrund erscheint."
+  );
 }

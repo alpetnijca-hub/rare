@@ -3,10 +3,17 @@
 import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { productImageUrl, productThumbUrl } from "@/lib/product-image";
 
 export interface GalleryImage {
+  /**
+   * Fertige Bildadressen. Sie werden **auf dem Server** gebaut, weil die
+   * Einstellung SHOP_IMAGE_BACKGROUND nur dort lesbar ist: Im Browser wäre
+   * `process.env.SHOP_IMAGE_BACKGROUND` leer, die Galerie würde nach der
+   * Hydration andere Adressen erzeugen als der Server – und damit ein anderes
+   * Bild anzeigen als die Produktkarte daneben.
+   */
   url: string;
+  thumbUrl: string;
   alt: string;
 }
 
@@ -17,12 +24,9 @@ export interface GalleryImage {
 export function ProductGallery({
   images,
   productName,
-  fragranceFamily,
 }: {
   images: GalleryImage[];
   productName: string;
-  /** Bestimmt die Kulisse, wenn SHOP_IMAGE_BACKGROUND auf "scene" steht. */
-  fragranceFamily?: string | null;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -52,7 +56,7 @@ export function ProductGallery({
       <div className="relative aspect-4/5 overflow-hidden border border-line bg-charcoal">
         <Image
           key={active.url}
-          src={productImageUrl(active.url, "detail", 1, fragranceFamily)}
+          src={active.url}
           alt={active.alt}
           fill
           priority
@@ -84,7 +88,7 @@ export function ProductGallery({
                   Ansicht {index + 1} von {images.length} anzeigen
                 </span>
                 <Image
-                  src={productThumbUrl(image.url)}
+                  src={image.thumbUrl}
                   alt=""
                   aria-hidden="true"
                   fill

@@ -14,6 +14,7 @@ import {
 } from "@/lib/email";
 import { deleteCloudinaryImage } from "@/lib/cloudinary";
 import { productImageUrl } from "@/lib/product-image";
+import type { SceneSource } from "@/config/scent-scenes";
 import {
   adminCategorySchema,
   adminDiscountSchema,
@@ -114,10 +115,10 @@ function collectNewImages(
  */
 async function warmeBilderVor(
   urls: string[],
-  fragranceFamily: string | null,
+  scene: SceneSource,
 ): Promise<void> {
   const adressen = urls
-    .map((url) => productImageUrl(url, "card", 1, fragranceFamily))
+    .map((url) => productImageUrl(url, "card", 1, scene))
     .filter((url) => url.includes("res.cloudinary.com"));
 
   if (adressen.length === 0) return;
@@ -307,10 +308,11 @@ export async function saveProductAction(
     });
     savedId = created.id;
 
-    await warmeBilderVor(
-      bilder.map((bild) => bild.url),
-      data.fragranceFamily,
-    );
+    await warmeBilderVor(bilder.map((bild) => bild.url), {
+      fragranceFamily: data.fragranceFamily,
+      topNotes: data.topNotes,
+      heartNotes: data.heartNotes,
+    });
   }
 
   revalidatePath("/admin/produkte");
@@ -579,7 +581,7 @@ export async function addProductImageAction(
     prisma.productImage.count({ where: { productId } }),
     prisma.product.findUnique({
       where: { id: productId },
-      select: { fragranceFamily: true },
+      select: { fragranceFamily: true, topNotes: true, heartNotes: true },
     }),
   ]);
 
@@ -593,7 +595,7 @@ export async function addProductImageAction(
     },
   });
 
-  await warmeBilderVor([url], product?.fragranceFamily ?? null);
+  await warmeBilderVor([url], product ?? {});
 
   revalidatePath(`/admin/produkte/${productId}`);
   revalidatePath("/shop");

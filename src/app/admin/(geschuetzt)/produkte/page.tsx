@@ -45,6 +45,8 @@ export default async function AdminProductsPage({
       isAlternative: true,
       isDemo: true,
       fragranceFamily: true,
+      topNotes: true,
+      heartNotes: true,
       kind: true,
       images: { orderBy: { sortOrder: "asc" }, take: 1, select: { url: true, alt: true } },
       variants: {
@@ -160,7 +162,7 @@ export default async function AdminProductsPage({
                           <div className="relative size-12 shrink-0 overflow-hidden border border-line bg-ink">
                             {product.images[0] && (
                               <Image
-                                src={productImageUrl(product.images[0].url, "detail", 1, product.fragranceFamily)}
+                                src={productImageUrl(product.images[0].url, "detail", 1, product)}
                                 alt=""
                                 aria-hidden="true"
                                 fill

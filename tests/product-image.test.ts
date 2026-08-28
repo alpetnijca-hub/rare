@@ -1,8 +1,12 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { productImageUrl, productThumbUrl } from "@/lib/product-image";
+import {
+  productImageUrl,
+  productThumbUrl,
+  sceneHint,
+} from "@/lib/product-image";
 import { signatureError } from "@/components/admin/use-cloudinary-upload";
 import { fragranceFamilies } from "@/lib/catalog";
-import { sceneMotif } from "@/config/scent-scenes";
+import { motifFromNotes, sceneMotif, usedNotes } from "@/config/scent-scenes";
 
 /**
  * Einheitliche Produktbilder.
@@ -144,8 +148,8 @@ describe("Kulisse aus den Duftnoten", () => {
   it("setzt zur Duftfamilie passende Motive ein", () => {
     process.env.SHOP_IMAGE_BACKGROUND = "scene";
 
-    const zitrus = productImageUrl(cloudinary, "card", 1, "ZITRUS");
-    const holzig = productImageUrl(cloudinary, "card", 1, "HOLZIG");
+    const zitrus = productImageUrl(cloudinary, "card", 1, { fragranceFamily: "ZITRUS" });
+    const holzig = productImageUrl(cloudinary, "card", 1, { fragranceFamily: "HOLZIG" });
 
     expect(zitrus).toContain("lemons");
     expect(holzig).toContain("cedar");
@@ -160,7 +164,7 @@ describe("Kulisse aus den Duftnoten", () => {
     process.env.SHOP_IMAGE_BACKGROUND = "scene";
 
     for (const familie of ["ZITRUS", "HOLZIG", "LEDER", "FLORAL"]) {
-      expect(productImageUrl(cloudinary, "card", 1, familie)).toContain(
+      expect(productImageUrl(cloudinary, "card", 1, { fragranceFamily: familie })).toContain(
         "warm%20golden%20light",
       );
     }
@@ -170,7 +174,7 @@ describe("Kulisse aus den Duftnoten", () => {
     // Andersherum füllt die Kulisse nur den Ausschnitt des Originalfotos und
     // oben und unten blieben schwarze Balken stehen.
     process.env.SHOP_IMAGE_BACKGROUND = "scene";
-    const result = productImageUrl(cloudinary, "card", 1, "FLORAL");
+    const result = productImageUrl(cloudinary, "card", 1, { fragranceFamily: "FLORAL" });
 
     const pad = result.indexOf("c_pad");
     const scene = result.indexOf("e_gen_background_replace");
@@ -182,7 +186,7 @@ describe("Kulisse aus den Duftnoten", () => {
     // Ein Komma trennt in einer Cloudinary-Adresse die Anweisungen. Stünde
     // eines im Text, zerfiele die Adresse und Cloudinary antwortete mit 400.
     process.env.SHOP_IMAGE_BACKGROUND = "scene";
-    const result = productImageUrl(cloudinary, "card", 1, "GOURMAND");
+    const result = productImageUrl(cloudinary, "card", 1, { fragranceFamily: "GOURMAND" });
     const teil = result.split("e_gen_background_replace:prompt_")[1].split("/")[0];
 
     expect(teil).not.toContain(",");
@@ -194,8 +198,8 @@ describe("Kulisse aus den Duftnoten", () => {
     // einmal Guthaben statt zweimal.
     process.env.SHOP_IMAGE_BACKGROUND = "scene";
 
-    expect(productImageUrl(cloudinary, "card", 1, "LEDER")).toBe(
-      productImageUrl(cloudinary, "detail", 1, "LEDER"),
+    expect(productImageUrl(cloudinary, "card", 1, { fragranceFamily: "LEDER" })).toBe(
+      productImageUrl(cloudinary, "detail", 1, { fragranceFamily: "LEDER" }),
     );
   });
 
@@ -203,7 +207,7 @@ describe("Kulisse aus den Duftnoten", () => {
     process.env.SHOP_IMAGE_BACKGROUND = "scene";
 
     for (const familie of [null, undefined, "GIBTESNICHT"]) {
-      const result = productImageUrl(cloudinary, "card", 1, familie);
+      const result = productImageUrl(cloudinary, "card", 1, { fragranceFamily: familie });
       expect(result).toContain("e_background_removal/");
       expect(result).not.toContain("e_gen_background_replace");
     }
@@ -212,17 +216,110 @@ describe("Kulisse aus den Duftnoten", () => {
   it("versteht auch die deutsche Schreibweise", () => {
     for (const wert of ["szene", "duftnoten", "SCENE"]) {
       process.env.SHOP_IMAGE_BACKGROUND = wert;
-      expect(productImageUrl(cloudinary, "card", 1, "ZITRUS")).toContain(
+      expect(productImageUrl(cloudinary, "card", 1, { fragranceFamily: "ZITRUS" })).toContain(
         "e_gen_background_replace",
       );
     }
+  });
+
+  it("baut die Kulisse aus Kopf- und Herznoten", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+
+    const result = productImageUrl(cloudinary, "card", 1, {
+      fragranceFamily: "HOLZIG",
+      topNotes: ["Zitrone"],
+      heartNotes: ["Rose"],
+    });
+
+    expect(result).toContain("lemons");
+    expect(result).toContain("rose");
+    // Die Duftnoten schlagen die Duftfamilie – sonst wäre der Eintrag im
+    // Adminbereich wirkungslos.
+    expect(result).not.toContain("cedar");
+  });
+
+  it("fällt ohne darstellbare Note auf die Duftfamilie zurück", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+
+    // Moschus und Ambroxan sind Gerüche ohne Gegenstand – dafür gibt es
+    // bewusst kein Motiv.
+    const result = productImageUrl(cloudinary, "card", 1, {
+      fragranceFamily: "HOLZIG",
+      topNotes: ["Moschus"],
+      heartNotes: ["Ambroxan"],
+    });
+
+    expect(result).toContain("cedar");
+  });
+
+  it("nimmt höchstens zwei Noten ins Bild", () => {
+    // Mit drei Motiven wird die Beschreibung so lang, dass das Bildmodell die
+    // dunkle Bildsprache am Ende überliest – im Test kam eine helle blaue
+    // Kulisse heraus statt der dunklen.
+    const motiv = motifFromNotes(["Zitrone", "Rose", "Vanille", "Leder"]);
+
+    expect(motiv).not.toBeNull();
+    expect(motiv).toContain("lemons");
+    expect(motiv).toContain("rose");
+    expect(motiv).not.toContain("vanilla");
+    expect(motiv).not.toContain("leather");
+  });
+
+  it("stellt die dunkle Bildsprache an den Anfang", () => {
+    // Das Modell gewichtet den Anfang der Beschreibung am stärksten. Stand
+    // "dark" nur hinten, kam eine helle Kulisse heraus.
+    expect(motifFromNotes(["Zitrone"])).toMatch(/^dark moody/);
+  });
+
+  it("versteht Umlaute, Grossschreibung und Leerzeichen", () => {
+    for (const schreibweise of ["Vanille", "vanille", " VANILLE "]) {
+      expect(motifFromNotes([schreibweise])).toContain("vanilla pods");
+    }
+    expect(motifFromNotes(["Grüner Tee"])).toContain("green tea");
+  });
+
+  it("nennt dieselbe Note nicht zweimal", () => {
+    // „Rose“ steht oft in Kopf- und Herznote.
+    const motiv = motifFromNotes(["Rose", "Rose", "Zitrone"]);
+    expect(motiv?.match(/rose petals/g)).toHaveLength(1);
+  });
+
+  it("meldet für den Adminbereich, welche Noten verwendet werden", () => {
+    expect(usedNotes(["Zitrone", "Moschus", "Vanille"])).toEqual([
+      "Zitrone",
+      "Vanille",
+    ]);
+    expect(usedNotes(["Zitrone", "Rose", "Vanille"])).toEqual([
+      "Zitrone",
+      "Rose",
+    ]);
+    expect(usedNotes(["Moschus", "Ambroxan"])).toEqual([]);
+  });
+
+  it("lässt keine Duftnote die Bildadresse zerlegen", () => {
+    // Die Noten kommen aus einem Eingabefeld. Ein Komma oder Schrägstrich
+    // darin würde in einer Cloudinary-Adresse als Trenner gelesen.
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+
+    const result = productImageUrl(cloudinary, "card", 1, {
+      topNotes: ["Zitrone, mit Komma / und Schrägstrich"],
+      heartNotes: ["Vanille"],
+    });
+    const teil = result.split("e_gen_background_replace:prompt_")[1].split("/")[0];
+
+    expect(teil).not.toContain(",");
+    expect(teil).not.toContain("%2C");
+    expect(teil).not.toContain("%2F");
   });
 
   it("hat für jede Duftfamilie ein Motiv", () => {
     // Ohne diesen Test fällt eine neu angelegte Duftfamilie erst auf, wenn ein
     // Produkt im Shop ohne Kulisse dasteht – und niemand weiss, warum.
     for (const familie of fragranceFamilies) {
-      expect(sceneMotif(familie), `Kulisse fehlt für ${familie}`).not.toBeNull();
+      expect(
+        sceneMotif({ fragranceFamily: familie }),
+        `Kulisse fehlt für ${familie}`,
+      ).not.toBeNull();
     }
   });
 
@@ -234,6 +331,46 @@ describe("Kulisse aus den Duftnoten", () => {
 
     expect(result).not.toContain("e_gen_background_replace");
     expect(result).toContain("e_background_removal/");
+  });
+});
+
+describe("Hinweis im Adminbereich", () => {
+  afterEach(() => {
+    delete process.env.SHOP_IMAGE_BACKGROUND;
+  });
+
+  it("schweigt, solange keine Kulisse eingeschaltet ist", () => {
+    expect(sceneHint({ topNotes: ["Zitrone"] })).toBeNull();
+  });
+
+  it("nennt die Noten, die tatsächlich im Bild landen", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+
+    const hinweis = sceneHint({
+      topNotes: ["Zitrone", "Moschus"],
+      heartNotes: ["Vanille"],
+    });
+
+    expect(hinweis).toContain("Zitrone");
+    expect(hinweis).toContain("Vanille");
+    // Moschus hat kein Aussehen und darf nicht als verwendet gemeldet werden.
+    expect(hinweis).not.toContain("Moschus");
+  });
+
+  it("erklärt, warum die Duftfamilie einspringt", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+
+    const hinweis = sceneHint({
+      fragranceFamily: "HOLZIG",
+      topNotes: ["Moschus"],
+    });
+
+    expect(hinweis).toContain("Duftfamilie");
+  });
+
+  it("sagt, was zu tun ist, wenn gar nichts hinterlegt ist", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+    expect(sceneHint({})).toContain("Kopf- oder Herznote");
   });
 });
 

@@ -10,6 +10,7 @@ import {
   type VariantOption,
 } from "@/components/product/variant-picker";
 import { returnsPolicy, siteConfig, taxConfig } from "@/config/site";
+import { productImageUrl, productThumbUrl } from "@/lib/product-image";
 import {
   formatDeliveryRange,
   formatRestockDate,
@@ -263,12 +264,15 @@ export default async function ProductPage({ params }: PageProps) {
           {/* Bilder */}
           <div className="lg:sticky lg:top-28 lg:h-fit">
             <ProductGallery
+              /* Adressen bewusst hier und nicht in der Galerie bauen: Die
+                 Einstellung SHOP_IMAGE_BACKGROUND ist nur serverseitig
+                 lesbar. */
               images={product.images.map((image) => ({
-                url: image.url,
+                url: productImageUrl(image.url, "detail", 1, product),
+                thumbUrl: productThumbUrl(image.url),
                 alt: image.alt,
               }))}
               productName={product.name}
-              fragranceFamily={product.fragranceFamily}
             />
           </div>
 

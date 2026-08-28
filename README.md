@@ -686,10 +686,26 @@ unruhigem Hintergrund zurecht, setzt aber das Zusatzmodul
 «Background Removal» im Cloudinary-Konto voraus.
 
 `scene` geht einen Schritt weiter: Der Flakon wird freigestellt und
-anschliessend vor eine erzeugte Kulisse gesetzt, die zur `fragranceFamily` des
-Produkts passt – Zitrus bekommt Früchte, Holzig bekommt Oud und Zedernrinde,
-Leder bekommt Tabak. Die Motive stehen in `src/config/scent-scenes.ts` und
-teilen sich denselben Bildstil, damit alle Produktbilder wie eine Serie wirken.
+anschliessend vor eine erzeugte Kulisse gesetzt. Woraus die entsteht, wird in
+dieser Reihenfolge entschieden:
+
+1. **Kopf- und Herznoten des Produkts.** Was im Adminbereich als Duftnote
+   steht, landet im Bild: „Zitrone, Pfirsich“ ergibt Zitronen und Pfirsiche
+   neben dem Flakon. Übersetzt wird über ein Wörterbuch in
+   `src/config/scent-scenes.ts` – nicht wörtlich, weil das Bildmodell
+   englische Substantive braucht und weil Noten ohne Aussehen (Moschus,
+   Ambroxan, Aldehyde) übersprungen gehören.
+2. **Duftfamilie**, wenn keine Note ein Motiv ergibt.
+3. **Nichts** – dann wird der Flakon nur freigestellt.
+
+Höchstens zwei Motive pro Bild, und die dunkle Bildsprache steht am Anfang der
+Beschreibung. Beides ist ausprobiert: Mit drei Motiven wird die Beschreibung so
+lang, dass das Modell den dunklen Bildstil am Ende überliest – im Test kam eine
+helle blaue Kulisse heraus.
+
+Im Adminbereich steht über den Produktbildern, welche Noten tatsächlich
+verwendet werden (`sceneHint()`), damit niemand rätselt, warum „Moschus“ nichts
+bewirkt.
 
 Zwei Dinge dazu:
 
@@ -701,6 +717,10 @@ Zwei Dinge dazu:
   ersten Mal abgerufen wird. Deshalb ruft `warmeBilderVor()` in
   `src/app/admin/actions.ts` sie direkt nach dem Speichern einmal selbst ab –
   sonst liefe die erste Kundin in eine Wartezeit oder ein kaputtes Bild.
+- **Adressen gehören auf den Server.** `SHOP_IMAGE_BACKGROUND` ist in
+  Client-Komponenten nicht lesbar; dort käme immer `keep` heraus. Galerie und
+  Bildverwaltung bekommen ihre Adressen deshalb fertig als Prop
+  (`GalleryImage.url`, `ImageRow.previewUrl`) statt sie selbst zu bauen.
 
 Steht keine oder eine unbekannte Duftfamilie am Produkt, wird der Flakon nur
 freigestellt statt eine Kulisse zu raten.

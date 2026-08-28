@@ -8,6 +8,7 @@ import { ImageManager } from "@/components/admin/image-manager";
 import { DeleteProductForm } from "@/components/admin/delete-product-form";
 import { getAvailability } from "@/lib/availability";
 import { isCloudinaryConfigured } from "@/lib/cloudinary";
+import { productImageUrl, sceneHint } from "@/lib/product-image";
 
 export const dynamic = "force-dynamic";
 
@@ -116,10 +117,13 @@ export default async function EditProductPage({
         >
           <ImageManager
             productId={product.id}
-            fragranceFamily={product.fragranceFamily}
+            sceneHint={sceneHint(product)}
             images={product.images.map((image) => ({
               id: image.id,
               url: image.url,
+              // Adresse hier bauen: SHOP_IMAGE_BACKGROUND ist nur
+              // serverseitig lesbar.
+              previewUrl: productImageUrl(image.url, "detail", 1, product),
               alt: image.alt,
               publicId: image.publicId,
             }))}
