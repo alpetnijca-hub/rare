@@ -718,9 +718,12 @@ unruhigem Hintergrund zurecht, setzt aber das Zusatzmodul
 anschliessend vor eine erzeugte Kulisse gesetzt. Woraus die entsteht, wird in
 dieser Reihenfolge entschieden:
 
-1. **Kopf- und Herznoten des Produkts.** Was im Adminbereich als Duftnote
-   steht, landet im Bild: „Zitrone, Pfirsich“ ergibt Zitronen und Pfirsiche
-   neben dem Flakon. Übersetzt wird über ein Wörterbuch in
+1. **Die Duftnoten des Produkts.** Was im Adminbereich als Duftnote steht,
+   landet im Bild: „Zitrone, Pfirsich“ ergibt Zitronen und Pfirsiche neben dem
+   Flakon. Gewählt wird nach Möglichkeit **eine Note aus Kopf oder Herz und
+   eine aus der Basis** – „Oud Maracuja“ hat Maracuja im Kopf und Oud in der
+   Basis, und ausgerechnet das Oud gehört ins Bild. Übersetzt wird über ein
+   Wörterbuch in
    `src/config/scent-scenes.ts` – nicht wörtlich, weil das Bildmodell
    englische Substantive braucht und weil Noten ohne Aussehen (Moschus,
    Ambroxan, Aldehyde) übersprungen gehören.

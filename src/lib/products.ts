@@ -31,10 +31,12 @@ export const productCardSelect = {
   subtitle: true,
   scentProfile: true,
   fragranceFamily: true,
-  // Kopf- und Herznoten bestimmen die Kulisse hinter dem Flakon, siehe
-  // src/config/scent-scenes.ts.
+  // Die Duftnoten bestimmen die Kulisse hinter dem Flakon, siehe
+  // src/config/scent-scenes.ts. Die Basisnoten gehören dazu: Dort steht meist,
+  // wofür ein Duft bekannt ist – Oud, Vanille, Amber, Leder.
   topNotes: true,
   heartNotes: true,
+  baseNotes: true,
   kind: true,
   isAlternative: true,
   isDemo: true,

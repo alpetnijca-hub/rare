@@ -5,9 +5,10 @@
  * und setzt ihn vor eine erzeugte Kulisse. Woraus die Kulisse entsteht, wird
  * in dieser Reihenfolge entschieden:
  *
- *   1. **Kopf- und Herznoten des Produkts.** Was im Adminbereich als Duftnote
- *      steht, landet im Bild: „Zitrone, Pfirsich“ ergibt Zitronen und
- *      Pfirsiche neben dem Flakon. Das ist der Normalfall.
+ *   1. **Die Duftnoten des Produkts.** Was im Adminbereich als Duftnote steht,
+ *      landet im Bild: „Zitrone, Pfirsich“ ergibt Zitronen und Pfirsiche neben
+ *      dem Flakon. Nach Möglichkeit eine Note aus Kopf oder Herz und eine aus
+ *      der Basis – siehe `chosenNotes()`. Das ist der Normalfall.
  *   2. **Duftfamilie**, falls keine der Noten ein Motiv ergibt.
  *   3. **Nichts** – dann wird der Flakon nur freigestellt, statt eine Kulisse
  *      zu raten.
@@ -306,33 +307,95 @@ function motifForNote(note: string): string | undefined {
  */
 const maxNotesInScene = 2;
 
-/**
- * Baut eine Kulisse aus Duftnoten. `null`, wenn keine der Noten etwas
- * Darstellbares ergibt.
- */
-export function motifFromNotes(notes: readonly string[]): string | null {
-  const gefunden: string[] = [];
+interface NoteMatch {
+  /** Die Note so, wie sie im Adminbereich eingetippt wurde. */
+  note: string;
+  /** Der englische Gegenstand für das Bildmodell. */
+  motif: string;
+}
+
+/** Alle Noten einer Liste, für die es ein Motiv gibt – ohne Dubletten. */
+function matchNotes(notes: readonly string[]): NoteMatch[] {
+  const treffer: NoteMatch[] = [];
 
   for (const note of notes) {
     const motif = motifForNote(note);
     // Dubletten überspringen: Steht „Rose“ in Kopf- und Herznote, soll die
     // Kulisse nicht zweimal dasselbe Motiv enthalten.
-    if (motif && !gefunden.includes(motif)) gefunden.push(motif);
-    if (gefunden.length === maxNotesInScene) break;
+    if (motif && !treffer.some((eintrag) => eintrag.motif === motif)) {
+      treffer.push({ note, motif });
+    }
   }
 
-  if (gefunden.length === 0) return null;
+  return treffer;
+}
+
+/**
+ * Baut eine Kulisse aus einer flachen Notenliste.
+ *
+ * Für den einfachen Fall, in dem keine Unterscheidung nach Kopf, Herz und
+ * Basis nötig ist.
+ */
+export function motifFromNotes(notes: readonly string[]): string | null {
+  return buildScene(matchNotes(notes).slice(0, maxNotesInScene));
+}
+
+function buildScene(gewaehlt: NoteMatch[]): string | null {
+  if (gewaehlt.length === 0) return null;
   // "dark moody still life" steht vorn, weil das Modell den Anfang der
   // Beschreibung am stärksten gewichtet.
-  return `dark moody still life with ${gefunden.join(" and ")} ${sceneSetting}`;
+  return `dark moody still life with ${gewaehlt
+    .map((eintrag) => eintrag.motif)
+    .join(" and ")} ${sceneSetting}`;
 }
 
 /** Alles, woraus eine Kulisse entstehen kann. */
 export interface SceneSource {
   fragranceFamily?: string | null;
-  /** Kopfnoten – zuerst, weil sie den ersten Eindruck des Dufts prägen. */
+  /** Kopfnoten – der erste Eindruck des Dufts. */
   topNotes?: readonly string[] | null;
   heartNotes?: readonly string[] | null;
+  /** Basisnoten – dort steht meist, wofür ein Duft bekannt ist. */
+  baseNotes?: readonly string[] | null;
+}
+
+/**
+ * Welche Noten ins Bild kommen.
+ *
+ * Nach Möglichkeit **eine aus Kopf oder Herz und eine aus der Basis**. Das ist
+ * nicht willkürlich: „Oud Maracuja“ hat Maracuja in der Kopfnote und Oud in
+ * der Basis. Nähme man nur Kopf und Herz, stünde ausgerechnet das Oud nicht im
+ * Bild – dabei ist es der Duft, für den das Parfüm gekauft wird. Dasselbe gilt
+ * für Vanille, Amber und Leder: Die Signatur eines Dufts sitzt fast immer
+ * unten.
+ *
+ * Gibt es auf einer Seite nichts Darstellbares, wird von der anderen
+ * aufgefüllt.
+ */
+export function chosenNotes(source: SceneSource): NoteMatch[] {
+  const vorne = matchNotes([
+    ...(source.topNotes ?? []),
+    ...(source.heartNotes ?? []),
+  ]);
+  const unten = matchNotes([...(source.baseNotes ?? [])]);
+
+  const gewaehlt: NoteMatch[] = [];
+
+  const hinzu = (eintrag: NoteMatch | undefined) => {
+    if (!eintrag) return;
+    if (gewaehlt.length >= maxNotesInScene) return;
+    if (gewaehlt.some((schon) => schon.motif === eintrag.motif)) return;
+    gewaehlt.push(eintrag);
+  };
+
+  hinzu(vorne[0]);
+  hinzu(unten[0]);
+
+  // Bleibt Platz – weil eine der beiden Seiten leer war –, mit dem Rest
+  // auffüllen.
+  for (const eintrag of [...vorne, ...unten]) hinzu(eintrag);
+
+  return gewaehlt;
 }
 
 /**
@@ -344,8 +407,7 @@ export function sceneMotif(
 ): string | null {
   if (!source) return null;
 
-  const notes = [...(source.topNotes ?? []), ...(source.heartNotes ?? [])];
-  const ausNoten = motifFromNotes(notes);
+  const ausNoten = buildScene(chosenNotes(source));
   if (ausNoten) return ausNoten;
 
   const family = source.fragranceFamily;
@@ -361,18 +423,6 @@ export function sceneMotif(
  * Nur für die Anzeige im Adminbereich: Wer „Moschus“ einträgt und nichts im
  * Hintergrund sieht, soll nicht rätseln müssen, warum.
  */
-export function usedNotes(notes: readonly string[]): string[] {
-  const treffer: string[] = [];
-  const motive: string[] = [];
-
-  for (const note of notes) {
-    const motif = motifForNote(note);
-    if (motif && !motive.includes(motif)) {
-      motive.push(motif);
-      treffer.push(note);
-    }
-    if (motive.length === maxNotesInScene) break;
-  }
-
-  return treffer;
+export function usedNotes(source: SceneSource): string[] {
+  return chosenNotes(source).map((eintrag) => eintrag.note);
 }

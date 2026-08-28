@@ -285,15 +285,14 @@ describe("Kulisse aus den Duftnoten", () => {
   });
 
   it("meldet für den Adminbereich, welche Noten verwendet werden", () => {
-    expect(usedNotes(["Zitrone", "Moschus", "Vanille"])).toEqual([
+    expect(usedNotes({ topNotes: ["Zitrone", "Moschus", "Vanille"] })).toEqual([
       "Zitrone",
       "Vanille",
     ]);
-    expect(usedNotes(["Zitrone", "Rose", "Vanille"])).toEqual([
-      "Zitrone",
-      "Rose",
-    ]);
-    expect(usedNotes(["Moschus", "Ambroxan"])).toEqual([]);
+    expect(
+      usedNotes({ topNotes: ["Zitrone", "Rose"], baseNotes: ["Vanille"] }),
+    ).toEqual(["Zitrone", "Vanille"]);
+    expect(usedNotes({ topNotes: ["Moschus", "Ambroxan"] })).toEqual([]);
   });
 
   it("lässt keine Duftnote die Bildadresse zerlegen", () => {
@@ -310,6 +309,49 @@ describe("Kulisse aus den Duftnoten", () => {
     expect(teil).not.toContain(",");
     expect(teil).not.toContain("%2C");
     expect(teil).not.toContain("%2F");
+  });
+
+  it("nimmt eine Note von vorn und eine aus der Basis", () => {
+    // Der Fall, der es aufgedeckt hat: „Oud Maracuja“ hat Maracuja in der
+    // Kopfnote und Oud in der Basis. Ohne die Basis stand ausgerechnet das Oud
+    // nicht im Bild – dabei ist es der Duft, für den das Parfüm gekauft wird.
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+
+    const result = productImageUrl(cloudinary, "card", 1, {
+      topNotes: ["Maracuja"],
+      heartNotes: ["Safran"],
+      baseNotes: ["Oudholz", "Vanille"],
+    });
+
+    expect(result).toContain("passion%20fruits");
+    expect(result).toContain("oud%20wood");
+    // Nur zwei Motive – Safran und Vanille bleiben draussen.
+    expect(result).not.toContain("saffron");
+    expect(result).not.toContain("vanilla");
+  });
+
+  it("füllt aus der Basis auf, wenn Kopf und Herz nichts hergeben", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+
+    const result = productImageUrl(cloudinary, "card", 1, {
+      topNotes: ["Moschus"],
+      baseNotes: ["Vanille", "Tonkabohne"],
+    });
+
+    expect(result).toContain("vanilla%20pods");
+    expect(result).toContain("tonka%20beans");
+  });
+
+  it("füllt aus Kopf und Herz auf, wenn die Basis nichts hergeben", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+
+    const result = productImageUrl(cloudinary, "card", 1, {
+      topNotes: ["Zitrone", "Bergamotte"],
+      baseNotes: ["Ambroxan"],
+    });
+
+    expect(result).toContain("lemons");
+    expect(result).toContain("bergamot");
   });
 
   it("gibt dem Meer ein eigenes Bild statt ein paar Tropfen", () => {
@@ -406,7 +448,7 @@ describe("Hinweis im Adminbereich", () => {
 
   it("sagt, was zu tun ist, wenn gar nichts hinterlegt ist", () => {
     process.env.SHOP_IMAGE_BACKGROUND = "scene";
-    expect(sceneHint({})).toContain("Kopf- oder Herznote");
+    expect(sceneHint({})).toContain("Duftnote");
   });
 });
 

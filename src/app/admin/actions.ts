@@ -313,6 +313,7 @@ export async function saveProductAction(
       fragranceFamily: data.fragranceFamily,
       topNotes: data.topNotes,
       heartNotes: data.heartNotes,
+      baseNotes: data.baseNotes,
     });
   }
 
@@ -582,7 +583,12 @@ export async function addProductImageAction(
     prisma.productImage.count({ where: { productId } }),
     prisma.product.findUnique({
       where: { id: productId },
-      select: { fragranceFamily: true, topNotes: true, heartNotes: true },
+      select: {
+        fragranceFamily: true,
+        topNotes: true,
+        heartNotes: true,
+        baseNotes: true,
+      },
     }),
   ]);
 

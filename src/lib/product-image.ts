@@ -225,23 +225,22 @@ export function productThumbUrl(url: string, size = 240): string {
 export function sceneHint(source: SceneSource): string | null {
   if (backgroundMode() !== "scene") return null;
 
-  const notes = [...(source.topNotes ?? []), ...(source.heartNotes ?? [])];
-  const genutzt = usedNotes(notes);
+  const genutzt = usedNotes(source);
 
   if (genutzt.length > 0) {
-    return `Im Hintergrund erscheint: ${genutzt.join(", ")} – aus deinen Kopf- und Herznoten.`;
+    return `Im Hintergrund erscheint: ${genutzt.join(", ")} – aus deinen Duftnoten.`;
   }
 
   if (sceneMotif(source)) {
     return (
-      "Keine deiner Kopf- und Herznoten lässt sich abbilden (Moschus, Ambroxan " +
-      "und Ähnliches haben kein Aussehen). Der Hintergrund richtet sich " +
-      "deshalb nach der Duftfamilie."
+      "Keine deiner Duftnoten lässt sich abbilden (Moschus, Ambroxan und " +
+      "Ähnliches haben kein Aussehen). Der Hintergrund richtet sich deshalb " +
+      "nach der Duftfamilie."
     );
   }
 
   return (
-    "Der Flakon wird nur freigestellt. Trag eine Kopf- oder Herznote wie " +
-    "„Zitrone“, „Rose“ oder „Vanille“ ein, damit sie im Hintergrund erscheint."
+    "Der Flakon wird nur freigestellt. Trag eine Duftnote wie „Zitrone“, " +
+    "„Rose“ oder „Vanille“ ein, damit sie im Hintergrund erscheint."
   );
 }

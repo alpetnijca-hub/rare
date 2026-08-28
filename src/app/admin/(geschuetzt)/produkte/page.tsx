@@ -47,6 +47,7 @@ export default async function AdminProductsPage({
       fragranceFamily: true,
       topNotes: true,
       heartNotes: true,
+      baseNotes: true,
       kind: true,
       images: { orderBy: { sortOrder: "asc" }, take: 1, select: { url: true, alt: true } },
       variants: {
