@@ -83,6 +83,19 @@ export async function POST(request: NextRequest) {
     discountCode: input.discountCode || null,
   });
 
+  // Vor der allgemeinen Prüfung, damit der Kunde den echten Grund erfährt und
+  // nicht „Warenkorb ist leer“ liest, obwohl etwas drin ist.
+  if (quote.belowMinimum) {
+    return Response.json(
+      {
+        error: `Der Mindestbestellwert beträgt ${formatPrice(
+          quote.minOrderCents,
+        )}. Es fehlen noch ${formatPrice(quote.missingForMinimumCents)}.`,
+      },
+      { status: 409 },
+    );
+  }
+
   if (!quote.valid || quote.lines.length === 0) {
     return Response.json(
       {

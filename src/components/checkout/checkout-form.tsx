@@ -765,6 +765,22 @@ export function CheckoutForm() {
           />
         </div>
 
+        {/* Mindestbestellwert: Der Grund gehört vor den Knopf, nicht erst in
+            die Fehlermeldung nach dem Klick. */}
+        {quote.belowMinimum && (
+          <p
+            role="status"
+            className="mt-5 border border-amber-800/60 bg-amber-950/25 px-4 py-3 text-sm leading-relaxed text-amber-100/85"
+          >
+            Der Mindestbestellwert beträgt{" "}
+            <strong className="font-medium">
+              {formatPrice(quote.minOrderCents)}
+            </strong>
+            . Es fehlen noch {formatPrice(quote.missingForMinimumCents)}. Leg
+            noch eine Abfüllung dazu, dann geht es weiter.
+          </p>
+        )}
+
         {formError && (
           <p
             role="alert"

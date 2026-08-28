@@ -379,6 +379,23 @@ export function CartView() {
           </p>
         )}
 
+        {/* Mindestbestellwert: Der Grund muss vor dem Knopf stehen, sonst
+            klickt man auf einen Knopf, der nicht reagiert, und weiss nicht
+            warum. */}
+        {quote?.belowMinimum && (
+          <p
+            role="status"
+            className="mt-6 border border-amber-800/60 bg-amber-950/25 px-4 py-3 text-sm leading-relaxed text-amber-100/85"
+          >
+            Der Mindestbestellwert beträgt{" "}
+            <strong className="font-medium">
+              {formatPrice(quote.minOrderCents)}
+            </strong>
+            . Es fehlen noch {formatPrice(quote.missingForMinimumCents)} – zwei
+            Abfüllungen genügen meistens schon.
+          </p>
+        )}
+
         <ButtonLink
           href="/kasse"
           size="lg"

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { taxConfig } from "@/config/site";
+import { minOrderCents, taxConfig } from "@/config/site";
 import { includedTaxCents } from "@/lib/money";
 import {
   combinedDelivery,
@@ -74,6 +74,12 @@ export interface Quote {
   delivery: { minDays: number; maxDays: number; mixed: boolean };
   hasPreorderItems: boolean;
   itemCount: number;
+  /** Mindestbestellwert in Rappen. 0 = keine Regel. */
+  minOrderCents: number;
+  /** true, wenn der Warenwert unter dem Mindestbestellwert liegt. */
+  belowMinimum: boolean;
+  /** Wie viel bis zum Mindestbestellwert fehlt. */
+  missingForMinimumCents: number;
   /** Kann so bestellt werden? */
   valid: boolean;
   /** Meldungen, die dem Kunden angezeigt werden müssen. */
@@ -257,6 +263,11 @@ export async function buildQuote(options: QuoteOptions): Promise<Quote> {
     mixed: itemDelivery.mixed,
   };
 
+  // Mindestbestellwert auf den Warenwert vor Rabatt bezogen – siehe
+  // `minOrderCents` in src/config/site.ts.
+  const belowMinimum =
+    lines.length > 0 && minOrderCents > 0 && subtotalCents < minOrderCents;
+
   return {
     lines,
     removed,
@@ -274,7 +285,13 @@ export async function buildQuote(options: QuoteOptions): Promise<Quote> {
     delivery,
     hasPreorderItems: lines.some((line) => line.isPreorder),
     itemCount: lines.reduce((sum, line) => sum + line.quantity, 0),
-    valid: lines.length > 0 && shippingMethod !== null,
+    minOrderCents,
+    belowMinimum,
+    missingForMinimumCents: belowMinimum ? minOrderCents - subtotalCents : 0,
+    // Unter dem Mindestbestellwert ist der Warenkorb nicht bestellbar. Das
+    // steht hier und nicht nur im Formular: Der Wert darf nirgends durch eine
+    // manipulierte Anfrage umgangen werden können.
+    valid: lines.length > 0 && shippingMethod !== null && !belowMinimum,
     notices: [...new Set(notices)],
   };
 }
@@ -322,6 +339,9 @@ export interface SerializedQuote {
   deliveryMixed: boolean;
   hasPreorderItems: boolean;
   itemCount: number;
+  minOrderCents: number;
+  belowMinimum: boolean;
+  missingForMinimumCents: number;
   valid: boolean;
   notices: string[];
   removedVariantIds: string[];
@@ -370,6 +390,9 @@ export function serializeQuote(quote: Quote): SerializedQuote {
     deliveryMixed: quote.delivery.mixed,
     hasPreorderItems: quote.hasPreorderItems,
     itemCount: quote.itemCount,
+    minOrderCents: quote.minOrderCents,
+    belowMinimum: quote.belowMinimum,
+    missingForMinimumCents: quote.missingForMinimumCents,
     valid: quote.valid,
     notices: quote.notices,
     removedVariantIds: quote.removed.map((entry) => entry.variantId),

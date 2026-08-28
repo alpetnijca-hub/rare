@@ -8,6 +8,7 @@ import {
 import { ProviderAddress } from "@/components/legal/provider-address";
 import {
   isVatRegistered,
+  minOrderCents,
   maxPreorderQuantity,
   maxQuantityPerItem,
   returnsPolicy,
@@ -97,6 +98,17 @@ export default function TermsPage() {
             : ". Wir sind nicht mehrwertsteuerpflichtig und weisen deshalb keine Mehrwertsteuer aus"}
           , zuzüglich Versandkosten.
         </p>
+        {minOrderCents > 0 && (
+          <p>
+            Für Bestellungen gilt ein Mindestbestellwert von{" "}
+            <strong className="font-medium text-cream">
+              {formatPrice(minOrderCents)}
+            </strong>{" "}
+            (Warenwert ohne Versandkosten, vor Abzug eines Rabattcodes). Wird er
+            nicht erreicht, lässt sich die Bestellung nicht abschliessen; der
+            fehlende Betrag wird im Warenkorb angezeigt.
+          </p>
+        )}
         <p>
           Der Shop bietet die Möglichkeit, Preise zur Orientierung in einer
           anderen Währung anzuzeigen. Diese Umrechnung ist unverbindlich und

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { returnsPolicy, siteConfig } from "@/config/site";
+import { minOrderCents, returnsPolicy, siteConfig } from "@/config/site";
 import { shippingMethods } from "@/lib/shipping";
 import { formatPrice } from "@/lib/money";
 
@@ -54,6 +54,10 @@ const groups: Array<{ title: string; entries: FaqEntry[] }> = [
         question: "Brauche ich ein Kundenkonto?",
         answer:
           "Nein. Du kannst als Gast bestellen – wir benötigen nur die Angaben, die für Lieferung und Rechnung erforderlich sind. Den Status deiner Bestellung rufst du über den persönlichen Link in der Bestellbestätigung ab.",
+      },
+      {
+        question: "Gibt es einen Mindestbestellwert?",
+        answer: `Ja, ${formatPrice(minOrderCents)} Warenwert ohne Versandkosten. Zwei Abfüllungen genügen dafür in der Regel. Fehlt noch etwas, zeigen wir dir im Warenkorb genau an, wie viel.`,
       },
       {
         question: "Welche Zahlungsarten gibt es?",

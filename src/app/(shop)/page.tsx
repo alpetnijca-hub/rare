@@ -377,6 +377,59 @@ export default async function HomePage() {
       )}
 
       {/* ---------------------------------------------------------------- */}
+      {/* Duftwunsch über Instagram                                         */}
+      {/* ---------------------------------------------------------------- */}
+      <section aria-labelledby="duftwunsch" className="container-shop py-16 md:py-20">
+        <div
+          className="flex flex-col items-start gap-6 border border-line bg-charcoal px-6 py-8
+            md:flex-row md:items-center md:justify-between md:px-10 md:py-10"
+        >
+          <div className="max-w-xl">
+            <p className="eyebrow mb-3">Duft nicht dabei?</p>
+            <h2 id="duftwunsch" className="text-2xl md:text-3xl">
+              Schreib uns deinen Wunsch auf Instagram
+            </h2>
+            <p className="mt-4 text-sm leading-relaxed text-muted md:text-base">
+              Du suchst einen bestimmten Duft, der hier nicht steht? Schreib uns
+              eine Nachricht auf Instagram – wir schauen, ob wir ihn besorgen
+              können, und melden uns mit Preis und Verfügbarkeit zurück.
+            </p>
+          </div>
+
+          <a
+            href={siteConfig.social.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-13 shrink-0 items-center gap-2.5 border border-gold px-7 text-sm
+              uppercase tracking-[0.14em] text-gold transition-colors
+              hover:bg-gold hover:text-ink focus-visible:outline-2
+              focus-visible:outline-offset-3 focus-visible:outline-gold"
+          >
+            <svg
+              viewBox="0 0 18 18"
+              className="size-4.5"
+              fill="none"
+              aria-hidden="true"
+            >
+              <rect
+                x="1.6"
+                y="1.6"
+                width="14.8"
+                height="14.8"
+                rx="4.4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              />
+              <circle cx="9" cy="9" r="3.6" stroke="currentColor" strokeWidth="1.5" />
+              <circle cx="13.4" cy="4.6" r="1" fill="currentColor" />
+            </svg>
+            {siteConfig.social.instagramHandle}
+            <span className="sr-only">(öffnet in neuem Tab)</span>
+          </a>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
       {/* Über uns / Vertrauen                                              */}
       {/* ---------------------------------------------------------------- */}
       <section aria-labelledby="ueber-uns" className="border-y border-line bg-charcoal">

@@ -146,6 +146,23 @@ export const taxConfig = {
   pricesIncludeTax: envFlag(process.env.SHOP_PRICES_INCLUDE_TAX, true),
 } as const;
 
+/**
+ * Mindestbestellwert in Rappen, bezogen auf den Warenwert **vor** Rabatt.
+ *
+ * Warum vor Rabatt: Wer für CHF 15 in den Warenkorb legt, hat den
+ * Mindestbestellwert erreicht. Ein Gutschein soll ihn nicht nachträglich
+ * darunter drücken – das versteht niemand.
+ *
+ * Bewusst über eine Umgebungsvariable änderbar (`SHOP_MIN_ORDER_CENTS`),
+ * damit sich der Betrag ohne Codeänderung anpassen lässt. `0` schaltet die
+ * Regel ab.
+ *
+ * Rechtlich: Ein Mindestbestellwert ist zulässig, muss aber **vor** der
+ * Bestellung klar erkennbar sein. Er steht deshalb im Warenkorb, an der Kasse,
+ * in den AGB und in den häufigen Fragen.
+ */
+export const minOrderCents = envInt(process.env.SHOP_MIN_ORDER_CENTS, 1500);
+
 /** true, sobald ein Steuersatz konfiguriert ist. */
 export const isVatRegistered = taxConfig.rateBp > 0;
 
