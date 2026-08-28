@@ -246,7 +246,7 @@ export function CheckoutForm() {
   const [appliedCode, setAppliedCode] = useState("");
   const [customerNote, setCustomerNote] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
-  const [acceptWithdrawal, setAcceptWithdrawal] = useState(false);
+  const [acceptNoReturns, setAcceptNoReturns] = useState(false);
   const [marketingOptIn, setMarketingOptIn] = useState(false);
 
   const [submitting, setSubmitting] = useState(false);
@@ -303,7 +303,7 @@ export function CheckoutForm() {
           freeSampleVariantId: freeSampleVariantId || undefined,
           customerNote,
           acceptTerms,
-          acceptWithdrawal,
+          acceptNoReturns,
           marketingOptIn,
         }),
       });
@@ -755,18 +755,19 @@ export function CheckoutForm() {
           />
 
           <Checkbox
-            id="widerruf"
-            checked={acceptWithdrawal}
-            onChange={(event) => setAcceptWithdrawal(event.target.checked)}
+            id="keine-rueckgabe"
+            checked={acceptNoReturns}
+            onChange={(event) => setAcceptNoReturns(event.target.checked)}
             required
-            error={fieldIssues.acceptWithdrawal}
+            error={fieldIssues.acceptNoReturns}
             label={
               <>
-                Ich habe die{" "}
+                Mir ist bekannt, dass eine Rückgabe bei Parfüm aus
+                Hygienegründen{" "}
                 <Link href="/widerruf" target="_blank" className="text-gold underline underline-offset-2">
-                  Rückgabebedingungen
+                  ausgeschlossen
                 </Link>{" "}
-                zur Kenntnis genommen.
+                ist. Bei Mängeln oder Transportschäden gilt das nicht.
               </>
             }
           />

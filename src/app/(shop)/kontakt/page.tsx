@@ -86,7 +86,7 @@ export default function ContactPage() {
               </address>
               <p className="mt-3 text-xs leading-relaxed text-subtle">
                 {hasPublicAddress
-                  ? "Kein Ladengeschäft – bitte sende Retouren erst nach Rücksprache."
+                  ? "Kein Ladengeschäft – bitte schreib uns, bevor du etwas versendest."
                   : addressOnRequestNote}
               </p>
             </div>
@@ -94,8 +94,8 @@ export default function ContactPage() {
             <div className="border border-line bg-charcoal p-5">
               <h2 className="eyebrow mb-3">Häufige Fragen</h2>
               <p className="mb-4 text-sm leading-relaxed text-muted">
-                Vieles ist schon beantwortet: Lieferzeiten, Rückgabe, Haltbarkeit
-                von Abfüllungen und mehr.
+                Vieles ist schon beantwortet: Lieferzeiten, Haltbarkeit von
+                Abfüllungen, Mindestbestellwert und mehr.
               </p>
               <Link
                 href="/faq"

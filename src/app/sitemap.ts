@@ -16,12 +16,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteConfig.url}/faq`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${siteConfig.url}/kontakt`, changeFrequency: "yearly", priority: 0.5 },
     { url: `${siteConfig.url}/versand`, changeFrequency: "monthly", priority: 0.4 },
-    { url: `${siteConfig.url}/rueckgabe`, changeFrequency: "monthly", priority: 0.4 },
     { url: `${siteConfig.url}/newsletter`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${siteConfig.url}/impressum`, changeFrequency: "yearly", priority: 0.2 },
     { url: `${siteConfig.url}/datenschutz`, changeFrequency: "yearly", priority: 0.2 },
     { url: `${siteConfig.url}/agb`, changeFrequency: "yearly", priority: 0.2 },
-    { url: `${siteConfig.url}/widerruf`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${siteConfig.url}/widerruf`, changeFrequency: "yearly", priority: 0.3 },
     {
       url: `${siteConfig.url}/cookie-einstellungen`,
       changeFrequency: "yearly",

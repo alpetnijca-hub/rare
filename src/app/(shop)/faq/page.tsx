@@ -3,7 +3,6 @@ import Link from "next/link";
 import {
   freeSampleFromCents,
   minOrderCents,
-  returnsPolicy,
   siteConfig,
 } from "@/config/site";
 import { shippingMethods } from "@/lib/shipping";
@@ -12,7 +11,7 @@ import { formatPrice } from "@/lib/money";
 export const metadata: Metadata = {
   title: "Häufige Fragen",
   description:
-    "Antworten zu Abfüllungen, Lieferzeiten, Haltbarkeit, Rückgabe und Duftalternativen.",
+    "Antworten zu Abfüllungen, Lieferzeiten, Haltbarkeit und Duftalternativen.",
   alternates: { canonical: "/faq" },
 };
 
@@ -124,17 +123,17 @@ const groups: Array<{ title: string; entries: FaqEntry[] }> = [
       {
         question: "Kann ich einen Duft zurückgeben, der mir nicht gefällt?",
         answer:
-          `Ungeöffnete und originalversiegelte Artikel ja – wir räumen dir freiwillig ${returnsPolicy.voluntaryDays} Tage Rückgaberecht ein. Bei geöffneten Parfüms und Abfüllungen ist eine Rückgabe aus Hygienegründen ausgeschlossen. Genau deshalb gibt es unsere Abfüllungen ab 2 ml – teste erst günstig, entscheide dann.`,
+          "Nein. Parfüm ist ein Kosmetikprodukt: Was einmal unser Lager verlassen hat, dürfen wir aus Hygienegründen nicht wieder verkaufen. Deshalb nehmen wir keine Ware zurück und erstatten in diesem Fall auch nichts. Genau dafür gibt es unsere Abfüllungen ab 2 ml – teste erst für ein paar Franken, entscheide dann.",
       },
       {
         question: "Der Artikel ist beschädigt angekommen – was nun?",
         answer:
-          "Schreib uns mit einem Foto. Wir schicken kostenlos Ersatz oder erstatten den vollen Betrag. Die Rücksendekosten übernehmen wir in diesem Fall selbstverständlich.",
+          "Dann gilt der Ausschluss nicht. Schreib uns mit einem Foto. Wir schicken kostenlos Ersatz oder erstatten den vollen Betrag, und die Rücksendekosten übernehmen wir. Dasselbe gilt bei einer Falschlieferung oder einem Mangel – deine gesetzlichen Gewährleistungsrechte schränken wir nicht ein.",
       },
       {
-        question: "Wie lange dauert eine Erstattung?",
+        question: "Wie finde ich heraus, ob ein Duft zu mir passt?",
         answer:
-          "Wir lösen die Erstattung nach Eingang und Prüfung der Rücksendung aus. Bis der Betrag auf deinem Konto sichtbar ist, vergehen je nach Bank weitere 5 bis 10 Werktage.",
+          "Mit einer Abfüllung ab 2 ml. Das reicht für mehrere Tage auf der eigenen Haut, und genau darauf kommt es an – Parfüm riecht auf jeder Haut anders als auf dem Papierstreifen. Der Mindestbestellwert von CHF 15 entspricht ungefähr zwei Testern.",
       },
     ],
   },

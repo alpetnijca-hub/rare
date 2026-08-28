@@ -107,8 +107,16 @@ export const checkoutSchema = z
     acceptTerms: z.literal(true, {
       message: "Bitte AGB und Datenschutzerklärung bestätigen.",
     }),
-    acceptWithdrawal: z.literal(true, {
-      message: "Bitte die Rückgabe- und Widerrufsinformationen bestätigen.",
+    /**
+     * Bestätigung, dass der Ausschluss der Rückgabe bekannt ist.
+     *
+     * Der Shop nimmt keine Ware zurück (siehe `returnsPolicy` in
+     * src/config/site.ts). Eine solche Bedingung muss vor dem Kauf klar
+     * kommuniziert sein, sonst ist sie im Streitfall wenig wert – deshalb ein
+     * eigenes Häkchen und nicht nur ein Satz in den AGB.
+     */
+    acceptNoReturns: z.literal(true, {
+      message: "Bitte bestätigen, dass eine Rückgabe ausgeschlossen ist.",
     }),
     marketingOptIn: z.boolean().default(false),
   })

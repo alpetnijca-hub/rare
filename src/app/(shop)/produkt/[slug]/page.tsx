@@ -9,7 +9,7 @@ import {
   VariantPicker,
   type VariantOption,
 } from "@/components/product/variant-picker";
-import { returnsPolicy, siteConfig, taxConfig } from "@/config/site";
+import { siteConfig, taxConfig } from "@/config/site";
 import { productImageUrl, productThumbUrl } from "@/lib/product-image";
 import {
   formatDeliveryRange,
@@ -338,8 +338,7 @@ export default async function ProductPage({ params }: PageProps) {
               </li>
               <li className="flex items-start gap-2.5">
                 <span className="mt-1.5 size-1 shrink-0 bg-gold" aria-hidden="true" />
-                {returnsPolicy.voluntaryDays} Tage Rückgaberecht auf
-                ungeöffnete Artikel
+                Keine Rückgabe – dafür Abfüllungen ab 2 ml zum Testen
               </li>
               <li className="flex items-start gap-2.5">
                 <span className="mt-1.5 size-1 shrink-0 bg-gold" aria-hidden="true" />

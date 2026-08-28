@@ -376,7 +376,7 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
               href="/widerruf"
               className="flex min-h-11 items-center text-sm text-muted underline underline-offset-4 transition-colors hover:text-gold-light"
             >
-              Rückgabe &amp; Widerruf
+              Rückgabe &amp; Hygiene
             </Link>
           </div>
         </section>

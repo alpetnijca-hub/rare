@@ -12,7 +12,6 @@ import {
   minOrderCents,
   maxPreorderQuantity,
   maxQuantityPerItem,
-  returnsPolicy,
   siteConfig,
   taxConfig,
 } from "@/config/site";
@@ -25,7 +24,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/agb" },
 };
 
-const returnShippingByCustomer = returnsPolicy.returnShippingPaidBy === "customer";
 
 export default function TermsPage() {
   const { contact } = siteConfig;
@@ -226,33 +224,33 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="7. Rückgabe und Widerruf">
+      <LegalSection title="7. Keine Rückgabe">
         <p>
           Bei Onlinebestellungen besteht nach Schweizer Recht kein gesetzliches
-          Widerrufsrecht. Wir gewähren dir freiwillig ein Rückgaberecht von{" "}
-          {returnsPolicy.voluntaryDays} Tagen ab Erhalt für ungeöffnete,
-          originalversiegelte Artikel.{" "}
-          {returnShippingByCustomer
-            ? "Die Kosten der Rücksendung trägst du."
-            : "Die Kosten der Rücksendung übernehmen wir."}
+          Widerrufsrecht (Art. 40a ff. OR gilt nur für Haustür- und
+          Telefongeschäfte). Ein freiwilliges Rückgaberecht gewähren wir nicht.
+          Mit dem Abschluss der Bestellung ist der Kauf verbindlich.
         </p>
         <p>
-          Alle Einzelheiten, Voraussetzungen und Ausnahmen findest du unter{" "}
+          Grund ist die Art der Ware: Parfüms, Abfüllungen und Proben sind
+          versiegelte Kosmetikprodukte, die aus Gründen des
+          Gesundheitsschutzes und der Hygiene nicht zur Rückgabe geeignet
+          sind. Ist die Versiegelung nach der Lieferung entfernt oder hat der
+          Artikel unseren Einflussbereich verlassen, dürfen wir ihn nicht
+          erneut in den Verkauf geben. Die Einzelheiten stehen unter{" "}
           <Link
             href="/widerruf"
             className="text-gold underline underline-offset-2 hover:text-gold-light"
           >
-            Rückgaberecht
+            Rückgabe &amp; Hygiene
           </Link>
           .
         </p>
         <p>
-          <strong className="font-medium text-cream">Wichtig:</strong> Bei
-          versiegelten Waren, die aus Gründen des Gesundheitsschutzes oder der
-          Hygiene nicht zur Rückgabe geeignet sind, ist eine Rückgabe
-          ausgeschlossen, sobald die Versiegelung nach der Lieferung entfernt
-          wurde. Das betrifft insbesondere geöffnete Parfüms, Abfüllungen und
-          Proben.
+          <strong className="font-medium text-cream">Davon unberührt:</strong>{" "}
+          deine gesetzlichen Gewährleistungsrechte bei Mängeln,
+          Transportschäden und Falschlieferungen nach Ziffer 8. Diese Rechte
+          schränken wir nicht ein.
         </p>
       </LegalSection>
 
@@ -321,8 +319,9 @@ export default function TermsPage() {
           die jeweils genannten Produkte gültig. Sie sind nicht mit anderen
           Aktionen kombinierbar, sofern nichts anderes angegeben ist, können
           nicht in bar ausbezahlt und nicht nachträglich auf eine bereits
-          abgeschlossene Bestellung angerechnet werden. Bei einer Rückgabe wird
-          der tatsächlich bezahlte Betrag erstattet.
+          abgeschlossene Bestellung angerechnet werden. Muss eine Bestellung wegen
+          eines Mangels rückabgewickelt werden, erstatten wir den tatsächlich
+          bezahlten Betrag.
         </p>
       </LegalSection>
 

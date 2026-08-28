@@ -17,7 +17,6 @@ const serviceLinks = [
   { href: "/kontakt", label: "Kontakt" },
   { href: "/faq", label: "Häufige Fragen" },
   { href: "/versand", label: "Versand & Lieferung" },
-  { href: "/rueckgabe", label: "Rückgabe & Erstattung" },
   { href: "/bestellung", label: "Bestellung verfolgen" },
 ];
 
@@ -25,7 +24,7 @@ const legalLinks = [
   { href: "/impressum", label: "Impressum" },
   { href: "/datenschutz", label: "Datenschutz" },
   { href: "/agb", label: "AGB" },
-  { href: "/widerruf", label: "Rückgaberecht" },
+  { href: "/widerruf", label: "Rückgabe & Hygiene" },
   { href: "/cookie-einstellungen", label: "Cookie-Einstellungen" },
 ];
 

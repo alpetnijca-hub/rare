@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import {
   LegalBox,
   LegalList,
@@ -9,22 +8,20 @@ import {
 import { returnsPolicy, siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Rückgaberecht",
+  title: "Rückgabe & Hygiene",
   description:
-    "Unser freiwilliges Rückgaberecht: Fristen, Voraussetzungen und Ablauf.",
+    "Warum wir Parfüm nicht zurücknehmen – und was gilt, wenn etwas defekt ankommt.",
   alternates: { canonical: "/widerruf" },
 };
-
-const returnShippingByCustomer = returnsPolicy.returnShippingPaidBy === "customer";
 
 export default function ReturnRightPage() {
   const { contact } = siteConfig;
 
   return (
     <LegalPage
-      title="Rückgaberecht"
-      intro="Was gilt, wenn du eine Bestellung zurückgeben möchtest."
-      lastUpdated="20. August 2026"
+      title="Rückgabe & Hygiene"
+      intro="Parfüm ist ein Kosmetikprodukt. Was das für eine Rückgabe bedeutet – und was gilt, wenn etwas nicht in Ordnung ist."
+      lastUpdated="28. August 2026"
       notice="review"
     >
       <LegalSection title="Kurz gesagt">
@@ -32,29 +29,47 @@ export default function ReturnRightPage() {
           items={[
             <>
               <strong className="font-medium text-cream">
-                {returnsPolicy.voluntaryDays} Tage Rückgaberecht
+                Wir nehmen keine Ware zurück
               </strong>{" "}
-              auf ungeöffnete, originalversiegelte Artikel – freiwillig von uns
-              zugesagt.
+              und erstatten den Kaufpreis nicht, wenn ein Duft dir schlicht
+              nicht gefällt. Parfüm ist ein Kosmetikprodukt – einmal aus der
+              Hand gegeben, dürfen wir es nicht wieder verkaufen.
             </>,
             <>
               <strong className="font-medium text-cream">
-                Geöffnete Parfüms und Abfüllungen
-              </strong>{" "}
-              können wir aus Hygienegründen nicht zurücknehmen.
+                Ist etwas defekt, beschädigt oder falsch geliefert
+              </strong>
+              , gilt das nicht. Dann melde dich, und wir finden eine Lösung –
+              Ersatz oder Geld zurück, und die Rücksendung geht auf uns.
             </>,
             <>
               <strong className="font-medium text-cream">
-                Bei Mängeln, Transportschäden oder Falschlieferung
+                Deshalb gibt es Abfüllungen ab 2&nbsp;ml.
               </strong>{" "}
-              gilt das nicht – da findest du immer eine Lösung mit uns, und die
-              Rücksendung geht auf uns.
+              Für wenige Franken herausfinden, ob ein Duft zu dir passt, ist
+              günstiger als ein grosser Flakon, der dann steht.
             </>,
           ]}
         />
       </LegalSection>
 
-      <LegalSection title="Kein gesetzliches Widerrufsrecht – warum wir trotzdem eines geben">
+      <LegalSection title="Warum keine Rückgabe">
+        <p>
+          Jeder Flakon und jede Abfüllung verlässt unser Lager versiegelt.
+          Sobald diese Versiegelung entfernt ist, lässt sich nicht mehr
+          feststellen, ob der Inhalt unverändert ist – ob nichts entnommen,
+          nichts hinzugefügt und die Flüssigkeit richtig gelagert wurde. Ein
+          Produkt, das auf die Haut kommt, dürfen wir in diesem Zustand nicht
+          an die nächste Person weitergeben.
+        </p>
+        <p>
+          Das ist keine Bequemlichkeit, sondern der Grund, warum Rückgaben bei
+          Kosmetik branchenüblich ausgeschlossen sind. Wir sagen es lieber
+          vorher klar, als es später im Einzelfall zu verhandeln.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="Kein gesetzliches Widerrufsrecht in der Schweiz">
         <p>
           Bestellungen über einen Onlineshop fallen in der Schweiz{" "}
           <strong className="font-medium text-cream">
@@ -65,93 +80,53 @@ export default function ReturnRightPage() {
           Verträge – nicht für Bestellungen im Internet.
         </p>
         <p>
-          Wir halten das für keine gute Grundlage für eine Kundenbeziehung.
-          Deshalb sagen wir dir vertraglich ein Rückgaberecht zu. Es ist
-          freiwillig, aber verbindlich: Was hier steht, gilt.
+          Es gibt bei uns also weder ein gesetzliches noch ein freiwillig
+          zugesagtes Rückgaberecht. Mit dem Abschluss der Bestellung ist der
+          Kauf verbindlich.
         </p>
       </LegalSection>
 
-      <LegalSection title="Voraussetzungen">
+      <LegalSection title="Wenn etwas nicht in Ordnung ist">
+        <p>
+          Davon unberührt bleiben deine gesetzlichen Gewährleistungsrechte nach
+          Art. 197&nbsp;ff. OR. Die schränken wir mit keiner Bestimmung dieser
+          Seite ein – sie lassen sich gegenüber Konsumentinnen und Konsumenten
+          auch gar nicht wegbedingen.
+        </p>
+        <p>Melde dich bitte in diesen Fällen:</p>
         <LegalList
           items={[
-            <>
-              Die Rückgabe erfolgt innerhalb von{" "}
-              {returnsPolicy.voluntaryDays} Tagen ab Erhalt der Lieferung.
-              Massgeblich ist das Datum deiner Nachricht an uns.
-            </>,
-            "Die Artikel sind unbenutzt und die Originalversiegelung ist unversehrt.",
-            "Die Umverpackung ist so weit erhalten, dass ein Weiterverkauf möglich bleibt.",
-            "Du meldest die Rücksendung vorher kurz per E-Mail an – so können wir sie zuordnen und dir die richtige Adresse nennen.",
-          ]}
-        />
-      </LegalSection>
-
-      <LegalSection title="Wovon wir keine Rückgabe annehmen können">
-        <LegalList
-          items={[
-            <>
-              <strong className="font-medium text-cream">
-                Geöffnete Parfüms, Abfüllungen und Proben.
-              </strong>{" "}
-              Sobald die Versiegelung entfernt ist, lässt sich nicht mehr
-              ausschliessen, dass der Inhalt verändert wurde. Aus Gründen des
-              Gesundheitsschutzes und der Hygiene ist eine Rückgabe deshalb
-              ausgeschlossen.
-            </>,
-            "Individuell nach deinen Wünschen abgefüllte Sonderanfertigungen.",
-            "Artikel, die sichtbar benutzt oder beschädigt wurden.",
+            "Der Artikel ist beschädigt oder ausgelaufen angekommen.",
+            "Du hast einen anderen Artikel erhalten als bestellt.",
+            "Die Menge stimmt nicht oder etwas fehlt in der Sendung.",
+            "Der Duft weist einen erkennbaren Mangel auf.",
           ]}
         />
         <p>
-          Alle Flakons und Abfüllungen verlassen unser Lager versiegelt. Prüfe
-          bitte zuerst am ungeöffneten Artikel, ob die Bestellung stimmt.
-          Möchtest du einen Duft vorher riechen, sind unsere Abfüllungen ab
-          2&nbsp;ml genau dafür da – deutlich günstiger als ein Fehlkauf.
+          Ein Foto hilft uns, den Fall schnell zu klären. Wir schicken dann
+          kostenlos Ersatz oder erstatten den Betrag vollständig auf das
+          Zahlungsmittel, mit dem du bezahlt hast – die Rücksendekosten
+          übernehmen wir. Transportschäden meldest du am besten innerhalb von{" "}
+          {returnsPolicy.damageReportDays} Tagen; das ist eine Bitte und keine
+          Ausschlussfrist, aber gegenüber der Post lässt sich ein frischer
+          Schaden deutlich einfacher belegen.
         </p>
       </LegalSection>
 
-      <LegalSection title="Kosten">
-        <p>
-          {returnShippingByCustomer
-            ? "Die Kosten der Rücksendung trägst du. Wir empfehlen einen versicherten Versand mit Sendungsverfolgung – bis die Ware bei uns ankommt, liegt das Risiko bei dir."
-            : "Die Kosten der Rücksendung übernehmen wir. Melde die Rücksendung an, dann erhältst du von uns ein Retourenetikett."}
-        </p>
-        <p>
-          Bei berechtigten Beanstandungen – Transportschaden, Falschlieferung
-          oder Mangel – übernehmen wir die Rücksendekosten in jedem Fall.
-        </p>
-      </LegalSection>
-
-      <LegalSection title="Erstattung">
-        <p>
-          Nach Eingang und Prüfung der Rücksendung erstatten wir den Kaufpreis
-          innerhalb von {returnsPolicy.refundDays} Tagen auf dasselbe
-          Zahlungsmittel, mit dem du bezahlt hast. Je nach Bank dauert es
-          anschliessend weitere fünf bis zehn Werktage, bis der Betrag
-          sichtbar ist.
-        </p>
-        <p>
-          Die ursprünglichen Versandkosten erstatten wir bei einer vollständigen
-          Rückgabe mit. Bei einer Teilrückgabe bleiben sie bestehen.
-        </p>
-      </LegalSection>
-
-      <LegalBox title="So meldest du eine Rückgabe an">
-        <p>
-          Eine formlose E-Mail genügt. Damit es schnell geht, nenn uns bitte:
-        </p>
+      <LegalBox title="So meldest du einen Mangel">
+        <p>Eine formlose E-Mail genügt. Damit es schnell geht, nenn uns bitte:</p>
         <div className="mt-3 whitespace-pre-line border-l-2 border-gold/40 pl-4 text-sm leading-relaxed">
           {`An: ${contact.email}
-Betreff: Rückgabe Bestellung <Bestellnummer>
+Betreff: Reklamation Bestellung <Bestellnummer>
 
 Bestellnummer:
-Artikel, die zurückgehen sollen:
-Grund (freiwillig):
-Name und Adresse:`}
+Betroffener Artikel:
+Was ist nicht in Ordnung:
+Foto im Anhang:`}
         </div>
         <p className="mt-4">
           <a
-            href={`mailto:${contact.email}?subject=${encodeURIComponent("Rückgabe Bestellung")}`}
+            href={`mailto:${contact.email}?subject=${encodeURIComponent("Reklamation Bestellung")}`}
             className="text-gold underline underline-offset-2 hover:text-gold-light"
           >
             {contact.email}
@@ -159,25 +134,13 @@ Name und Adresse:`}
         </p>
       </LegalBox>
 
-      <LegalSection title="Deine Rechte bei mangelhafter Ware">
+      <LegalSection title="Vor der Bestellung testen">
         <p>
-          Unabhängig von diesem freiwilligen Rückgaberecht gelten deine
-          gesetzlichen Gewährleistungsrechte nach Art. 197 ff. OR. Die
-          schränken wir mit keiner Bestimmung dieser Seite ein.
-        </p>
-      </LegalSection>
-
-      <LegalSection title="Ablauf im Detail">
-        <p>
-          Wie eine Rücksendung praktisch abläuft – Verpackung, Adresse,
-          Erstattung – steht Schritt für Schritt unter{" "}
-          <Link
-            href="/rueckgabe"
-            className="text-gold underline underline-offset-2 hover:text-gold-light"
-          >
-            Rückgabe &amp; Erstattung
-          </Link>
-          .
+          Weil eine Rückgabe nicht möglich ist, gibt es fast jeden Duft als
+          Abfüllung ab 2&nbsp;ml. Damit kannst du einen Duft mehrere Tage auf
+          der eigenen Haut tragen, bevor du dich für eine grössere Größe
+          entscheidest – das ist der ehrlichste Test, den es gibt, und er
+          kostet einen Bruchteil.
         </p>
       </LegalSection>
     </LegalPage>

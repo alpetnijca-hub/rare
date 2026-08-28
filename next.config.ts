@@ -51,6 +51,16 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  /**
+   * /rueckgabe erklärte früher den Ablauf einer Rücksendung. Der Shop nimmt
+   * keine Ware mehr zurück, und beides auf zwei Seiten zu verteilen war schon
+   * vorher unübersichtlich. Die Adresse steckt aber in verschickten E-Mails
+   * und womöglich in Lesezeichen – deshalb eine dauerhafte Weiterleitung
+   * statt einer 404-Seite.
+   */
+  async redirects() {
+    return [{ source: "/rueckgabe", destination: "/widerruf", permanent: true }];
+  },
 };
 
 export default nextConfig;

@@ -211,7 +211,7 @@ export function renderEmail(options: EmailLayoutOptions): string {
                   <a href="${siteConfig.url}/impressum" style="color:#888;text-decoration:none;">Impressum</a> &nbsp;·&nbsp;
                   <a href="${siteConfig.url}/datenschutz" style="color:#888;text-decoration:none;">Datenschutz</a> &nbsp;·&nbsp;
                   <a href="${siteConfig.url}/agb" style="color:#888;text-decoration:none;">AGB</a> &nbsp;·&nbsp;
-                  <a href="${siteConfig.url}/widerruf" style="color:#888;text-decoration:none;">Widerruf</a>
+                  <a href="${siteConfig.url}/widerruf" style="color:#888;text-decoration:none;">Rückgabe</a>
                 </p>
                 <p style="margin:10px 0 0;font-family:${fontStack};font-size:11px;color:#555;">
                   © ${year} ${escapeHtml(siteConfig.name)}. Diese E-Mail wurde automatisch versendet.

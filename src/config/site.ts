@@ -190,29 +190,51 @@ export const isVatRegistered = taxConfig.rateBp > 0;
 /**
  * Rückgabebedingungen.
  *
- * Wichtig zum Verständnis: In der Schweiz gibt es für Bestellungen über einen
- * Onlineshop **kein gesetzliches Widerrufsrecht**. Art. 40a ff. OR gilt nur
- * für Haustür- und Telefongeschäfte. Was wir anbieten, ist deshalb ein
- * freiwilliges, vertraglich zugesagtes Rückgaberecht – und daran sind wir
- * gebunden, sobald wir es auf der Seite /widerruf zusagen.
+ * Dieser Shop nimmt **keine Rückgaben ohne Grund** an. Parfüm ist ein
+ * Kosmetikprodukt: Sobald eine Flasche oder Abfüllung die Hand des Käufers
+ * verlassen hat, lässt sich nicht mehr feststellen, ob der Inhalt unverändert
+ * ist. Weiterverkaufen darf man sie danach nicht mehr.
  *
- * Wir liefern ausschliesslich in die Schweiz (siehe `shippingCountries` in
- * src/lib/shipping.ts). Deshalb kommt zwingendes EU-Fernabsatzrecht hier
- * nicht zur Anwendung. Sollte das Liefergebiet je erweitert werden, müssen
- * die Rechtstexte um eine echte Widerrufsbelehrung ergänzt werden.
+ * Was rechtlich dahintersteht:
+ *
+ *  - In der Schweiz gibt es für Bestellungen über einen Onlineshop **kein
+ *    gesetzliches Widerrufsrecht**. Art. 40a ff. OR gilt nur für Haustür- und
+ *    Telefongeschäfte. Eine freiwillige Rückgabe wegzulassen ist deshalb
+ *    zulässig – anders als in der EU, wo ein zwingendes Fernabsatzrecht gilt.
+ *    Wir liefern ausschliesslich in die Schweiz (siehe `shippingCountries` in
+ *    src/lib/shipping.ts). Wird das Liefergebiet je erweitert, braucht es
+ *    zwingend eine echte Widerrufsbelehrung – dann ist diese Datei der erste
+ *    Ort, der geändert werden muss.
+ *  - **Die Gewährleistung bleibt.** Bei einem Mangel, einem Transportschaden
+ *    oder einer Falschlieferung haftet der Verkäufer nach Art. 197 ff. OR,
+ *    und diese Rechte lassen sich gegenüber Konsumentinnen und Konsumenten
+ *    nicht wegbedingen (Art. 210 Abs. 4 OR; ein pauschaler Ausschluss wäre
+ *    zudem nach Art. 8 UWG angreifbar). Ein Satz wie „keine Erstattung unter
+ *    keinen Umständen“ darf deshalb nirgends auf der Seite stehen. Die
+ *    Rechtstexte sagen „keine Rückgabe aus Hygienegründen“ und nennen den
+ *    Weg für Mängel ausdrücklich daneben.
+ *
+ * Ob die Texte im Einzelfall genügen, kann nur eine Anwältin oder ein Anwalt
+ * beurteilen – automatisch rechtssicher sind sie nicht.
  */
 export const returnsPolicy = {
-  /** Freiwillige Rückgabefrist in Tagen ab Erhalt der Lieferung. */
-  voluntaryDays: 14,
   /**
-   * Wer trägt die Rücksendekosten?
-   * "customer" ist zulässig, solange – wie hier – vor der Bestellung klar
-   * darüber informiert wird. Auf "shop" umstellen, wenn ihr sie übernehmen
-   * wollt; die Rechtstexte passen sich automatisch an.
+   * Nimmt der Shop Ware ohne Grund zurück? Nein – Kosmetik, Hygiene.
+   *
+   * Auf `true` zu stellen genügt nicht: Die Rechtstexte müssten dann wieder
+   * eine Frist, einen Ablauf und die Kostenregelung nennen. Das Feld steht
+   * hier, damit die Entscheidung an einer Stelle sichtbar ist und nicht in
+   * einem Dutzend Seitentexte verstreut.
    */
-  returnShippingPaidBy: "customer" as "customer" | "shop",
-  /** Frist für die Erstattung nach Eingang der Rücksendung, in Tagen. */
-  refundDays: 14,
+  acceptsVoluntaryReturns: false,
+  /**
+   * Innerhalb wie vieler Tage ein Transportschaden gemeldet werden sollte.
+   *
+   * Das ist eine Bitte, keine Ausschlussfrist: Die gesetzliche
+   * Gewährleistung läuft unabhängig davon weiter. Früh gemeldet lässt sich
+   * ein Schaden nur einfacher gegenüber der Post belegen.
+   */
+  damageReportDays: 7,
 } as const;
 
 /** Schwelle, ab der das Dashboard vor niedrigem Bestand warnt (Fallback). */
