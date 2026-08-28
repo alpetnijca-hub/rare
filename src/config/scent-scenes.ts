@@ -43,7 +43,7 @@ const sceneMotifs: Record<string, string> = {
   FLORAL: "scattered rose petals and white blossoms",
   ORIENTAL: "scattered amber resin pieces and dried spices",
   HOLZIG: "pieces of dark cedar wood and tree bark scattered around",
-  FRISCH: "green leaves and water droplets scattered around",
+  FRISCH: "wet dark stones and sea spray with fresh green leaves",
   ZITRUS: "fresh lemons and green citrus leaves",
   FRUCHTIG: "fresh peaches and red berries scattered around",
   GOURMAND: "vanilla pods and roasted cocoa beans scattered around",
@@ -80,6 +80,10 @@ const noteMotifs: Record<string, string> = {
   neroli: "white neroli blossoms",
   petitgrain: "green citrus leaves",
   yuzu: "yuzu citrus fruits",
+  bitterorange: "bitter oranges cut open",
+  pomelo: "pomelo halves",
+  kalamansi: "small green calamansi limes",
+  zitronenverbene: "lemon verbena leaves",
 
   // Früchte
   pfirsich: "ripe peaches",
@@ -100,6 +104,17 @@ const noteMotifs: Record<string, string> = {
   traube: "dark grapes",
   kokos: "cracked coconut",
   dattel: "dried dates",
+  granatapfel: "pomegranate halves with red seeds",
+  quitte: "ripe quinces",
+  blaubeere: "fresh blueberries",
+  heidelbeere: "fresh blueberries",
+  preiselbeere: "red lingonberries",
+  cassis: "black currants on the branch",
+  rhabarber: "cut rhubarb stalks",
+  banane: "ripe bananas",
+  papaya: "sliced papaya",
+  passionsfrucht: "halved passion fruits",
+  maracuja: "halved passion fruits",
 
   // Blüten
   rose: "fresh rose petals",
@@ -118,6 +133,16 @@ const noteMotifs: Record<string, string> = {
   geranie: "geranium leaves and flowers",
   osmanthus: "small golden osmanthus flowers",
   kirschblute: "cherry blossom branches",
+  lilie: "white lilies",
+  flieder: "lilac branches",
+  mimose: "yellow mimosa blossoms",
+  gardenie: "white gardenia flowers",
+  hyazinthe: "purple hyacinths",
+  kamille: "small chamomile flowers",
+  lotus: "pale lotus flowers on dark water",
+  seerose: "pale water lilies on dark water",
+  orchidee: "dark orchids",
+  ginster: "yellow broom blossoms",
 
   // Kräuter und Grün
   minze: "fresh mint leaves",
@@ -133,6 +158,13 @@ const noteMotifs: Record<string, string> = {
   vetiver: "dried vetiver grass",
   patchouli: "dry patchouli leaves",
   heu: "dried hay",
+  eukalyptus: "eucalyptus branches",
+  wacholder: "juniper berries on a branch",
+  fenchel: "fennel bulbs and fronds",
+  zitronengras: "cut lemongrass stalks",
+  matcha: "green matcha powder",
+  schwarzertee: "dried black tea leaves",
+  farn: "dark fern fronds",
 
   // Gewürze
   pfeffer: "black peppercorns",
@@ -146,6 +178,11 @@ const noteMotifs: Record<string, string> = {
   koriander: "coriander seeds",
   anis: "star anise",
   chili: "dried red chilies",
+  sternanis: "star anise pods",
+  lorbeer: "dried bay leaves",
+  kumin: "cumin seeds",
+  kreuzkummel: "cumin seeds",
+  vanillepfeffer: "black peppercorns and vanilla pods",
 
   // Holz und Harz
   oud: "dark oud wood pieces",
@@ -163,6 +200,18 @@ const noteMotifs: Record<string, string> = {
   benzoe: "benzoin resin pieces",
   labdanum: "labdanum resin",
   harz: "resin pieces",
+  rosenholz: "rosewood pieces",
+  palisander: "dark rosewood planks",
+  ebenholz: "polished ebony wood",
+  teakholz: "teak wood pieces",
+  guajakholz: "guaiac wood pieces",
+  kaschmirholz: "pale cashmere wood pieces",
+  tanne: "fir branches and cones",
+  pinie: "pine cones and needles",
+  zypresse: "cypress branches",
+  papyrus: "dried papyrus stalks",
+  weihrauchharz: "frankincense resin pieces",
+  raucherwerk: "smouldering incense and resin pieces",
 
   // Süss und Gourmand
   vanille: "vanilla pods",
@@ -178,18 +227,61 @@ const noteMotifs: Record<string, string> = {
   praline: "chocolate pralines",
   zucker: "sugar crystals",
   reis: "raw rice grains",
+  nougat: "pieces of nougat",
+  marzipan: "marzipan pieces and almonds",
+  lakritz: "black liquorice pieces",
+  kokosmilch: "coconut milk in a bowl and cracked coconut",
+  ahornsirup: "maple syrup in a glass jar",
+  keks: "butter biscuits",
+  geback: "golden pastry pieces",
+  popcorn: "caramel popcorn",
+  walnuss: "cracked walnuts",
+  cashew: "cashew nuts",
 
-  // Leder, Rauch, Mineralisch
+  // Leder, Rauch, Tabak
   leder: "a piece of dark leather",
   wildleder: "a piece of dark suede",
   tabak: "dried tobacco leaves",
+  pfeifentabak: "dried tobacco leaves and a pipe",
   rauch: "wisps of smoke",
+  lagerfeuer: "glowing embers and wisps of smoke",
   birkenteer: "birch tar and dark bark",
-  meersalz: "coarse sea salt",
-  salz: "coarse sea salt",
+  whisky: "a glass of whisky and oak staves",
+  rum: "dark rum in a glass and sugarcane",
+  cognac: "cognac in a glass and oak wood",
+
+  // Meer und Wasser
+  //
+  // „Meerwasser“ enthält auch „Wasser“. Weil das längste Stichwort gewinnt
+  // (siehe src/lib/notes.ts), bekommt das Meer sein eigenes Bild und nicht
+  // bloss ein paar Tropfen.
+  meerwasser: "dark ocean water with white sea foam and wet rocks",
+  meereswasser: "dark ocean water with white sea foam and wet rocks",
+  meeresbrise: "dark ocean waves and wet black rocks at dusk",
+  meer: "dark ocean water with white sea foam and wet rocks",
+  ozean: "dark ocean water with white sea foam and wet rocks",
+  marine: "dark ocean waves and wet black rocks",
+  aquatisch: "dark water surface with ripples and wet stones",
+  alge: "dark wet seaweed on black rocks",
+  muschel: "seashells on wet dark sand",
+  treibholz: "weathered driftwood on wet dark sand",
+  sand: "fine dark sand with ripples",
+  meersalz: "coarse sea salt crystals and wet black rocks",
+  salz: "coarse salt crystals",
+  regen: "water droplets on a dark surface",
+  wasser: "clear water droplets on a dark surface",
+  nebel: "low drifting mist over dark stone",
+  eiskristall: "shards of clear ice on dark stone",
+  schnee: "fresh snow on dark stone",
+
+  // Erde, Stein, Mineralisch
   stein: "dark stones",
-  regen: "water droplets",
-  wasser: "water droplets",
+  feuerstein: "dark flint stones",
+  erde: "dark damp soil",
+  moos: "soft green moss on dark stone",
+  leinen: "folded natural linen cloth",
+  papier: "sheets of aged paper",
+  tinte: "spilled dark ink",
 };
 
 const noteKeywords = Object.keys(noteMotifs);

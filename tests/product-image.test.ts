@@ -312,6 +312,42 @@ describe("Kulisse aus den Duftnoten", () => {
     expect(teil).not.toContain("%2F");
   });
 
+  it("gibt dem Meer ein eigenes Bild statt ein paar Tropfen", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+
+    const meer = productImageUrl(cloudinary, "card", 1, {
+      topNotes: ["Meerwasser"],
+    });
+    expect(meer).toContain("ocean");
+
+    // Reines „Wasser“ bleibt bewusst zurückhaltend.
+    const wasser = productImageUrl(cloudinary, "card", 1, {
+      topNotes: ["Wasser"],
+    });
+    expect(wasser).toContain("droplets");
+    expect(wasser).not.toContain("ocean");
+  });
+
+  it("kennt auch zusammengesetzte Holz- und Gourmandnoten", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+
+    // Die erwarteten Wörter sind bewusst mehrteilig: „oud“ allein steckt schon
+    // in „cloudinary“ und der Test ginge auch dann durch, wenn gar keine
+    // Kulisse erzeugt würde.
+    for (const [note, erwartet] of [
+      ["Oudholz", "oud%20wood"],
+      ["Vanilleschote", "vanilla%20pods"],
+      ["Rosenholz", "rosewood%20pieces"],
+      ["Treibholz", "weathered%20driftwood"],
+      ["Granatapfel", "pomegranate%20halves"],
+    ] as const) {
+      expect(
+        productImageUrl(cloudinary, "card", 1, { topNotes: [note] }),
+        `„${note}“`,
+      ).toContain(erwartet);
+    }
+  });
+
   it("hat für jede Duftfamilie ein Motiv", () => {
     // Ohne diesen Test fällt eine neu angelegte Duftfamilie erst auf, wenn ein
     // Produkt im Shop ohne Kulisse dasteht – und niemand weiss, warum.

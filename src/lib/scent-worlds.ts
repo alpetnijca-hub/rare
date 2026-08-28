@@ -33,8 +33,16 @@ export const scentWorlds: readonly ScentWorld[] = [
     sortOrder: 10,
     notes: [
       "zitrone", "limette", "bergamotte", "grapefruit", "mandarine",
-      "orange", "blutorange", "neroli", "petitgrain", "yuzu", "zitrusfruchte",
-      "meersalz", "salz", "wasser", "regen", "aquatisch", "marine",
+      "orange", "blutorange", "bitterorange", "neroli", "petitgrain", "yuzu",
+      "zitrusfruchte", "pomelo", "kalamansi", "zitronenverbene",
+      // Maritim: „Meerwasser“ enthält auch „Wasser“ – weil das längste
+      // Stichwort gewinnt, bekommt das Meer trotzdem seinen eigenen Eintrag.
+      // „Treibholz“ steht bewusst nicht hier: Ohne eigenes Stichwort greift
+      // „Holz“ und der Duft landet bei Holzig & Oud – im Bild bleibt es
+      // trotzdem Treibholz am Strand.
+      "meerwasser", "meereswasser", "meeresbrise", "meer", "ozean", "marine",
+      "aquatisch", "alge", "muschel", "sand", "meersalz", "salz",
+      "wasser", "regen", "nebel", "eiskristall", "schnee",
     ],
   },
   {
@@ -46,7 +54,9 @@ export const scentWorlds: readonly ScentWorld[] = [
       "pfirsich", "aprikose", "himbeere", "erdbeere", "brombeere",
       "johannisbeere", "kirsche", "pflaume", "apfel", "birne", "feige",
       "ananas", "mango", "litschi", "melone", "traube", "kokos", "dattel",
-      "cassis", "rhabarber",
+      "cassis", "rhabarber", "granatapfel", "quitte", "blaubeere",
+      "heidelbeere", "preiselbeere", "banane", "papaya", "passionsfrucht",
+      "maracuja",
     ],
   },
   {
@@ -58,7 +68,8 @@ export const scentWorlds: readonly ScentWorld[] = [
       "rose", "jasmin", "veilchen", "iris", "tuberose", "maiglockchen",
       "ylangylang", "orangenblute", "magnolie", "freesie", "pfingstrose",
       "narzisse", "geranie", "osmanthus", "kirschblute", "lilie", "flieder",
-      "mimose", "gardenie",
+      "mimose", "gardenie", "hyazinthe", "kamille", "lotus", "seerose",
+      "orchidee", "ginster",
     ],
   },
   {
@@ -68,8 +79,9 @@ export const scentWorlds: readonly ScentWorld[] = [
     sortOrder: 40,
     notes: [
       "minze", "basilikum", "rosmarin", "salbei", "thymian", "lavendel",
-      "grunertee", "tee", "bambus", "efeu", "eichenmoos", "heu", "wermut",
-      "estragon", "gras", "galbanum",
+      "grunertee", "schwarzertee", "matcha", "tee", "bambus", "efeu",
+      "eichenmoos", "moos", "heu", "wermut", "estragon", "gras", "galbanum",
+      "eukalyptus", "wacholder", "fenchel", "zitronengras", "farn",
     ],
   },
   {
@@ -79,7 +91,7 @@ export const scentWorlds: readonly ScentWorld[] = [
     sortOrder: 50,
     notes: [
       "pfeffer", "rosapfeffer", "kardamom", "zimt", "nelke", "muskat",
-      "safran", "ingwer", "koriander", "anis", "chili", "kumin",
+      "safran", "ingwer", "koriander", "anis", "sternanis", "chili", "kumin",
       "kreuzkummel", "lorbeer",
     ],
   },
@@ -91,7 +103,10 @@ export const scentWorlds: readonly ScentWorld[] = [
     notes: [
       "oud", "agarholz", "sandelholz", "zeder", "zedernholz", "kiefer",
       "birke", "eiche", "vetiver", "patchouli", "guajakholz", "kaschmirholz",
-      "papyrus", "zypresse", "holz",
+      "papyrus", "zypresse", "holz", "erde",
+      // „Rosenholz“ enthält „Rose“, „Ebenholz“ enthält „Holz“ – beide sind
+      // hier eigene Stichwörter, damit sie sicher beim Holz landen.
+      "rosenholz", "palisander", "ebenholz", "teakholz", "tanne", "pinie",
     ],
   },
   {
@@ -100,8 +115,11 @@ export const scentWorlds: readonly ScentWorld[] = [
     description: "Warm und schwer – Harze, Amber und Räucherwerk.",
     sortOrder: 70,
     notes: [
-      "amber", "bernstein", "weihrauch", "myrrhe", "benzoe", "labdanum",
-      "harz", "opoponax", "styrax", "elemi",
+      "amber", "bernstein", "weihrauch", "weihrauchharz", "myrrhe", "benzoe",
+      "labdanum", "harz", "opoponax", "styrax", "elemi",
+      // „Räucherwerk“ enthält „Rauch“ – als eigenes Stichwort landet es beim
+      // Weihrauch statt beim Lagerfeuer.
+      "raucherwerk",
     ],
   },
   {
@@ -110,8 +128,8 @@ export const scentWorlds: readonly ScentWorld[] = [
     description: "Dunkel und markant – Leder, Tabak und Rauch.",
     sortOrder: 80,
     notes: [
-      "leder", "wildleder", "tabak", "rauch", "birkenteer", "teer",
-      "whisky", "rum", "cognac",
+      "leder", "wildleder", "tabak", "pfeifentabak", "rauch", "lagerfeuer",
+      "birkenteer", "teer", "whisky", "rum", "cognac",
     ],
   },
   {
@@ -121,8 +139,10 @@ export const scentWorlds: readonly ScentWorld[] = [
     sortOrder: 90,
     notes: [
       "vanille", "tonkabohne", "kakao", "schokolade", "karamell", "honig",
-      "kaffee", "mandel", "pistazie", "haselnuss", "praline", "zucker",
-      "reis", "milch", "sahne", "marshmallow", "zuckerwatte",
+      "kaffee", "mandel", "pistazie", "haselnuss", "walnuss", "cashew",
+      "praline", "zucker", "reis", "milch", "kokosmilch", "sahne",
+      "marshmallow", "zuckerwatte", "nougat", "marzipan", "lakritz",
+      "ahornsirup", "keks", "geback", "popcorn",
     ],
   },
 ];

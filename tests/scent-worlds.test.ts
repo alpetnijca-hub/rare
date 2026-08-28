@@ -111,6 +111,44 @@ describe("worldsForProduct", () => {
     );
   });
 
+  it("verwechselt keine Note wegen eines kurzen Stichworts", () => {
+    // Diese Fälle sind beim Erweitern der Listen tatsächlich aufgetaucht:
+    // „Weisser Moschus“ enthält „eis“, „Sandelholz“ enthält „Sand“,
+    // „Räucherwerk“ enthält „Rauch“ und „Rosenholz“ enthält „Rose“.
+    expect(worldsForProduct({ topNotes: ["Weisser Moschus"] })).toEqual([]);
+
+    const paare: Array<[string, string]> = [
+      ["Sandelholz", "holzig-oud"],
+      ["Räucherwerk", "amber-harzig"],
+      ["Rosenholz", "holzig-oud"],
+      ["Ebenholz", "holzig-oud"],
+      ["Treibholz", "holzig-oud"],
+      ["Granatapfel", "fruchtig-suess"],
+      ["Zitronengras", "gruen-kraeuter"],
+      ["Kokosmilch", "suess-gourmand"],
+      ["Sternanis", "wuerzig"],
+      ["Pfeifentabak", "leder-rauch"],
+    ];
+
+    for (const [note, slug] of paare) {
+      expect(
+        worldsForProduct({ topNotes: [note] })[0]?.world.slug,
+        `„${note}“`,
+      ).toBe(slug);
+    }
+  });
+
+  it("erkennt das Meer als eigene Note", () => {
+    // „Meerwasser“ enthält „Wasser“ – ohne eigenes Stichwort gäbe es statt des
+    // Meeres nur ein paar Wassertropfen im Bild.
+    for (const note of ["Meerwasser", "Meeresbrise", "Ozean", "Meersalz"]) {
+      expect(
+        worldsForProduct({ topNotes: [note] })[0]?.world.slug,
+        `„${note}“`,
+      ).toBe("frisch-zitrisch");
+    }
+  });
+
   it("ordnet nichts zu, wenn keine Note passt", () => {
     expect(worldsForProduct({ topNotes: ["Moschus", "Ambroxan"] })).toEqual([]);
     expect(worldsForProduct({})).toEqual([]);
