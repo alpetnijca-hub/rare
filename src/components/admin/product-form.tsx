@@ -68,6 +68,39 @@ export const emptyProduct: ProductFormValues = {
   categoryIds: [],
 };
 
+/**
+ * Ein Kategorie-Häkchen.
+ *
+ * Bewusst das ganze Feld als Label: Damit trifft man auch mit dem Daumen auf
+ * dem Handy, statt das kleine Kästchen suchen zu müssen.
+ */
+function KategorieHaken({
+  category,
+  checked,
+}: {
+  category: { id: string; name: string };
+  checked: boolean;
+}) {
+  return (
+    <label
+      className="flex cursor-pointer items-center gap-3 border border-line px-3 py-2.5 text-sm
+        text-cream transition-colors hover:border-line-strong
+        has-[:checked]:border-gold/60 has-[:checked]:bg-gold/5"
+    >
+      <input
+        type="checkbox"
+        name="categoryIds"
+        value={category.id}
+        defaultChecked={checked}
+        className="size-4 shrink-0 cursor-pointer appearance-none border border-line-strong bg-ink
+          checked:border-gold checked:bg-gold
+          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+      />
+      <span>{category.name}</span>
+    </label>
+  );
+}
+
 export function ProductForm({
   values,
   categories,
@@ -80,6 +113,14 @@ export function ProductForm({
 }) {
   const action = saveProductAction.bind(null, values.id ?? null);
   const [state, formAction] = useActionState(action, idleState);
+
+  // Zielgruppe und übrige Kategorien getrennt anzeigen. In einer gemeinsamen
+  // Liste ging unter, dass „Damen / Herren / Unisex“ die Angabe ist, die den
+  // Duft überhaupt erst im Menü auftauchen lässt.
+  const zielgruppen = categories.filter((category) => category.kind === "GENDER");
+  const weitereKategorien = categories.filter(
+    (category) => category.kind !== "GENDER",
+  );
 
   return (
     <form action={formAction} className="flex flex-col gap-6">
@@ -193,6 +234,58 @@ export function ProductForm({
       </Card>
 
       <Card
+        title="Für wen ist der Duft?"
+        description="Damit erscheint der Duft im Menü unter Damen, Herren oder Unisex – und im passenden Filter der Shopseite. Mehrfachauswahl ist erlaubt."
+      >
+        {zielgruppen.length > 0 ? (
+          <fieldset>
+            <legend className="sr-only">Zielgruppe zuordnen</legend>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {zielgruppen.map((category) => (
+                <KategorieHaken
+                  key={category.id}
+                  category={category}
+                  checked={values.categoryIds.includes(category.id)}
+                />
+              ))}
+            </div>
+          </fieldset>
+        ) : (
+          <p className="text-sm leading-relaxed text-muted">
+            Es sind noch keine Zielgruppen angelegt. Unter{" "}
+            <Link
+              href="/admin/kategorien"
+              className="text-gold underline underline-offset-2 hover:text-gold-light"
+            >
+              Kategorien
+            </Link>{" "}
+            legst du „Damen“, „Herren“ und „Unisex“ an – danach erscheinen sie
+            hier zum Anhaken.
+          </p>
+        )}
+      </Card>
+
+      {weitereKategorien.length > 0 && (
+        <Card
+          title="Weitere Kategorien"
+          description="Optional. Zusätzliche Einordnung neben der Zielgruppe."
+        >
+          <fieldset>
+            <legend className="sr-only">Weitere Kategorien zuordnen</legend>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {weitereKategorien.map((category) => (
+                <KategorieHaken
+                  key={category.id}
+                  category={category}
+                  checked={values.categoryIds.includes(category.id)}
+                />
+              ))}
+            </div>
+          </fieldset>
+        </Card>
+      )}
+
+      <Card
         title="Duftnoten"
         description="Mehrere Noten mit Komma trennen, z. B. „Bergamotte, Zitrone, Pfeffer“."
       >
@@ -256,36 +349,6 @@ export function ProductForm({
             )}
           </Field>
         </div>
-      </Card>
-
-      <Card title="Kategorien">
-        <fieldset>
-          <legend className="sr-only">Kategorien zuordnen</legend>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {categories.map((category) => (
-              <label
-                key={category.id}
-                className="flex cursor-pointer items-center gap-3 border border-line px-3 py-2.5 text-sm text-cream transition-colors hover:border-line-strong"
-              >
-                <input
-                  type="checkbox"
-                  name="categoryIds"
-                  value={category.id}
-                  defaultChecked={values.categoryIds.includes(category.id)}
-                  className="size-4 shrink-0 cursor-pointer appearance-none border border-line-strong bg-ink
-                    checked:border-gold checked:bg-gold
-                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-                />
-                <span>
-                  {category.name}
-                  <span className="ml-2 text-xs text-subtle">
-                    {category.kind === "GENDER" ? "Zielgruppe" : "Art"}
-                  </span>
-                </span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
       </Card>
 
       {/* Bilder und erste Größe nur beim Anlegen. Beim Bearbeiten gibt es

@@ -1,15 +1,20 @@
 import { prisma } from "@/lib/prisma";
 import { isCloudinaryConfigured } from "@/lib/cloudinary";
+import { planScentWorlds } from "@/lib/scent-world-sync";
+import { ScentWorldPanel } from "@/components/admin/scent-world-panel";
 import { AdminPageHeader, Card, EmptyRow } from "@/components/admin/layout-parts";
 import { CategoryManager } from "@/components/admin/category-manager";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminCategoriesPage() {
-  const categories = await prisma.category.findMany({
-    orderBy: [{ kind: "asc" }, { sortOrder: "asc" }],
-    include: { _count: { select: { products: true } } },
-  });
+  const [categories, plan] = await Promise.all([
+    prisma.category.findMany({
+      orderBy: [{ kind: "asc" }, { sortOrder: "asc" }],
+      include: { _count: { select: { products: true } } },
+    }),
+    planScentWorlds(prisma),
+  ]);
 
   return (
     <>
@@ -17,6 +22,10 @@ export default async function AdminCategoriesPage() {
         title="Kategorien"
         description="Zielgruppen (Damen, Herren, Unisex) und Produktarten für Navigation und Filter. Das Kachelbild erscheint auf der Startseite."
       />
+
+      <Card title="Duftwelten aus den Duftnoten">
+        <ScentWorldPanel plan={plan} />
+      </Card>
 
       <Card>
         {categories.length === 0 ? (

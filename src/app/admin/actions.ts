@@ -14,6 +14,7 @@ import {
 } from "@/lib/email";
 import { deleteCloudinaryImage } from "@/lib/cloudinary";
 import { productImageUrl } from "@/lib/product-image";
+import { applyScentWorlds } from "@/lib/scent-world-sync";
 import type { SceneSource } from "@/config/scent-scenes";
 import {
   adminCategorySchema,
@@ -672,6 +673,24 @@ export async function saveCategoryAction(
   revalidatePath("/shop");
 
   return success("Kategorie gespeichert.");
+}
+
+/**
+ * Duftwelten aus den Duftnoten erzeugen und zuordnen.
+ *
+ * Der Adminbereich zeigt vorher an, was passieren würde; hier wird genau
+ * dieser Plan ausgeführt. Angefasst werden nur die Duftwelt-Kategorien –
+ * „Damen“, „Herren“ und alles von Hand Vergebene bleibt unberührt.
+ */
+export async function applyScentWorldsAction(): Promise<void> {
+  await requireAdmin();
+
+  await applyScentWorlds(prisma);
+
+  revalidatePath("/admin/kategorien");
+  revalidatePath("/admin/produkte");
+  revalidatePath("/shop");
+  revalidatePath("/");
 }
 
 export async function deleteCategoryAction(formData: FormData): Promise<void> {

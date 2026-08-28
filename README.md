@@ -64,6 +64,35 @@ Prisma 7 · Stripe · Resend · Auth.js v5 · Cloudinary · Vitest
 > `siteConfig.contact` eintragen – Impressum, AGB, Datenschutzerklärung,
 > Footer und alle E-Mails zeigen sie dann automatisch wieder an.
 
+### Duftwelten aus den Duftnoten
+
+Unter **Admin → Kategorien** steht oben „Duftwelten aus den Duftnoten“. Der
+Shop liest die Kopf-, Herz- und Basisnoten aller eigenen Produkte und schlägt
+Kategorien vor: „Vanille, Tonkabohne, Karamell“ ergibt *Süss & Gourmand*,
+„Oud, Zeder, Vetiver“ ergibt *Holzig & Oud*.
+
+Die Regeln stehen in `src/lib/scent-worlds.ts`:
+
+- Eine Welt zählt, wenn sie **mindestens zwei** Noten trifft – oder wenn sie
+  der beste Treffer ist. Sonst landete jeder Duft mit einer einzigen
+  Pfeffernote unter *Würzig*.
+- Höchstens **zwei Welten** pro Duft. Ein Duft in fünf Kategorien hilft beim
+  Stöbern nicht mehr.
+- Erkannt wird über das **längste enthaltene Stichwort** (`src/lib/notes.ts`).
+  In echten Daten steht „Oudholz“, „Tabakblatt“ und „Schwarzer Pfeffer“, nicht
+  „Oud“, „Tabak“ und „Pfeffer“. Die Regel „längstes Stichwort gewinnt“ sorgt
+  ausserdem dafür, dass „Eichenmoos“ beim Moos landet und nicht beim Holz.
+
+Der Adminbereich zeigt den Vorschlag **vor** dem Ausführen an, samt der Noten,
+die den Ausschlag gaben. Angefasst werden ausschliesslich Duftwelt-Kategorien;
+von Hand vergebene Zuordnungen wie „Damen“ oder „Herren“ bleiben unberührt.
+Der Knopf lässt sich beliebig oft drücken – ändern sich die Duftnoten eines
+Produkts, wird beim nächsten Durchlauf umsortiert.
+
+Auf der Startseite bekommen nur die Zielgruppen grosse Kacheln; die Duftwelten
+stehen als Textzeile darunter, sonst bestünde die Seite nur noch aus
+Kategorien.
+
 Weitere Punkte, die zwingend zu erledigen sind:
 
 - **Mehrwertsteuer:** `SHOP_TAX_RATE_BP` steht auf `0`, weil ohne UID und ohne

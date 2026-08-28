@@ -27,6 +27,8 @@
  *     zusammengewürfelte Fotos.
  */
 
+import { findNoteKeyword } from "@/lib/notes";
+
 /** Gemeinsame Bildsprache aller Kulissen: dunkel, warm, ruhig. */
 const sceneSetting =
   "on dark stone surface with warm golden light and soft shadows " +
@@ -62,8 +64,9 @@ const sceneMotifs: Record<string, string> = {
  * hier nicht drin und werden übersprungen, statt das Bild mit einer erfundenen
  * Darstellung zu füllen.
  *
- * Die Schlüssel werden kleingeschrieben und ohne Umlaute verglichen (siehe
- * `normalizeNote`): „Vanille“, „vanille“ und „VANILLE“ treffen alle.
+ * Die Schlüssel werden kleingeschrieben und ohne Umlaute verglichen und
+ * müssen nur **in** der Note stecken: „Vanille“, „vanille“ und
+ * „Vanilleschote“ treffen alle denselben Eintrag (siehe `src/lib/notes.ts`).
  */
 const noteMotifs: Record<string, string> = {
   // Zitrus
@@ -189,15 +192,16 @@ const noteMotifs: Record<string, string> = {
   wasser: "water droplets",
 };
 
-/** Kleinschreiben und Umlaute auflösen, damit die Suche zuverlässig trifft. */
-function normalizeNote(note: string): string {
-  return note
-    .toLowerCase()
-    .replace(/ä/g, "a")
-    .replace(/ö/g, "o")
-    .replace(/ü/g, "u")
-    .replace(/ß/g, "ss")
-    .replace(/[^a-z]/g, "");
+const noteKeywords = Object.keys(noteMotifs);
+
+/**
+ * Motiv zu einer eingetippten Note. Erkannt wird über das längste enthaltene
+ * Stichwort, damit auch „Oudholz“, „Tabakblatt“ und „Vanilleschote“ treffen –
+ * siehe `src/lib/notes.ts`.
+ */
+function motifForNote(note: string): string | undefined {
+  const keyword = findNoteKeyword(note, noteKeywords);
+  return keyword ? noteMotifs[keyword] : undefined;
 }
 
 /**
@@ -218,7 +222,7 @@ export function motifFromNotes(notes: readonly string[]): string | null {
   const gefunden: string[] = [];
 
   for (const note of notes) {
-    const motif = noteMotifs[normalizeNote(note)];
+    const motif = motifForNote(note);
     // Dubletten überspringen: Steht „Rose“ in Kopf- und Herznote, soll die
     // Kulisse nicht zweimal dasselbe Motiv enthalten.
     if (motif && !gefunden.includes(motif)) gefunden.push(motif);
@@ -270,7 +274,7 @@ export function usedNotes(notes: readonly string[]): string[] {
   const motive: string[] = [];
 
   for (const note of notes) {
-    const motif = noteMotifs[normalizeNote(note)];
+    const motif = motifForNote(note);
     if (motif && !motive.includes(motif)) {
       motive.push(motif);
       treffer.push(note);

@@ -115,6 +115,12 @@ export default async function HomePage() {
   ]);
   const demoProducts = demoStatus.demoProducts;
 
+  // Grosse Kacheln nur für die Zielgruppen. Die Duftwelten kämen sonst als
+  // zehn weitere Kacheln dazu und die Startseite bestünde nur noch aus
+  // Kategorien; sie stehen deshalb als Textzeile darunter.
+  const zielgruppen = categories.filter((category) => category.kind === "GENDER");
+  const duftwelten = categories.filter((category) => category.kind !== "GENDER");
+
   const freeShippingFrom = amountUntilFreeShipping(0, "standard");
 
   return (
@@ -251,7 +257,7 @@ export default async function HomePage() {
       {/* ---------------------------------------------------------------- */}
       {/* Kategorien                                                        */}
       {/* ---------------------------------------------------------------- */}
-      {categories.length > 0 && (
+      {zielgruppen.length > 0 && (
         <section
           aria-labelledby="kategorien"
           className="border-y border-line bg-charcoal"
@@ -268,7 +274,7 @@ export default async function HomePage() {
             <ul
               className="grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3"
             >
-              {categories.map((category) => (
+              {zielgruppen.map((category) => (
                 <li key={category.id}>
                   <Link
                     href={`/shop?kategorie=${category.slug}`}
@@ -324,6 +330,26 @@ export default async function HomePage() {
                 </li>
               ))}
             </ul>
+
+            {duftwelten.length > 0 && (
+              <div className="mt-10 border-t border-line pt-8">
+                <p className="eyebrow mb-4">Oder nach Duftwelt</p>
+                <ul className="flex flex-wrap gap-2.5">
+                  {duftwelten.map((category) => (
+                    <li key={category.id}>
+                      <Link
+                        href={`/shop?kategorie=${category.slug}`}
+                        className="inline-flex min-h-11 items-center border border-line px-4 text-sm
+                          text-muted transition-colors hover:border-gold/50 hover:text-gold-light
+                          focus-visible:border-gold/50"
+                      >
+                        {category.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </section>
       )}
