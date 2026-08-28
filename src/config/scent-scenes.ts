@@ -30,7 +30,15 @@
 
 import { findNoteKeyword } from "@/lib/notes";
 
-/** Gemeinsame Bildsprache aller Kulissen: dunkel, warm, ruhig. */
+/**
+ * Gemeinsame Bildsprache aller Kulissen: dunkel, warm, ruhig.
+ *
+ * Der Schluss („dark moody product photography shallow depth of field“) sieht
+ * überflüssig aus, ist es aber nicht: Nachgemessen an einem echten
+ * Produktfoto ergab derselbe Bildwunsch ohne diesen Teil eine mittelhelle
+ * Kulisse (Helligkeit 86 von 255), mit ihm eine dunkle (51). Wer hier kürzt,
+ * bekommt helle Bilder auf einer schwarzen Seite.
+ */
 const sceneSetting =
   "on dark stone surface with warm golden light and soft shadows " +
   "dark moody product photography shallow depth of field";
@@ -85,6 +93,12 @@ const noteMotifs: Record<string, string> = {
   pomelo: "pomelo halves",
   kalamansi: "small green calamansi limes",
   zitronenverbene: "lemon verbena leaves",
+  tangerine: "fresh tangerines",
+  clementine: "fresh clementines",
+  cedrat: "large citron fruits",
+  hesperiden: "assorted citrus fruits",
+  limone: "fresh lemons",
+  litsea: "small green litsea berries",
 
   // Früchte
   pfirsich: "ripe peaches",
@@ -116,6 +130,19 @@ const noteMotifs: Record<string, string> = {
   papaya: "sliced papaya",
   passionsfrucht: "halved passion fruits",
   maracuja: "halved passion fruits",
+  sanddorn: "orange sea buckthorn berries",
+  holunder: "dark elderberries on the branch",
+  holunderblute: "white elderflower umbels",
+  mirabelle: "small yellow mirabelle plums",
+  nektarine: "ripe nectarines",
+  zwetschge: "dark blue plums",
+  kaki: "ripe persimmons",
+  guave: "sliced guava",
+  physalis: "physalis in their husks",
+  kaktusfeige: "prickly pears",
+  tamarinde: "tamarind pods",
+  waldbeeren: "wild forest berries",
+  sauerkirsche: "dark sour cherries",
 
   // Blüten
   rose: "fresh rose petals",
@@ -144,6 +171,25 @@ const noteMotifs: Record<string, string> = {
   seerose: "pale water lilies on dark water",
   orchidee: "dark orchids",
   ginster: "yellow broom blossoms",
+  kamelie: "pale camellia flowers",
+  hibiskus: "deep red hibiscus flowers",
+  heliotrop: "purple heliotrope flowers",
+  immortelle: "dried yellow immortelle flowers",
+  champaca: "golden champaca flowers",
+  frangipani: "white frangipani flowers",
+  plumeria: "white plumeria flowers",
+  tiare: "white tiare blossoms",
+  monoi: "tiare blossoms in oil",
+  lindenblute: "pale linden blossoms",
+  akazie: "yellow acacia blossoms",
+  glyzinie: "hanging wisteria blossoms",
+  kornblume: "blue cornflowers",
+  ringelblume: "orange marigolds",
+  mohn: "red poppy flowers",
+  schneeglockchen: "white snowdrops",
+  krokus: "purple crocus flowers",
+  tulpe: "dark tulips",
+  dahlie: "deep red dahlias",
 
   // Kräuter und Grün
   minze: "fresh mint leaves",
@@ -166,6 +212,23 @@ const noteMotifs: Record<string, string> = {
   matcha: "green matcha powder",
   schwarzertee: "dried black tea leaves",
   farn: "dark fern fronds",
+  petersilie: "flat parsley leaves",
+  dill: "fresh dill fronds",
+  oregano: "dried oregano",
+  majoran: "marjoram sprigs",
+  ysop: "hyssop sprigs",
+  zitronenmelisse: "lemon balm leaves",
+  melisse: "lemon balm leaves",
+  brennnessel: "dark nettle leaves",
+  tomate: "tomato leaves on the vine",
+  weizen: "wheat ears",
+  hafer: "oat stalks",
+  stroh: "dry straw",
+  waldboden: "damp forest floor with leaves",
+  tannennadel: "fir needles and a small branch",
+  kiefernadel: "pine needles and a small branch",
+  klee: "green clover leaves",
+  chai: "chai spices and dried tea leaves",
 
   // Gewürze
   pfeffer: "black peppercorns",
@@ -184,6 +247,16 @@ const noteMotifs: Record<string, string> = {
   kumin: "cumin seeds",
   kreuzkummel: "cumin seeds",
   vanillepfeffer: "black peppercorns and vanilla pods",
+  piment: "allspice berries",
+  szechuanpfeffer: "szechuan peppercorns",
+  kubebenpfeffer: "cubeb peppercorns",
+  schwarzkummel: "black cumin seeds",
+  bockshornklee: "fenugreek seeds",
+  macis: "dried mace blades",
+  galgant: "galangal root",
+  kurkuma: "turmeric root and powder",
+  paprika: "dried red paprika pods",
+  zimtblute: "cassia buds",
 
   // Holz und Harz
   oud: "dark oud wood pieces",
@@ -205,6 +278,20 @@ const noteMotifs: Record<string, string> = {
   palisander: "dark rosewood planks",
   ebenholz: "polished ebony wood",
   teakholz: "teak wood pieces",
+  mahagoni: "dark mahogany wood",
+  akazienholz: "acacia wood pieces",
+  olivenholz: "olive wood pieces",
+  kampfer: "camphor crystals and wood",
+  fichte: "spruce branches and cones",
+  larche: "larch branches and cones",
+  buche: "beech wood pieces",
+  korkeiche: "cork oak bark",
+  birkenrinde: "curled birch bark",
+  drachenblut: "dragon blood resin pieces",
+  kopal: "copal resin pieces",
+  tolubalsam: "tolu balsam resin",
+  perubalsam: "peru balsam resin",
+  ambra: "grey ambergris on wet dark sand",
   guajakholz: "guaiac wood pieces",
   kaschmirholz: "pale cashmere wood pieces",
   tanne: "fir branches and cones",
@@ -236,6 +323,19 @@ const noteMotifs: Record<string, string> = {
   keks: "butter biscuits",
   geback: "golden pastry pieces",
   popcorn: "caramel popcorn",
+  baiser: "white meringue kisses",
+  meringue: "white meringue kisses",
+  cremebrulee: "creme brulee with a caramel crust",
+  waffel: "golden waffles",
+  zimtschnecke: "cinnamon rolls",
+  erdnuss: "roasted peanuts",
+  macadamia: "macadamia nuts",
+  kastanie: "roasted chestnuts",
+  marone: "roasted chestnuts",
+  melasse: "dark molasses in a jar",
+  butter: "a block of butter",
+  joghurt: "yoghurt in a bowl",
+  espresso: "a small espresso and roasted beans",
   walnuss: "cracked walnuts",
   cashew: "cashew nuts",
 
@@ -250,6 +350,14 @@ const noteMotifs: Record<string, string> = {
   whisky: "a glass of whisky and oak staves",
   rum: "dark rum in a glass and sugarcane",
   cognac: "cognac in a glass and oak wood",
+  gin: "gin in a glass with juniper berries",
+  wodka: "vodka in a glass on ice",
+  champagner: "champagne in a coupe glass",
+  wein: "red wine in a glass",
+  rotwein: "red wine in a glass",
+  kohle: "black charcoal pieces",
+  holzkohle: "black charcoal pieces",
+  asche: "fine grey ash",
 
   // Meer und Wasser
   //
@@ -283,6 +391,19 @@ const noteMotifs: Record<string, string> = {
   leinen: "folded natural linen cloth",
   papier: "sheets of aged paper",
   tinte: "spilled dark ink",
+  kies: "dark gravel",
+  kieselstein: "smooth dark pebbles",
+  kreide: "white chalk pieces",
+  beton: "raw concrete surface",
+  metall: "brushed dark metal",
+  kupfer: "polished copper",
+  pergament: "aged parchment",
+  staub: "fine dust in a beam of light",
+  ozon: "clear air over dark water",
+  gewitter: "storm clouds over dark water",
+  bienenwachs: "beeswax blocks",
+  kerzenwachs: "melted candle wax",
+  seide: "folded dark silk",
 };
 
 const noteKeywords = Object.keys(noteMotifs);
@@ -300,12 +421,12 @@ function motifForNote(note: string): string | undefined {
 /**
  * Wie viele Noten höchstens ins Bild dürfen.
  *
- * Zwei ist Absicht und ausprobiert: Mit drei Motiven wird die Beschreibung so
- * lang, dass das Bildmodell die dunkle Bildsprache am Ende überliest – im Test
- * kam eine helle, blaue Kulisse heraus statt der dunklen. Zwei Gegenstände
- * halten die Kulisse ruhig und lassen den Flakon der Hauptdarsteller bleiben.
+ * Drei ist die Obergrenze; mehr macht die Kulisse unruhig und zieht die
+ * Aufmerksamkeit vom Flakon weg. Drei Motive nebeneinander sind an einem
+ * echten Produktfoto nachgemessen und bleiben dunkel – vorausgesetzt,
+ * `sceneSetting` bleibt vollständig.
  */
-const maxNotesInScene = 2;
+const maxNotesInScene = 3;
 
 interface NoteMatch {
   /** Die Note so, wie sie im Adminbereich eingetippt wurde. */
@@ -360,17 +481,16 @@ export interface SceneSource {
 }
 
 /**
- * Welche Noten ins Bild kommen.
+ * Welche Noten ins Bild kommen: bis zu drei.
  *
- * Nach Möglichkeit **eine aus Kopf oder Herz und eine aus der Basis**. Das ist
- * nicht willkürlich: „Oud Maracuja“ hat Maracuja in der Kopfnote und Oud in
- * der Basis. Nähme man nur Kopf und Herz, stünde ausgerechnet das Oud nicht im
- * Bild – dabei ist es der Duft, für den das Parfüm gekauft wird. Dasselbe gilt
- * für Vanille, Amber und Leder: Die Signatur eines Dufts sitzt fast immer
- * unten.
+ * Kopf- und Herznoten kommen zuerst – sie beschreiben, wonach ein Duft beim
+ * Aufsprühen riecht. Danach die Basis, denn dort sitzt oft die Signatur:
+ * „Oud Maracuja“ hat Maracuja im Kopf und Oud in der Basis, und ausgerechnet
+ * das Oud gehört ins Bild.
  *
- * Gibt es auf einer Seite nichts Darstellbares, wird von der anderen
- * aufgefüllt.
+ * Damit die Basis nicht leer ausgeht, wenn Kopf und Herz schon drei Motive
+ * hergeben, ist der erste Basistreffer gesetzt: Von den drei Plätzen gehen
+ * höchstens zwei an Kopf und Herz, solange die Basis etwas beizutragen hat.
  */
 export function chosenNotes(source: SceneSource): NoteMatch[] {
   const vorne = matchNotes([
@@ -388,10 +508,13 @@ export function chosenNotes(source: SceneSource): NoteMatch[] {
     gewaehlt.push(eintrag);
   };
 
-  hinzu(vorne[0]);
+  // Ein Platz bleibt für die Basis reserviert, solange sie etwas hergibt.
+  const plaetzeVorne = unten.length > 0 ? maxNotesInScene - 1 : maxNotesInScene;
+  for (const eintrag of vorne.slice(0, plaetzeVorne)) hinzu(eintrag);
+
   hinzu(unten[0]);
 
-  // Bleibt Platz – weil eine der beiden Seiten leer war –, mit dem Rest
+  // Bleibt Platz – etwa weil eine der beiden Seiten leer war –, mit dem Rest
   // auffüllen.
   for (const eintrag of [...vorne, ...unten]) hinzu(eintrag);
 

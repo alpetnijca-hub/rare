@@ -80,6 +80,13 @@ export const discountCodeSchema = z
   .regex(/^[A-Za-z0-9_-]+$/, "Ungültiger Gutscheincode.")
   .transform((value) => value.toUpperCase());
 
+const freeSampleField = z
+  .string()
+  .trim()
+  .max(60)
+  .optional()
+  .nullable();
+
 export const checkoutSchema = z
   .object({
     items: cartSchema,
@@ -92,6 +99,11 @@ export const checkoutSchema = z
     shippingMethod: z.string().min(1).max(40),
     discountCode: discountCodeSchema.optional().or(z.literal("")),
     customerNote: z.string().trim().max(500).optional().or(z.literal("")),
+    /**
+     * Gewünschte Gratis-Abfüllung. Nur die ID – ob sie zusteht, entscheidet
+     * `buildQuote()` serverseitig.
+     */
+    freeSampleVariantId: freeSampleField,
     acceptTerms: z.literal(true, {
       message: "Bitte AGB und Datenschutzerklärung bestätigen.",
     }),
@@ -116,6 +128,7 @@ export const cartQuoteSchema = z.object({
   shippingMethod: z.string().min(1).max(40).optional(),
   country: z.enum(countryCodes).optional(),
   discountCode: discountCodeSchema.optional().or(z.literal("")),
+  freeSampleVariantId: freeSampleField,
 });
 
 export const newsletterSchema = z.object({

@@ -163,6 +163,27 @@ export const taxConfig = {
  */
 export const minOrderCents = envInt(process.env.SHOP_MIN_ORDER_CENTS, 1500);
 
+/**
+ * Ab diesem Warenwert liegt eine Gratis-Abfüllung bei, die sich die Kundschaft
+ * selbst aussuchen darf. Rappen, `0` schaltet die Aktion ab.
+ *
+ * Bezugsgrösse ist wie beim Mindestbestellwert der Warenwert vor Rabatt: Wer
+ * für CHF 120 einkauft, hat sich das Geschenk verdient – auch mit Gutschein.
+ */
+export const freeSampleFromCents = envInt(
+  process.env.SHOP_FREE_SAMPLE_FROM_CENTS,
+  12000,
+);
+
+/**
+ * Grösste Abfüllung, die als Geschenk zulässig ist (in Millilitern).
+ *
+ * Wichtig als Sicherheitsgrenze: Die gewünschte Variante kommt aus dem
+ * Browser. Ohne diese Prüfung liesse sich statt einer 2-ml-Probe ein
+ * 100-ml-Flakon als „Geschenk“ anfordern.
+ */
+export const freeSampleMaxMl = envInt(process.env.SHOP_FREE_SAMPLE_MAX_ML, 2);
+
 /** true, sobald ein Steuersatz konfiguriert ist. */
 export const isVatRegistered = taxConfig.rateBp > 0;
 

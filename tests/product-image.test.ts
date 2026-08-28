@@ -252,16 +252,16 @@ describe("Kulisse aus den Duftnoten", () => {
     expect(result).toContain("cedar");
   });
 
-  it("nimmt höchstens zwei Noten ins Bild", () => {
-    // Mit drei Motiven wird die Beschreibung so lang, dass das Bildmodell die
-    // dunkle Bildsprache am Ende überliest – im Test kam eine helle blaue
-    // Kulisse heraus statt der dunklen.
+  it("nimmt höchstens drei Noten ins Bild", () => {
+    // Mehr Motive machen die Kulisse unruhig und ziehen die Aufmerksamkeit vom
+    // Flakon weg. Damit drei Motive nicht doch eine helle Kulisse ergeben, ist
+    // der gemeinsame Schlussteil kurz gehalten.
     const motiv = motifFromNotes(["Zitrone", "Rose", "Vanille", "Leder"]);
 
     expect(motiv).not.toBeNull();
     expect(motiv).toContain("lemons");
     expect(motiv).toContain("rose");
-    expect(motiv).not.toContain("vanilla");
+    expect(motiv).toContain("vanilla");
     expect(motiv).not.toContain("leather");
   });
 
@@ -291,7 +291,7 @@ describe("Kulisse aus den Duftnoten", () => {
     ]);
     expect(
       usedNotes({ topNotes: ["Zitrone", "Rose"], baseNotes: ["Vanille"] }),
-    ).toEqual(["Zitrone", "Vanille"]);
+    ).toEqual(["Zitrone", "Rose", "Vanille"]);
     expect(usedNotes({ topNotes: ["Moschus", "Ambroxan"] })).toEqual([]);
   });
 
@@ -311,23 +311,24 @@ describe("Kulisse aus den Duftnoten", () => {
     expect(teil).not.toContain("%2F");
   });
 
-  it("nimmt eine Note von vorn und eine aus der Basis", () => {
+  it("hält der Basis einen Platz frei", () => {
     // Der Fall, der es aufgedeckt hat: „Oud Maracuja“ hat Maracuja in der
-    // Kopfnote und Oud in der Basis. Ohne die Basis stand ausgerechnet das Oud
-    // nicht im Bild – dabei ist es der Duft, für den das Parfüm gekauft wird.
+    // Kopfnote und Oud in der Basis. Ohne reservierten Platz stand
+    // ausgerechnet das Oud nicht im Bild – dabei ist es der Duft, für den das
+    // Parfüm gekauft wird.
     process.env.SHOP_IMAGE_BACKGROUND = "scene";
 
     const result = productImageUrl(cloudinary, "card", 1, {
-      topNotes: ["Maracuja"],
+      topNotes: ["Maracuja", "Bergamotte", "Zitrone"],
       heartNotes: ["Safran"],
-      baseNotes: ["Oudholz", "Vanille"],
+      baseNotes: ["Oudholz"],
     });
 
+    // Von drei Plätzen gehen höchstens zwei an Kopf und Herz.
     expect(result).toContain("passion%20fruits");
+    expect(result).toContain("bergamot");
     expect(result).toContain("oud%20wood");
-    // Nur zwei Motive – Safran und Vanille bleiben draussen.
     expect(result).not.toContain("saffron");
-    expect(result).not.toContain("vanilla");
   });
 
   it("füllt aus der Basis auf, wenn Kopf und Herz nichts hergeben", () => {

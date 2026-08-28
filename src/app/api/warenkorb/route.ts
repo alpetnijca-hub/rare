@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
       shippingMethodKey: parsed.data.shippingMethod,
       country: parsed.data.country,
       discountCode: parsed.data.discountCode || null,
+      freeSampleVariantId: parsed.data.freeSampleVariantId || null,
     });
 
     return Response.json(serializeQuote(quote), {

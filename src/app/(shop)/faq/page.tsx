@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { minOrderCents, returnsPolicy, siteConfig } from "@/config/site";
+import {
+  freeSampleFromCents,
+  minOrderCents,
+  returnsPolicy,
+  siteConfig,
+} from "@/config/site";
 import { shippingMethods } from "@/lib/shipping";
 import { formatPrice } from "@/lib/money";
 
@@ -58,6 +63,10 @@ const groups: Array<{ title: string; entries: FaqEntry[] }> = [
       {
         question: "Gibt es einen Mindestbestellwert?",
         answer: `Ja, ${formatPrice(minOrderCents)} Warenwert ohne Versandkosten. Zwei Abfüllungen genügen dafür in der Regel. Fehlt noch etwas, zeigen wir dir im Warenkorb genau an, wie viel.`,
+      },
+      {
+        question: "Bekomme ich ab einem bestimmten Betrag etwas dazu?",
+        answer: `Ja. Ab ${formatPrice(freeSampleFromCents)} Warenwert darfst du dir im Warenkorb eine Abfüllung aussuchen, die nichts kostet. Sie wird zusammen mit deiner Bestellung versendet. Ohne Auswahl versenden wir ohne Geschenk – die Auswahl steht im Warenkorb, sobald der Betrag erreicht ist.`,
       },
       {
         question: "Welche Zahlungsarten gibt es?",

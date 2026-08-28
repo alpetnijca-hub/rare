@@ -1,5 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import { minOrderCents, taxConfig } from "@/config/site";
+import {
+  freeSampleFromCents,
+  freeSampleMaxMl,
+  minOrderCents,
+  taxConfig,
+} from "@/config/site";
 import { includedTaxCents } from "@/lib/money";
 import {
   combinedDelivery,
@@ -56,6 +61,15 @@ export interface QuoteLine {
   deliveryMaxDays: number;
   issue: LineIssue | null;
   issueMessage: string | null;
+  /** Gratis-Abfüllung ab dem Aktionsbetrag – kostet nichts, zählt aber zum Bestand. */
+  isFreeSample: boolean;
+}
+
+/** Eine Abfüllung, die als Geschenk zur Wahl steht. */
+export interface FreeSampleOption {
+  variantId: string;
+  productName: string;
+  size: string;
 }
 
 export interface Quote {
@@ -74,6 +88,14 @@ export interface Quote {
   delivery: { minDays: number; maxDays: number; mixed: boolean };
   hasPreorderItems: boolean;
   itemCount: number;
+  /** Ab diesem Warenwert liegt eine Gratis-Abfüllung bei. 0 = keine Aktion. */
+  freeSampleFromCents: number;
+  /** true, wenn der Warenwert für die Gratis-Abfüllung reicht. */
+  freeSampleEligible: boolean;
+  /** Die gewählte Gratis-Abfüllung, falls eine gültige gewählt wurde. */
+  freeSampleVariantId: string | null;
+  /** Abfüllungen, die zur Wahl stehen. Nur gefüllt, wenn die Aktion greift. */
+  freeSampleOptions: FreeSampleOption[];
   /** Mindestbestellwert in Rappen. 0 = keine Regel. */
   minOrderCents: number;
   /** true, wenn der Warenwert unter dem Mindestbestellwert liegt. */
@@ -91,6 +113,8 @@ export interface QuoteOptions {
   shippingMethodKey?: string;
   country?: string;
   discountCode?: string | null;
+  /** Vom Browser gewünschte Gratis-Abfüllung. Wird serverseitig geprüft. */
+  freeSampleVariantId?: string | null;
 }
 
 const emptyDiscount: DiscountResult = {
@@ -107,7 +131,13 @@ const emptyDiscount: DiscountResult = {
  * verfügbaren Bestand reduziert. Beides wird über `notices` gemeldet.
  */
 export async function buildQuote(options: QuoteOptions): Promise<Quote> {
-  const { items, shippingMethodKey, country, discountCode } = options;
+  const {
+    items,
+    shippingMethodKey,
+    country,
+    discountCode,
+    freeSampleVariantId: gewuenschteProbe,
+  } = options;
 
   // Abgelaufene Reservierungen freigeben, BEVOR die verfügbare Menge
   // berechnet wird. Sonst erschiene Ware als vergriffen, die längst niemand
@@ -214,12 +244,97 @@ export async function buildQuote(options: QuoteOptions): Promise<Quote> {
       deliveryMaxDays: variant.deliveryMaxDays,
       issue,
       issueMessage,
+      isFreeSample: false,
     });
   }
 
   for (const entry of removed) notices.push(entry.message);
 
+  // Warenwert aus den bezahlten Positionen. Die Gratis-Abfüllung kommt erst
+  // danach dazu und darf ihn nicht verändern.
   const subtotalCents = lines.reduce((sum, line) => sum + line.lineTotalCents, 0);
+
+  // -----------------------------------------------------------------------
+  // Gratis-Abfüllung ab dem Aktionsbetrag.
+  //
+  // Die gewünschte Variante kommt aus dem Browser und wird deshalb hier noch
+  // einmal vollständig geprüft: Sie muss eine Probe sein, klein genug, aktiv
+  // und lieferbar. Ohne diese Prüfung liesse sich statt einer 2-ml-Probe ein
+  // 100-ml-Flakon als „Geschenk“ anfordern.
+  // -----------------------------------------------------------------------
+  const freeSampleEligible =
+    freeSampleFromCents > 0 && subtotalCents >= freeSampleFromCents;
+
+  let freeSampleOptions: FreeSampleOption[] = [];
+  let freeSampleVariantId: string | null = null;
+
+  if (freeSampleEligible) {
+    const proben = await prisma.productVariant.findMany({
+      where: {
+        isActive: true,
+        isSample: true,
+        volumeMl: { lte: freeSampleMaxMl },
+        product: { isActive: true },
+      },
+      include: {
+        product: {
+          include: { images: { orderBy: { sortOrder: "asc" }, take: 1 } },
+        },
+      },
+      orderBy: [{ product: { name: "asc" } }],
+    });
+
+    const lieferbar = proben.filter(
+      (variante) => getAvailability(variante).maxQuantity > 0,
+    );
+
+    freeSampleOptions = lieferbar.map((variante) => ({
+      variantId: variante.id,
+      productName: variante.product.name,
+      size: variante.size,
+    }));
+
+    const gewaehlt = gewuenschteProbe
+      ? lieferbar.find((variante) => variante.id === gewuenschteProbe)
+      : undefined;
+
+    if (gewuenschteProbe && !gewaehlt) {
+      notices.push(
+        "Die gewählte Gratis-Abfüllung ist nicht mehr verfügbar. Bitte wähle eine andere.",
+      );
+    }
+
+    if (gewaehlt) {
+      freeSampleVariantId = gewaehlt.id;
+      const bild = gewaehlt.product.images[0] ?? null;
+
+      lines.push({
+        variantId: gewaehlt.id,
+        productId: gewaehlt.productId,
+        productSlug: gewaehlt.product.slug,
+        productName: gewaehlt.product.name,
+        size: gewaehlt.size,
+        sku: gewaehlt.sku,
+        volumeMl: gewaehlt.volumeMl,
+        imageUrl: bild?.url ?? null,
+        imageAlt: bild?.alt ?? gewaehlt.product.name,
+        // Der Preis ist 0 – und zwar hier auf dem Server. Ein Preis aus dem
+        // Browser wird nirgends übernommen.
+        unitPriceCents: 0,
+        compareAtPriceCents: gewaehlt.priceCents,
+        quantity: 1,
+        requestedQuantity: 1,
+        lineTotalCents: 0,
+        availability: getAvailability(gewaehlt),
+        isPreorder: false,
+        deliveryMinDays: gewaehlt.deliveryMinDays,
+        deliveryMaxDays: gewaehlt.deliveryMaxDays,
+        issue: null,
+        issueMessage: null,
+        isFreeSample: true,
+      });
+    }
+  }
 
   // Rabatt auf den Warenwert.
   const discount = discountCode
@@ -285,6 +400,10 @@ export async function buildQuote(options: QuoteOptions): Promise<Quote> {
     delivery,
     hasPreorderItems: lines.some((line) => line.isPreorder),
     itemCount: lines.reduce((sum, line) => sum + line.quantity, 0),
+    freeSampleFromCents,
+    freeSampleEligible,
+    freeSampleVariantId,
+    freeSampleOptions,
     minOrderCents,
     belowMinimum,
     missingForMinimumCents: belowMinimum ? minOrderCents - subtotalCents : 0,
@@ -316,6 +435,7 @@ export interface SerializedQuote {
     deliveryMinDays: number;
     deliveryMaxDays: number;
     volumeMl: number;
+    isFreeSample: boolean;
   }>;
   subtotalCents: number;
   discountCents: number;
@@ -339,6 +459,10 @@ export interface SerializedQuote {
   deliveryMixed: boolean;
   hasPreorderItems: boolean;
   itemCount: number;
+  freeSampleFromCents: number;
+  freeSampleEligible: boolean;
+  freeSampleVariantId: string | null;
+  freeSampleOptions: FreeSampleOption[];
   minOrderCents: number;
   belowMinimum: boolean;
   missingForMinimumCents: number;
@@ -367,6 +491,7 @@ export function serializeQuote(quote: Quote): SerializedQuote {
       deliveryMinDays: line.deliveryMinDays,
       deliveryMaxDays: line.deliveryMaxDays,
       volumeMl: line.volumeMl,
+      isFreeSample: line.isFreeSample,
     })),
     subtotalCents: quote.subtotalCents,
     discountCents: quote.discountCents,
@@ -390,6 +515,10 @@ export function serializeQuote(quote: Quote): SerializedQuote {
     deliveryMixed: quote.delivery.mixed,
     hasPreorderItems: quote.hasPreorderItems,
     itemCount: quote.itemCount,
+    freeSampleFromCents: quote.freeSampleFromCents,
+    freeSampleEligible: quote.freeSampleEligible,
+    freeSampleVariantId: quote.freeSampleVariantId,
+    freeSampleOptions: quote.freeSampleOptions,
     minOrderCents: quote.minOrderCents,
     belowMinimum: quote.belowMinimum,
     missingForMinimumCents: quote.missingForMinimumCents,

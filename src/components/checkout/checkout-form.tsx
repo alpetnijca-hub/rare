@@ -234,7 +234,7 @@ function AddressFields({
 
 export function CheckoutForm() {
   const router = useRouter();
-  const { items, ready } = useCart();
+  const { items, ready, freeSampleVariantId } = useCart();
 
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -298,6 +298,9 @@ export function CheckoutForm() {
           billingAddress: billingDiffers ? billingAddress : undefined,
           shippingMethod: effectiveShippingMethod,
           discountCode: appliedCode || undefined,
+          // Nur die Wahl. Ob sie zusteht und dass sie nichts kostet,
+          // entscheidet der Server.
+          freeSampleVariantId: freeSampleVariantId || undefined,
           customerNote,
           acceptTerms,
           acceptWithdrawal,
@@ -584,7 +587,10 @@ export function CheckoutForm() {
 
         <ul className="flex flex-col gap-4 border-b border-line pb-5">
           {quote.lines.map((line) => (
-            <li key={line.variantId} className="flex gap-3">
+            <li
+              key={`${line.variantId}-${line.isFreeSample ? "gratis" : "kauf"}`}
+              className="flex gap-3"
+            >
               <div className="relative size-14 shrink-0 overflow-hidden border border-line bg-ink">
                 {line.imageUrl && (
                   <Image
@@ -607,13 +613,21 @@ export function CheckoutForm() {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm text-cream">{line.productName}</p>
                 <p className="text-xs text-subtle">
-                  {line.size} · {line.quantity} ×{" "}
-                  {formatPrice(line.unitPriceCents)}
+                  {line.isFreeSample ? (
+                    <>
+                      {line.size} · <span className="text-gold">Geschenk</span>
+                    </>
+                  ) : (
+                    <>
+                      {line.size} · {line.quantity} ×{" "}
+                      {formatPrice(line.unitPriceCents)}
+                    </>
+                  )}
                 </p>
               </div>
 
               <p className="whitespace-nowrap text-sm tabular-nums text-cream">
-                {formatPrice(line.lineTotalCents)}
+                {line.isFreeSample ? "Gratis" : formatPrice(line.lineTotalCents)}
               </p>
             </li>
           ))}

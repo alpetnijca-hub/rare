@@ -60,15 +60,26 @@ function CartLine({
             </h3>
             <p className="mt-1 text-sm text-muted">
               Größe: {line.size}
-              <span className="mx-2 text-subtle" aria-hidden="true">
-                ·
-              </span>
-              {formatPrice(line.unitPriceCents)} je Stück
+              {line.isFreeSample ? (
+                <>
+                  <span className="mx-2 text-subtle" aria-hidden="true">
+                    ·
+                  </span>
+                  <span className="text-gold">Dein Geschenk</span>
+                </>
+              ) : (
+                <>
+                  <span className="mx-2 text-subtle" aria-hidden="true">
+                    ·
+                  </span>
+                  {formatPrice(line.unitPriceCents)} je Stück
+                </>
+              )}
             </p>
           </div>
 
           <p className="whitespace-nowrap font-display text-lg text-cream">
-            {formatPrice(line.lineTotalCents)}
+            {line.isFreeSample ? "Gratis" : formatPrice(line.lineTotalCents)}
           </p>
         </div>
 
@@ -82,6 +93,19 @@ function CartLine({
           Lieferzeit {formatDeliveryRange(line.deliveryMinDays, line.deliveryMaxDays)}
         </p>
 
+        {/* Beim Geschenk gibt es nichts einzustellen: Menge 1, Preis 0. Der
+            einzige sinnvolle Knopf ist „andere wählen“. */}
+        {line.isFreeSample ? (
+          <div className="mt-1">
+            <button
+              type="button"
+              onClick={onRemove}
+              className="text-xs text-subtle underline underline-offset-4 transition-colors hover:text-gold-light"
+            >
+              Andere Abfüllung wählen
+            </button>
+          </div>
+        ) : (
         <div className="mt-1 flex flex-wrap items-center gap-4">
           <div className="flex items-center border border-line">
             <button
@@ -133,13 +157,15 @@ function CartLine({
             <span className="sr-only"> – {line.productName}, Größe {line.size}</span>
           </button>
         </div>
+        )}
       </div>
     </li>
   );
 }
 
 export function CartView() {
-  const { items, ready, setQuantity, removeItem } = useCart();
+  const { items, ready, setQuantity, removeItem, freeSampleVariantId, setFreeSample } =
+    useCart();
   const [discountInput, setDiscountInput] = useState("");
   const [appliedCode, setAppliedCode] = useState("");
 
@@ -239,15 +265,62 @@ export function CartView() {
         <ul className={cn("flex flex-col", loading && "opacity-60")}>
           {quote?.lines.map((line) => (
             <CartLine
-              key={line.variantId}
+              // Das Geschenk kann dieselbe Variante sein wie eine gekaufte
+              // Position – der Schlüssel muss beide auseinanderhalten.
+              key={`${line.variantId}-${line.isFreeSample ? "gratis" : "kauf"}`}
               line={line}
               onQuantityChange={(quantity) =>
                 setQuantity(line.variantId, quantity)
               }
-              onRemove={() => removeItem(line.variantId)}
+              onRemove={() =>
+                line.isFreeSample
+                  ? setFreeSample(null)
+                  : removeItem(line.variantId)
+              }
             />
           ))}
         </ul>
+
+        {/* Gratis-Abfüllung ab dem Aktionsbetrag. Die Liste kommt vom Server –
+            der Browser kennt weder Bestand noch Preise. */}
+        {quote?.freeSampleEligible && quote.freeSampleOptions.length > 0 && (
+          <div className="mt-8 border border-gold/40 bg-gold/5 px-5 py-5">
+            <p className="eyebrow mb-2 text-gold">Dein Geschenk</p>
+            <h2 className="font-display text-xl text-cream">
+              Such dir eine Abfüllung aus – gratis
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted">
+              Ab {formatPrice(quote.freeSampleFromCents)} legen wir eine
+              Abfüllung deiner Wahl dazu. Sie kostet nichts und wird mit deiner
+              Bestellung versendet.
+            </p>
+
+            <label className="sr-only" htmlFor="gratisprobe">
+              Gratis-Abfüllung auswählen
+            </label>
+            <select
+              id="gratisprobe"
+              value={freeSampleVariantId ?? ""}
+              onChange={(event) => setFreeSample(event.target.value || null)}
+              className="mt-4 min-h-11 w-full border border-line bg-charcoal px-3.5 text-[15px] text-cream
+                transition-colors hover:border-line-strong focus:border-gold focus:outline-none
+                focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            >
+              <option value="">Bitte auswählen …</option>
+              {quote.freeSampleOptions.map((option) => (
+                <option key={option.variantId} value={option.variantId}>
+                  {option.productName} – {option.size}
+                </option>
+              ))}
+            </select>
+
+            {!quote.freeSampleVariantId && (
+              <p className="mt-3 text-xs leading-relaxed text-subtle">
+                Ohne Auswahl versenden wir die Bestellung ohne Geschenk.
+              </p>
+            )}
+          </div>
+        )}
 
         {mixedDelivery && (
           <p className="mt-6 border border-line bg-charcoal px-4 py-3 text-sm leading-relaxed text-muted">

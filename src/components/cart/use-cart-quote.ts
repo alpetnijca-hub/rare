@@ -28,7 +28,7 @@ export interface UseCartQuoteResult {
 export function useCartQuote(
   options: UseCartQuoteOptions = {},
 ): UseCartQuoteResult {
-  const { items, ready, revision, removeMany } = useCart();
+  const { items, ready, revision, removeMany, freeSampleVariantId } = useCart();
   const { shippingMethod, country, discountCode } = options;
 
   const [quote, setQuote] = useState<SerializedQuote | null>(null);
@@ -70,6 +70,7 @@ export function useCartQuote(
             shippingMethod,
             country,
             discountCode: discountCode || undefined,
+            freeSampleVariantId: freeSampleVariantId || undefined,
           }),
         });
 
@@ -112,6 +113,7 @@ export function useCartQuote(
     shippingMethod,
     country,
     discountCode,
+    freeSampleVariantId,
     manualRefresh,
     removeMany,
   ]);

@@ -81,6 +81,7 @@ export async function POST(request: NextRequest) {
     shippingMethodKey: input.shippingMethod,
     country: input.shippingAddress.country,
     discountCode: input.discountCode || null,
+    freeSampleVariantId: input.freeSampleVariantId || null,
   });
 
   // Vor der allgemeinen Prüfung, damit der Kunde den echten Grund erfährt und

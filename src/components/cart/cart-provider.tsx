@@ -33,11 +33,20 @@ interface CartContextValue {
   clear: () => void;
   /** Entfernt Positionen, die der Server als nicht bestellbar meldet. */
   removeMany: (variantIds: string[]) => void;
+  /**
+   * Gewählte Gratis-Abfüllung ab dem Aktionsbetrag.
+   *
+   * Nur die Auswahl wird gemerkt. Ob sie zusteht und was sie kostet,
+   * entscheidet ausschliesslich der Server.
+   */
+  freeSampleVariantId: string | null;
+  setFreeSample: (variantId: string | null) => void;
   /** Zeitstempel der letzten Änderung – als Signal für Neuberechnungen. */
   revision: number;
 }
 
 const STORAGE_KEY = "rare-scents-cart-v1";
+const FREE_SAMPLE_KEY = "rare-scents-gratisprobe-v1";
 const MAX_QUANTITY = 20;
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -68,8 +77,20 @@ function readStorage(): CartItem[] {
   }
 }
 
+function readFreeSample(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.localStorage.getItem(FREE_SAMPLE_KEY);
+  } catch {
+    return null;
+  }
+}
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [freeSampleVariantId, setFreeSampleVariantId] = useState<string | null>(
+    null,
+  );
   const [ready, setReady] = useState(false);
   const [revision, setRevision] = useState(0);
 
@@ -81,6 +102,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(readStorage());
+    setFreeSampleVariantId(readFreeSample());
     setReady(true);
   }, []);
 
@@ -93,6 +115,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       // Privater Modus o. ä. – der Warenkorb bleibt dann nur im Speicher.
     }
   }, [items, ready]);
+
+  // Gewählte Gratis-Abfüllung merken. Gelesen wird sie oben zusammen mit dem
+  // Warenkorb, damit es bei einer Hydration bleibt.
+  const setFreeSample = useCallback((variantId: string | null) => {
+    setFreeSampleVariantId(variantId);
+    setRevision((value) => value + 1);
+    try {
+      if (variantId) {
+        window.localStorage.setItem(FREE_SAMPLE_KEY, variantId);
+      } else {
+        window.localStorage.removeItem(FREE_SAMPLE_KEY);
+      }
+    } catch {
+      // Privater Modus – die Wahl bleibt dann nur im Speicher.
+    }
+  }, []);
 
   // Warenkorb über mehrere Tabs synchron halten.
   useEffect(() => {
@@ -181,8 +219,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       removeMany,
       clear,
       revision,
+      freeSampleVariantId,
+      setFreeSample,
     }),
-    [items, ready, addItem, setQuantity, removeItem, removeMany, clear, revision],
+    [
+      items,
+      ready,
+      addItem,
+      setQuantity,
+      removeItem,
+      removeMany,
+      clear,
+      revision,
+      freeSampleVariantId,
+      setFreeSample,
+    ],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

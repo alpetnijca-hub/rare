@@ -7,6 +7,7 @@ import {
 } from "@/components/legal/legal-page";
 import { ProviderAddress } from "@/components/legal/provider-address";
 import {
+  freeSampleFromCents,
   isVatRegistered,
   minOrderCents,
   maxPreorderQuantity,
@@ -107,6 +108,19 @@ export default function TermsPage() {
             (Warenwert ohne Versandkosten, vor Abzug eines Rabattcodes). Wird er
             nicht erreicht, lässt sich die Bestellung nicht abschliessen; der
             fehlende Betrag wird im Warenkorb angezeigt.
+          </p>
+        )}
+        {freeSampleFromCents > 0 && (
+          <p>
+            Ab einem Warenwert von{" "}
+            <strong className="font-medium text-cream">
+              {formatPrice(freeSampleFromCents)}
+            </strong>{" "}
+            legen wir eine Abfüllung bei, die im Warenkorb ausgewählt werden
+            kann und nicht berechnet wird. Es besteht kein Anspruch auf eine
+            bestimmte Abfüllung; die Auswahl richtet sich nach dem verfügbaren
+            Bestand. Die Aktion kann jederzeit für künftige Bestellungen
+            geändert oder beendet werden.
           </p>
         )}
         <p>

@@ -13,14 +13,22 @@
  * „Orange“, gehört aber zu den Blüten.
  */
 
-/** Kleinschreiben, Umlaute auflösen, alles Übrige entfernen. */
+/**
+ * Kleinschreiben, Akzente auflösen, alles Übrige entfernen.
+ *
+ * Über NFD zerlegt und die Zeichen ohne eigene Breite entfernt: Damit fallen
+ * nicht nur Umlaute weg, sondern auch die französischen Akzente, die in
+ * Duftnoten ständig vorkommen – „Crème brûlée“, „Thé vert“, „Café“. Vorher
+ * blieb davon Buchstabensalat übrig und keine Note traf.
+ *
+ * ß wird vorher zu ss, weil es sich nicht zerlegen lässt.
+ */
 export function normalizeNote(note: string): string {
   return note
     .toLowerCase()
-    .replace(/ä/g, "a")
-    .replace(/ö/g, "o")
-    .replace(/ü/g, "u")
     .replace(/ß/g, "ss")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z]/g, "");
 }
 
