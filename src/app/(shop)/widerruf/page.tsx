@@ -98,7 +98,7 @@ export default function ReturnRightPage() {
               Gesundheitsschutzes und der Hygiene ist eine Rückgabe deshalb
               ausgeschlossen.
             </>,
-            "Individuell nach deinen Vorgaben zusammengestellte Sets.",
+            "Individuell nach deinen Wünschen abgefüllte Sonderanfertigungen.",
             "Artikel, die sichtbar benutzt oder beschädigt wurden.",
           ]}
         />

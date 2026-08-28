@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { idleState } from "@/app/admin/state";
 import { deleteCategoryAction, saveCategoryAction } from "@/app/admin/actions";
+import { CategoryImageField } from "@/components/admin/category-image-field";
 import { ConfirmSubmit, FormMessage, SubmitButton } from "@/components/admin/ui";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,7 @@ export interface CategoryRow {
   slug: string;
   description: string;
   kind: string;
+  heroImageUrl: string;
   sortOrder: number;
   isActive: boolean;
   productCount: number;
@@ -21,9 +23,11 @@ export interface CategoryRow {
 
 function CategoryForm({
   category,
+  cloudinaryEnabled,
   onDone,
 }: {
   category?: CategoryRow;
+  cloudinaryEnabled: boolean;
   onDone?: () => void;
 }) {
   const action = saveCategoryAction.bind(null, category?.id ?? null);
@@ -50,7 +54,7 @@ function CategoryForm({
           {(aria) => (
             <Select {...aria} name="kind" defaultValue={category?.kind ?? "GENDER"}>
               <option value="GENDER">Zielgruppe (Damen / Herren / Unisex)</option>
-              <option value="TYPE">Produktart (Abfüllungen / Sets)</option>
+              <option value="TYPE">Produktart (z. B. Abfüllungen)</option>
             </Select>
           )}
         </Field>
@@ -72,6 +76,12 @@ function CategoryForm({
           <TextArea {...aria} name="description" rows={2} defaultValue={category?.description} />
         )}
       </Field>
+
+      <CategoryImageField
+        id={`cat-image-${category?.id ?? "neu"}`}
+        value={category?.heroImageUrl ?? ""}
+        cloudinaryEnabled={cloudinaryEnabled}
+      />
 
       <Checkbox
         id={`cat-active-${category?.id ?? "neu"}`}
@@ -96,7 +106,13 @@ function CategoryForm({
   );
 }
 
-export function CategoryManager({ categories }: { categories: CategoryRow[] }) {
+export function CategoryManager({
+  categories,
+  cloudinaryEnabled,
+}: {
+  categories: CategoryRow[];
+  cloudinaryEnabled: boolean;
+}) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
 
@@ -169,13 +185,18 @@ export function CategoryManager({ categories }: { categories: CategoryRow[] }) {
 
       {editingId && (
         <CategoryForm
+          key={editingId}
           category={categories.find((entry) => entry.id === editingId)}
+          cloudinaryEnabled={cloudinaryEnabled}
           onDone={() => setEditingId(null)}
         />
       )}
 
       {adding ? (
-        <CategoryForm onDone={() => setAdding(false)} />
+        <CategoryForm
+          cloudinaryEnabled={cloudinaryEnabled}
+          onDone={() => setAdding(false)}
+        />
       ) : (
         <Button variant="secondary" size="sm" onClick={() => setAdding(true)}>
           Neue Kategorie

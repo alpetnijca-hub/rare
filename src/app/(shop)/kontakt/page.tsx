@@ -1,7 +1,13 @@
+import { Fragment } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ContactForm } from "@/components/contact-form";
-import { siteConfig } from "@/config/site";
+import {
+  addressOnRequestNote,
+  hasPublicAddress,
+  postalAddressLines,
+  siteConfig,
+} from "@/config/site";
 
 export const metadata: Metadata = {
   title: "Kontakt",
@@ -71,15 +77,17 @@ export default function ContactPage() {
               <h2 className="eyebrow mb-3">Anschrift</h2>
               <address className="text-sm not-italic leading-relaxed text-muted">
                 {siteConfig.legalName}
-                <br />
-                {siteConfig.contact.street}
-                <br />
-                {siteConfig.contact.postalCode} {siteConfig.contact.city}
-                <br />
-                {siteConfig.contact.country}
+                {postalAddressLines.map((line) => (
+                  <Fragment key={line}>
+                    <br />
+                    {line}
+                  </Fragment>
+                ))}
               </address>
               <p className="mt-3 text-xs leading-relaxed text-subtle">
-                Kein Ladengeschäft – bitte sende Retouren erst nach Rücksprache.
+                {hasPublicAddress
+                  ? "Kein Ladengeschäft – bitte sende Retouren erst nach Rücksprache."
+                  : addressOnRequestNote}
               </p>
             </div>
 

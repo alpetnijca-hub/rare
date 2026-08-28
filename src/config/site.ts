@@ -12,12 +12,14 @@ export const siteConfig = {
   /** Anzeigename des Shops. */
   name: "Rare Scents",
   /**
-   * Rechtlicher Name für Impressum, Bestellbestätigungen und Rechnungen.
-   * Einzelunternehmen ohne Handelsregistereintrag treten unter dem Namen der
-   * Inhaberin bzw. des Inhabers auf; der Fantasiename darf ergänzend genannt
-   * werden.
+   * Name, der im Impressum, in Bestellbestätigungen und auf Rechnungen steht.
+   *
+   * Bewusst nur der Firmenname ohne Personennamen: Der Shop wird von zu Hause
+   * aus betrieben, deshalb sollen weder Inhabername noch Privatadresse
+   * öffentlich auf der Website stehen. Siehe `contact.street` weiter unten –
+   * dort steht auch, welches rechtliche Risiko damit verbunden ist.
    */
-  legalName: "Rare Scents, Inhaber Alvin Ramdedovic",
+  legalName: "Rare Scents",
   /** Rechtsform – wird im Impressum ausgewiesen. */
   legalForm: "Einzelunternehmen",
   tagline: "Düfte mit Charakter",
@@ -52,9 +54,29 @@ export const siteConfig = {
      * nicht zwingend. `null` blendet die Angabe überall sauber aus.
      */
     phone: null as string | null,
-    street: "Neugasse 4b",
-    postalCode: "9242",
-    city: "Oberuzwil",
+    /**
+     * Postanschrift – absichtlich nicht veröffentlicht.
+     *
+     * ⚠️ Wichtig zu wissen: Art. 3 Abs. 1 lit. s UWG verlangt von
+     * Onlineanbietern "klare und vollständige Angaben über seine Identität und
+     * seine Kontaktadresse einschliesslich derjenigen der elektronischen
+     * Post". Die herrschende Lehre versteht unter "Kontaktadresse" eine
+     * Postanschrift; die E-Mail-Adresse kommt ausdrücklich *zusätzlich* dazu.
+     * Eine reine E-Mail-Angabe erfüllt die Vorschrift also strenggenommen
+     * nicht.
+     *
+     * Der Shop wird von einer Privatwohnung aus betrieben, die nicht im
+     * Internet stehen soll. Sauberste Lösung: ein Postfach der Schweizerischen
+     * Post oder eine c/o-Geschäftsadresse mieten und hier eintragen – dann
+     * erscheint sie automatisch wieder im Impressum, in den AGB, in der
+     * Datenschutzerklärung, im Footer und in allen E-Mails.
+     *
+     * Bis dahin nennen wir die Anschrift auf Anfrage per E-Mail
+     * (siehe `addressOnRequestNote`).
+     */
+    street: null as string | null,
+    postalCode: null as string | null,
+    city: null as string | null,
     country: "Schweiz",
     /**
      * Nicht im Handelsregister eingetragen und keine UID vorhanden.
@@ -64,8 +86,11 @@ export const siteConfig = {
     registrationNumber: null as string | null,
     /** Keine MwSt-Nummer, da nicht mehrwertsteuerpflichtig. */
     vatId: null as string | null,
-    /** Vertretungsberechtigte Person(en). */
-    representatives: "Alvin Ramdedovic",
+    /**
+     * Vertretungsberechtigte Person(en). `null` blendet den Abschnitt im
+     * Impressum aus – der Name wird auf Anfrage genannt.
+     */
+    representatives: null as string | null,
   },
 
   social: {
@@ -77,6 +102,34 @@ export const siteConfig = {
   supportHours: "Montag bis Freitag, 9–17 Uhr",
   supportResponseTime: "in der Regel innerhalb von 24 Stunden",
 } as const;
+
+/**
+ * Postanschrift als einzelne Zeilen.
+ *
+ * Leer, solange in `siteConfig.contact` keine Strasse und kein Ort hinterlegt
+ * sind. Alle Seiten und E-Mails prüfen die Länge und blenden den Block dann
+ * aus – so muss beim Eintragen einer Postfachadresse nur `site.ts` geändert
+ * werden.
+ */
+export const postalAddressLines: readonly string[] = [
+  siteConfig.contact.street,
+  [siteConfig.contact.postalCode, siteConfig.contact.city]
+    .filter(Boolean)
+    .join(" ") || null,
+  siteConfig.contact.city ? siteConfig.contact.country : null,
+].filter((line): line is string => Boolean(line));
+
+/** true, sobald eine Postanschrift öffentlich ausgewiesen wird. */
+export const hasPublicAddress = postalAddressLines.length > 0;
+
+/**
+ * Ersatztext, solange keine Postanschrift veröffentlicht ist.
+ * Bewusst kurz und ohne Ausreden formuliert.
+ */
+export const addressOnRequestNote =
+  "Wir betreiben kein Ladengeschäft. Die vollständige Postanschrift des " +
+  "Anbieters nennen wir auf Anfrage – eine kurze E-Mail genügt, und du " +
+  "erhältst sie umgehend.";
 
 /**
  * Steuerliche Einstellungen.

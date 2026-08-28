@@ -3,6 +3,7 @@ import {
   categories as demoCategories,
   discountCodes as demoDiscountCodes,
   products as demoProducts,
+  retiredCategorySlugs,
 } from "@/lib/demo-data";
 
 /**
@@ -145,15 +146,20 @@ export async function removeDemoData(
     },
   });
 
-  // Leere Demo-Kategorien entfernen, belegte behalten.
-  for (const category of demoCategories) {
+  // Leere Demo-Kategorien und abgeschaffte Kategorien entfernen, belegte
+  // behalten.
+  const aufraeumen = [
+    ...demoCategories.map((category) => category.slug),
+    ...retiredCategorySlugs,
+  ];
+  for (const slug of aufraeumen) {
     const inUse = await prisma.product.count({
-      where: { categories: { some: { slug: category.slug } } },
+      where: { categories: { some: { slug } } },
     });
     if (inUse === 0) {
       // deleteMany statt delete: wirft nicht, wenn die Kategorie gar nicht
       // (mehr) existiert, und erzeugt dadurch kein Fehlerprotokoll.
-      await prisma.category.deleteMany({ where: { slug: category.slug } });
+      await prisma.category.deleteMany({ where: { slug } });
     }
   }
 

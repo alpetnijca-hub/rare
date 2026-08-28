@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LegalList, LegalPage, LegalSection } from "@/components/legal/legal-page";
+import { ProviderAddress } from "@/components/legal/provider-address";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -18,24 +19,35 @@ export default function ImprintPage() {
       notice="review"
     >
       <LegalSection title="Anbieter">
-        <p>
-          {siteConfig.legalName}
-          <br />
-          {contact.street}
-          <br />
-          {contact.postalCode} {contact.city}
-          <br />
-          {contact.country}
+        <ProviderAddress />
+        <p className="text-xs text-subtle">
+          Rechtsform: {siteConfig.legalForm} mit Sitz in der Schweiz.
         </p>
-        <p className="text-xs text-subtle">Rechtsform: {siteConfig.legalForm}</p>
       </LegalSection>
 
       <LegalSection title="Verantwortliche Person">
-        <p>{contact.representatives}</p>
-        <p className="text-xs text-subtle">
-          Inhaber und für den Inhalt dieser Website verantwortlich, Anschrift
-          wie oben.
-        </p>
+        {contact.representatives ? (
+          <>
+            <p>{contact.representatives}</p>
+            <p className="text-xs text-subtle">
+              Inhaber und für den Inhalt dieser Website verantwortlich,
+              Anschrift wie oben.
+            </p>
+          </>
+        ) : (
+          <p>
+            Für den Inhalt dieser Website verantwortlich ist die Inhaberin bzw.
+            der Inhaber von {siteConfig.name}. Name und Postanschrift nennen wir
+            auf Anfrage – schreib uns dazu an{" "}
+            <a
+              href={`mailto:${contact.email}`}
+              className="text-gold underline underline-offset-2 hover:text-gold-light"
+            >
+              {contact.email}
+            </a>
+            .
+          </p>
+        )}
       </LegalSection>
 
       <LegalSection title="Kontakt">

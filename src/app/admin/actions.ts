@@ -579,6 +579,7 @@ export async function saveCategoryAction(
     slug: text(formData, "slug"),
     description: text(formData, "description"),
     kind: text(formData, "kind"),
+    heroImageUrl: text(formData, "heroImageUrl"),
     sortOrder: text(formData, "sortOrder") || "0",
     isActive: checkbox(formData, "isActive"),
   });
@@ -602,6 +603,7 @@ export async function saveCategoryAction(
     slug: data.slug,
     description: data.description || null,
     kind: data.kind,
+    heroImageUrl: data.heroImageUrl || null,
     sortOrder: data.sortOrder,
     isActive: data.isActive,
   };

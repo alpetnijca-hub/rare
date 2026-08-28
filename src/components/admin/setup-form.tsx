@@ -38,7 +38,7 @@ export function SetupForm() {
             autoComplete="name"
             required
             autoFocus
-            defaultValue="Alvin Ramdedovic"
+            placeholder="Dein Name"
           />
         )}
       </Field>

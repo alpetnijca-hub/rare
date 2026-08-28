@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalList, LegalPage, LegalSection } from "@/components/legal/legal-page";
+import { ProviderAddress } from "@/components/legal/provider-address";
 import { siteConfig } from "@/config/site";
 import { necessaryCookies, optionalServices } from "@/config/cookies";
 
@@ -35,15 +36,7 @@ export default function PrivacyPage() {
           Verantwortlich für die Bearbeitung personenbezogener Daten auf dieser
           Website ist:
         </p>
-        <p>
-          {siteConfig.legalName}
-          <br />
-          {contact.street}
-          <br />
-          {contact.postalCode} {contact.city}, {contact.country}
-          <br />
-          E-Mail: {mail}
-        </p>
+        <ProviderAddress />
         <p>
           Für alle Fragen zum Datenschutz genügt eine formlose Nachricht an
           diese Adresse. Wir haben keine Datenschutzbeauftragte und keinen

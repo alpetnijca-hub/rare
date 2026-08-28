@@ -1,5 +1,6 @@
+import { Fragment } from "react";
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
+import { postalAddressLines, siteConfig } from "@/config/site";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { CurrencySwitcher } from "@/components/currency/currency-switcher";
 import { isVatRegistered, taxConfig } from "@/config/site";
@@ -10,7 +11,6 @@ const shopLinks = [
   { href: "/shop?kategorie=damen", label: "Damen" },
   { href: "/shop?kategorie=herren", label: "Herren" },
   { href: "/shop?kategorie=unisex", label: "Unisex" },
-  { href: "/shop?kategorie=sets", label: "Geschenksets" },
 ];
 
 const serviceLinks = [
@@ -67,8 +67,8 @@ export function Footer() {
               Neue Düfte zuerst entdecken
             </h2>
             <p className="max-w-md text-sm leading-relaxed text-muted">
-              Gelegentliche Nachrichten zu neuen Abfüllungen, limitierten
-              Sets und Wiederverfügbarkeiten. Keine Werbeflut, jederzeit
+              Gelegentliche Nachrichten zu neuen Düften, frischen Abfüllungen
+              und Wiederverfügbarkeiten. Keine Werbeflut, jederzeit
               abbestellbar.
             </p>
           </div>
@@ -120,12 +120,12 @@ export function Footer() {
           <h2 className="eyebrow mb-4">Kontakt</h2>
           <address className="not-italic text-sm leading-relaxed text-muted">
             {siteConfig.legalName}
-            <br />
-            {siteConfig.contact.street}
-            <br />
-            {siteConfig.contact.postalCode} {siteConfig.contact.city}
-            <br />
-            {siteConfig.contact.country}
+            {postalAddressLines.map((line) => (
+              <Fragment key={line}>
+                <br />
+                {line}
+              </Fragment>
+            ))}
             <br />
             <a
               href={`mailto:${siteConfig.contact.email}`}

@@ -247,6 +247,19 @@ export const adminCategorySchema = z.object({
     .regex(/^[a-z0-9-]+$/, "Slug darf nur Kleinbuchstaben, Zahlen und - enthalten."),
   description: z.string().trim().max(500).optional().or(z.literal("")),
   kind: z.enum(["GENDER", "TYPE"]),
+  /**
+   * Bild der Kachel auf der Startseite. Erlaubt sind eine vollständige
+   * Adresse (Cloudinary) oder ein Pfad aus `public/`.
+   */
+  heroImageUrl: z
+    .string()
+    .trim()
+    .max(500)
+    .refine(
+      (value) => value === "" || /^(https?:\/\/|\/)/.test(value),
+      "Bitte eine Adresse mit https:// oder einen Pfad wie /produkte/bild.jpg angeben.",
+    )
+    .default(""),
   sortOrder: z.coerce.number().int().min(0).max(1000).default(0),
   isActive: z.coerce.boolean().default(true),
 });

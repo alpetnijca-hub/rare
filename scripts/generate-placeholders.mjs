@@ -81,7 +81,6 @@ const products = [
   { id: "velvet-rose", monogram: "VR", accent: "#d1567f", accentSoft: "#f0a7c0", shape: "round", angle: 25 },
   { id: "noir-vanilla", monogram: "NV", accent: "#b07c3f", accentSoft: "#e0bd8a", shape: "flask", angle: 45 },
   { id: "citrus-elan", monogram: "CE", accent: "#d8c14a", accentSoft: "#f2e6a0", shape: "tall", angle: 10 },
-  { id: "royal-essence", monogram: "RE", accent: "#3f7fb0", accentSoft: "#9ecbe8", shape: "square", angle: 55 },
 ];
 
 /** Zweites Bild je Produkt: gleiche Formsprache, andere Perspektive. */
@@ -143,25 +142,105 @@ function heroSvg() {
 `;
 }
 
-/** Kategoriebild - quadratisch, sehr reduziert. */
-function categorySvg(label, accent) {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600" role="img" aria-label="${label}">
+/**
+ * Kategoriebild.
+ *
+ * Kein Flakon-Symbol mehr, sondern eine gebaute Lichtstimmung: warme
+ * Farbwolken über tiefem Schwarz, ein schräger Lichtstreif, eine angedeutete
+ * Glaskante und eine feine Körnung. In der Kachel wirkt das wie ein
+ * atmosphärisches Foto statt wie ein Platzhalter – und es bleibt lizenzfrei,
+ * weil wir es selbst erzeugen.
+ *
+ * Hochformat 4:5, weil die Kacheln auf der Startseite hochkant stehen.
+ */
+function categorySvg(label, accent, second, aufbau) {
+  const id = (name) => `${name}-${label}`;
+  const { hell, warm, klein, winkel, streifY } = aufbau;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000" role="img" aria-label="${label}">
   <defs>
-    <linearGradient id="cat-bg-${label}" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#131313"/>
-      <stop offset="100%" stop-color="#080808"/>
+    <linearGradient id="${id("grund")}" x1="0.15" y1="0" x2="0.85" y2="1">
+      <stop offset="0%" stop-color="#17110c"/>
+      <stop offset="45%" stop-color="#0d0a08"/>
+      <stop offset="100%" stop-color="#050403"/>
     </linearGradient>
-    <radialGradient id="cat-glow-${label}" cx="50%" cy="45%" r="55%">
-      <stop offset="0%" stop-color="${accent}" stop-opacity="0.22"/>
+
+    <radialGradient id="${id("wolke1")}" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="${accent}" stop-opacity="0.95"/>
+      <stop offset="40%" stop-color="${accent}" stop-opacity="0.4"/>
       <stop offset="100%" stop-color="${accent}" stop-opacity="0"/>
     </radialGradient>
+
+    <radialGradient id="${id("wolke2")}" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="${second}" stop-opacity="0.75"/>
+      <stop offset="45%" stop-color="${second}" stop-opacity="0.26"/>
+      <stop offset="100%" stop-color="${second}" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Schräger Lichtstreif, wie er über geschliffenem Glas liegt. -->
+    <linearGradient id="${id("streif")}" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffe6bd" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#fff2da" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#ffe6bd" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="${id("kante")}" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#C8A45D" stop-opacity="0"/>
+      <stop offset="45%" stop-color="#e6c98a" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#C8A45D" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="${id("fuss")}" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#050403" stop-opacity="0.95"/>
+      <stop offset="40%" stop-color="#050403" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#050403" stop-opacity="0"/>
+    </linearGradient>
+
+    <radialGradient id="${id("vignette")}" cx="50%" cy="42%" r="72%">
+      <stop offset="55%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.65"/>
+    </radialGradient>
+
+    <!-- Feine Körnung: nimmt der Fläche das Digitale. -->
+    <filter id="${id("korn")}" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="4" seed="11"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.32"/>
+      </feComponentTransfer>
+    </filter>
+
+    <filter id="${id("weich")}" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="46"/>
+    </filter>
+
+    <filter id="${id("halbweich")}" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
   </defs>
-  <rect width="600" height="600" fill="url(#cat-bg-${label})"/>
-  <rect width="600" height="600" fill="url(#cat-glow-${label})"/>
-  <circle cx="300" cy="288" r="118" fill="none" stroke="#C8A45D" stroke-opacity="0.35" stroke-width="1.4"/>
-  <circle cx="300" cy="288" r="86" fill="none" stroke="#C8A45D" stroke-opacity="0.18" stroke-width="1"/>
-  <path d="M268 236h64v26l14 24v96a20 20 0 0 1-20 20h-52a20 20 0 0 1-20-20v-96l14-24z" fill="#0d0d0d" stroke="#C8A45D" stroke-width="1.6" stroke-opacity="0.75"/>
-  <rect x="288" y="212" width="24" height="24" fill="#C8A45D" opacity="0.75"/>
+
+  <rect width="800" height="1000" fill="url(#${id("grund")})"/>
+
+  <g filter="url(#${id("weich")})">
+    <ellipse cx="${hell[0]}" cy="${hell[1]}" rx="${hell[2]}" ry="${hell[3]}" fill="url(#${id("wolke1")})"/>
+    <ellipse cx="${warm[0]}" cy="${warm[1]}" rx="${warm[2]}" ry="${warm[3]}" fill="url(#${id("wolke2")})"/>
+    <ellipse cx="${klein[0]}" cy="${klein[1]}" rx="${klein[2]}" ry="${klein[3]}" fill="url(#${id("wolke2")})" opacity="0.5"/>
+  </g>
+
+  <!-- Angedeutete Glaskante: ein weit gezogener Bogen, kaum sichtbar. -->
+  <g filter="url(#${id("halbweich")})" opacity="0.7">
+    <path d="M-40 ${streifY + 300} C 220 ${streifY + 90}, 520 ${streifY + 40}, 860 ${streifY - 130}"
+          fill="none" stroke="url(#${id("kante")})" stroke-width="2"/>
+  </g>
+
+  <g filter="url(#${id("halbweich")})">
+    <rect x="-180" y="${streifY}" width="1160" height="26"
+          fill="url(#${id("streif")})" opacity="0.3"
+          transform="rotate(${winkel} 400 ${streifY + 13})"/>
+  </g>
+
+  <rect width="800" height="1000" fill="url(#${id("vignette")})"/>
+  <rect width="800" height="1000" filter="url(#${id("korn")})" opacity="0.6"/>
+  <rect y="470" width="800" height="530" fill="url(#${id("fuss")})"/>
 </svg>
 `;
 }
@@ -175,18 +254,67 @@ for (const product of products) {
 
 await writeFile(join(outputDir, "hero.svg"), heroSvg(), "utf8");
 
+// Akzentfarbe und zweite, wärmere Farbe je Kategorie. Beide bleiben in der
+// Gold-Palette des Shops, damit die Kacheln nebeneinander eine Familie bilden.
+// Akzentfarbe, zweite wärmere Farbe und Bildaufbau je Kategorie. Die Farben
+// bleiben in der Gold-Palette des Shops, damit die Kacheln nebeneinander eine
+// Familie bilden; der Aufbau unterscheidet sich, damit sie nicht wie dasselbe
+// Bild in drei Farben aussehen.
 const categories = [
-  ["damen", "#d1567f"],
-  ["herren", "#3f7fb0"],
-  ["unisex", "#C8A45D"],
-  ["abfuellungen", "#7a9c6a"],
-  ["sets", "#b07c3f"],
+  {
+    slug: "damen",
+    accent: "#b8555e",
+    second: "#e0a06a",
+    aufbau: {
+      hell: [230, 250, 300, 240],
+      warm: [640, 660, 250, 300],
+      klein: [110, 800, 200, 170],
+      winkel: -27,
+      streifY: 330,
+    },
+  },
+  {
+    slug: "herren",
+    accent: "#96541a",
+    second: "#d09646",
+    aufbau: {
+      hell: [590, 340, 275, 290],
+      warm: [190, 690, 290, 260],
+      klein: [700, 900, 200, 160],
+      winkel: 19,
+      streifY: 520,
+    },
+  },
+  {
+    slug: "unisex",
+    accent: "#c9a86a",
+    second: "#7d6440",
+    aufbau: {
+      hell: [400, 620, 330, 270],
+      warm: [660, 200, 260, 230],
+      klein: [90, 300, 210, 200],
+      winkel: -9,
+      streifY: 250,
+    },
+  },
+  {
+    slug: "abfuellungen",
+    accent: "#8f7a44",
+    second: "#bd8250",
+    aufbau: {
+      hell: [300, 430, 280, 300],
+      warm: [640, 830, 250, 240],
+      klein: [660, 130, 190, 170],
+      winkel: 12,
+      streifY: 620,
+    },
+  },
 ];
 
-for (const [slug, accent] of categories) {
+for (const { slug, accent, second, aufbau } of categories) {
   await writeFile(
     join(outputDir, `kategorie-${slug}.svg`),
-    categorySvg(slug, accent),
+    categorySvg(slug, accent, second, aufbau),
     "utf8",
   );
 }

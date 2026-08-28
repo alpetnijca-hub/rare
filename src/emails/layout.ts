@@ -1,4 +1,4 @@
-import { siteConfig } from "@/config/site";
+import { postalAddressLines, siteConfig } from "@/config/site";
 
 /**
  * Basis-Layout für alle Transaktions-E-Mails.
@@ -198,11 +198,11 @@ export function renderEmail(options: EmailLayoutOptions): string {
                   emailColors.muted
                 };">
                   ${escapeHtml(siteConfig.legalName)}<br />
-                  ${escapeHtml(siteConfig.contact.street)}, ${escapeHtml(
-                    siteConfig.contact.postalCode,
-                  )} ${escapeHtml(siteConfig.contact.city)}, ${escapeHtml(
-                    siteConfig.contact.country,
-                  )}<br />
+                  ${
+                    postalAddressLines.length > 0
+                      ? `${escapeHtml(postalAddressLines.join(", "))}<br />`
+                      : ""
+                  }
                   <a href="mailto:${escapeHtml(siteConfig.contact.email)}" style="color:${
                     emailColors.gold
                   };text-decoration:none;">${escapeHtml(siteConfig.contact.email)}</a>

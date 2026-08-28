@@ -5,6 +5,7 @@ import {
   LegalPage,
   LegalSection,
 } from "@/components/legal/legal-page";
+import { ProviderAddress } from "@/components/legal/provider-address";
 import {
   isVatRegistered,
   maxPreorderQuantity,
@@ -39,21 +40,7 @@ export default function TermsPage() {
           Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für sämtliche
           Bestellungen, die über diesen Onlineshop zwischen
         </p>
-        <p>
-          {siteConfig.legalName}
-          <br />
-          {contact.street}
-          <br />
-          {contact.postalCode} {contact.city}, {contact.country}
-          <br />
-          E-Mail:{" "}
-          <a
-            href={`mailto:${contact.email}`}
-            className="text-gold underline underline-offset-2 hover:text-gold-light"
-          >
-            {contact.email}
-          </a>
-        </p>
+        <ProviderAddress />
         <p>
           (nachfolgend „wir“ oder „Rare Scents“) und dir als Kundin oder Kunde
           abgeschlossen werden. Massgebend ist die zum Zeitpunkt der Bestellung
@@ -365,10 +352,10 @@ export default function TermsPage() {
           internationalen Warenkauf (CISG).
         </p>
         <p>
-          Gerichtsstand ist – soweit gesetzlich zulässig – {contact.city}. Die
-          zwingenden Zuständigkeiten zum Schutz von Konsumentinnen und
-          Konsumenten nach Art. 32 ZPO bleiben davon unberührt: Du kannst uns
-          in jedem Fall auch an deinem Wohnsitz einklagen.
+          Gerichtsstand ist – soweit gesetzlich zulässig – unser Sitz in der
+          Schweiz. Die zwingenden Zuständigkeiten zum Schutz von Konsumentinnen
+          und Konsumenten nach Art. 32 ZPO bleiben davon unberührt: Du kannst
+          uns in jedem Fall auch an deinem Wohnsitz einklagen.
         </p>
       </LegalSection>
 

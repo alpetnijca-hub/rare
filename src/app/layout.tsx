@@ -37,7 +37,6 @@ export const metadata: Metadata = {
     "Abfüllungen",
     "Duftproben",
     "Nischendüfte",
-    "Geschenkset Parfüm",
   ],
   authors: [{ name: siteConfig.name }],
   alternates: { canonical: "/" },

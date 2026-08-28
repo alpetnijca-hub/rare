@@ -44,14 +44,25 @@ Prisma 7 · Stripe · Resend · Auth.js v5 · Cloudinary · Vitest
 
 | Feld | Wert |
 | --- | --- |
-| Firma | Rare Scents, Inhaber Alvin Ramdedovic |
+| Firma | Rare Scents |
 | Rechtsform | Einzelunternehmen |
-| Adresse | Neugasse 4b, 9242 Oberuzwil, Schweiz |
+| Adresse | bewusst nicht veröffentlicht – siehe Hinweis unten |
 | E-Mail | rarescents.swiss@gmail.com |
 | Instagram | @rarescents.swiss |
 | Handelsregister / UID | keine (nicht eingetragen) |
 | Mehrwertsteuer | nicht mehrwertsteuerpflichtig |
 | Abrechnungswährung | CHF |
+
+> **Postanschrift:** Inhabername und Privatadresse stehen bewusst nirgends auf
+> der Website. Art. 3 Abs. 1 lit. s UWG verlangt von Onlineanbietern aber
+> „klare und vollständige Angaben über seine Identität und seine
+> Kontaktadresse einschliesslich derjenigen der elektronischen Post“ – die
+> E-Mail-Adresse kommt dort ausdrücklich *zusätzlich* zur Postanschrift.
+> Eine reine E-Mail-Angabe erfüllt die Vorschrift deshalb streng genommen
+> nicht. Saubere Lösung ohne Privatadresse im Netz: ein Postfach der
+> Schweizerischen Post oder eine c/o-Geschäftsadresse mieten und in
+> `siteConfig.contact` eintragen – Impressum, AGB, Datenschutzerklärung,
+> Footer und alle E-Mails zeigen sie dann automatisch wieder an.
 
 Weitere Punkte, die zwingend zu erledigen sind:
 

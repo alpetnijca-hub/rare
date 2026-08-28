@@ -14,7 +14,6 @@ const suggestions = [
     label: "Düfte mit Probengröße",
     hint: "Ab 2 ml zum Testen",
   },
-  { href: "/shop?kategorie=sets", label: "Geschenksets", hint: "Fertig zusammengestellt" },
   { href: "/kontakt", label: "Kontakt", hint: "Wir helfen persönlich weiter" },
 ];
 

@@ -48,15 +48,17 @@ export const categories = [
     sortOrder: 3,
     heroImageUrl: "/produkte/kategorie-unisex.svg",
   },
-  {
-    slug: "sets",
-    name: "Sets",
-    kind: "TYPE" as const,
-    description: "Geschenkfertig zusammengestellte Duftsets.",
-    sortOrder: 5,
-    heroImageUrl: "/produkte/kategorie-sets.svg",
-  },
 ];
+
+/**
+ * Kategorien, die es einmal gab und die es nicht mehr geben soll.
+ *
+ * Beim Aufräumen der Demo-Inhalte werden sie mitgelöscht, sofern ihnen kein
+ * Produkt mehr zugeordnet ist. „sets“ steht hier, weil wir keine Geschenksets
+ * mehr verkaufen; „abfuellungen“, weil Probengrössen inzwischen Varianten
+ * eines Dufts sind und keine eigene Abteilung mehr brauchen.
+ */
+export const retiredCategorySlugs = ["sets", "abfuellungen"];
 
 export interface SeedVariant {
   /** Kleine Größe zum Ausprobieren – erscheint in der Auswahl unter "Zum Testen". */
@@ -92,7 +94,7 @@ export interface SeedProduct {
     | "AROMATISCH"
     | "CHYPRE"
     | "LEDER";
-  kind: "PARFUM" | "ABFUELLUNG" | "PROBE" | "SET";
+  kind: "PARFUM" | "ABFUELLUNG" | "PROBE";
   topNotes: string[];
   heartNotes: string[];
   baseNotes: string[];
@@ -302,45 +304,6 @@ export const products: SeedProduct[] = [
       { sku: "RS-CE-010", isSample: true, size: "10 ml", volumeMl: 10, priceCents: 1490, compareAtPriceCents: 1890, stock: 33, deliveryMinDays: 1, deliveryMaxDays: 2, sortOrder: 2 },
       { sku: "RS-CE-050", size: "50 ml", volumeMl: 50, priceCents: 5490, compareAtPriceCents: 6490, stock: 17, deliveryMinDays: 1, deliveryMaxDays: 3, sortOrder: 3 },
       { sku: "RS-CE-100", size: "100 ml", volumeMl: 100, priceCents: 8900, stock: 8, deliveryMinDays: 1, deliveryMaxDays: 3, sortOrder: 4 },
-    ],
-  },
-
-  // -------------------------------------------------------------------------
-  // 6. Royal Essence – Set, mit einer deaktivierten Variante
-  // -------------------------------------------------------------------------
-  {
-    slug: "royal-essence",
-    name: "Royal Essence",
-    subtitle: "Entdeckerset mit fünf Abfüllungen à 2 ml",
-    description:
-      "Royal Essence ist unser Entdeckerset: fünf Abfüllungen à 2 ml aus unserem Sortiment, verpackt in einer schlichten schwarzen Box mit Goldprägung.\n" +
-      "Enthalten sind Golden Amber, Midnight Oud, Velvet Rose, Noir Vanilla und Citrus Élan – die ideale Möglichkeit, in Ruhe zu vergleichen.\n" +
-      "Das Set eignet sich gut als Geschenk. Auf Wunsch legen wir eine handgeschriebene Karte bei – schreib uns dazu einfach im Bestellkommentar.",
-    scentProfile: "Querschnitt durch das Sortiment – von zitrisch bis orientalisch",
-    fragranceFamily: "AROMATISCH",
-    kind: "SET",
-    topNotes: ["Bergamotte", "Zitrone", "Safran"],
-    heartNotes: ["Rose", "Amber", "Tabak"],
-    baseNotes: ["Vanille", "Oudholz", "Moschus"],
-    ingredients: STANDARD_INGREDIENTS,
-    usage:
-      "Jede Abfüllung ist einzeln beschriftet. Wir empfehlen, pro Tag nur einen Duft zu testen – " +
-      "die Nase gewöhnt sich schnell und vergleicht sonst ungenau.\n\n" +
-      defaultUsage,
-    isAlternative: false,
-    isBestseller: false,
-    isNew: true,
-    popularity: 560,
-    categorySlugs: ["sets", "unisex"],
-    images: [
-      { url: "/produkte/royal-essence-1.svg", alt: "Royal Essence – Set-Verpackung in Schwarz mit goldener Prägung" },
-      { url: "/produkte/royal-essence-2.svg", alt: "Royal Essence – zweite Ansicht des Sets" },
-    ],
-    variants: [
-      { sku: "RS-RE-SET5", isSample: true, size: "Set mit 5 × 2 ml", volumeMl: 10, priceCents: 2490, compareAtPriceCents: 2610, stock: 19, deliveryMinDays: 2, deliveryMaxDays: 4, sortOrder: 1 },
-      { sku: "RS-RE-SET3", isSample: true, size: "Set mit 3 × 2 ml", volumeMl: 6, priceCents: 1590, stock: 4, lowStockThreshold: 5, deliveryMinDays: 2, deliveryMaxDays: 4, sortOrder: 2 },
-      // Deaktiviert: zeigt "Derzeit nicht bestellbar" im Adminbereich.
-      { sku: "RS-RE-SET10", isSample: true, size: "Set mit 10 × 2 ml", volumeMl: 20, priceCents: 4490, stock: 0, isActive: false, deliveryMinDays: 3, deliveryMaxDays: 6, sortOrder: 3 },
     ],
   },
 ];

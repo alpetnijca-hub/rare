@@ -47,7 +47,15 @@ export const familyLabels: Record<string, string> = {
   LEDER: "Leder",
 };
 
-export const productKinds = ["PARFUM", "ABFUELLUNG", "PROBE", "SET"] as const;
+/**
+ * Auswählbare Produktarten.
+ *
+ * "SET" gibt es bewusst nicht mehr – wir verkaufen keine Geschenksets. Der
+ * Wert bleibt nur in der Datenbank-Enum stehen (prisma/schema.prisma), damit
+ * bestehende Zeilen nicht durch eine riskante Enum-Migration angefasst werden
+ * müssen; auswählen lässt er sich nirgends mehr.
+ */
+export const productKinds = ["PARFUM", "ABFUELLUNG", "PROBE"] as const;
 
 export type ProductKindValue = (typeof productKinds)[number];
 
@@ -55,6 +63,7 @@ export const kindLabels: Record<string, string> = {
   PARFUM: "Parfüm",
   ABFUELLUNG: "Abfüllung",
   PROBE: "Duftprobe",
+  /** Altbestand: wird nur noch für bereits gespeicherte Zeilen angezeigt. */
   SET: "Set",
 };
 

@@ -1,18 +1,86 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600" role="img" aria-label="damen">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000" role="img" aria-label="damen">
   <defs>
-    <linearGradient id="cat-bg-damen" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#131313"/>
-      <stop offset="100%" stop-color="#080808"/>
+    <linearGradient id="grund-damen" x1="0.15" y1="0" x2="0.85" y2="1">
+      <stop offset="0%" stop-color="#17110c"/>
+      <stop offset="45%" stop-color="#0d0a08"/>
+      <stop offset="100%" stop-color="#050403"/>
     </linearGradient>
-    <radialGradient id="cat-glow-damen" cx="50%" cy="45%" r="55%">
-      <stop offset="0%" stop-color="#d1567f" stop-opacity="0.22"/>
-      <stop offset="100%" stop-color="#d1567f" stop-opacity="0"/>
+
+    <radialGradient id="wolke1-damen" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#b8555e" stop-opacity="0.95"/>
+      <stop offset="40%" stop-color="#b8555e" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#b8555e" stop-opacity="0"/>
     </radialGradient>
+
+    <radialGradient id="wolke2-damen" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e0a06a" stop-opacity="0.75"/>
+      <stop offset="45%" stop-color="#e0a06a" stop-opacity="0.26"/>
+      <stop offset="100%" stop-color="#e0a06a" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Schräger Lichtstreif, wie er über geschliffenem Glas liegt. -->
+    <linearGradient id="streif-damen" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffe6bd" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#fff2da" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#ffe6bd" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="kante-damen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#C8A45D" stop-opacity="0"/>
+      <stop offset="45%" stop-color="#e6c98a" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#C8A45D" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="fuss-damen" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#050403" stop-opacity="0.95"/>
+      <stop offset="40%" stop-color="#050403" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#050403" stop-opacity="0"/>
+    </linearGradient>
+
+    <radialGradient id="vignette-damen" cx="50%" cy="42%" r="72%">
+      <stop offset="55%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.65"/>
+    </radialGradient>
+
+    <!-- Feine Körnung: nimmt der Fläche das Digitale. -->
+    <filter id="korn-damen" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="4" seed="11"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.32"/>
+      </feComponentTransfer>
+    </filter>
+
+    <filter id="weich-damen" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="46"/>
+    </filter>
+
+    <filter id="halbweich-damen" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
   </defs>
-  <rect width="600" height="600" fill="url(#cat-bg-damen)"/>
-  <rect width="600" height="600" fill="url(#cat-glow-damen)"/>
-  <circle cx="300" cy="288" r="118" fill="none" stroke="#C8A45D" stroke-opacity="0.35" stroke-width="1.4"/>
-  <circle cx="300" cy="288" r="86" fill="none" stroke="#C8A45D" stroke-opacity="0.18" stroke-width="1"/>
-  <path d="M268 236h64v26l14 24v96a20 20 0 0 1-20 20h-52a20 20 0 0 1-20-20v-96l14-24z" fill="#0d0d0d" stroke="#C8A45D" stroke-width="1.6" stroke-opacity="0.75"/>
-  <rect x="288" y="212" width="24" height="24" fill="#C8A45D" opacity="0.75"/>
+
+  <rect width="800" height="1000" fill="url(#grund-damen)"/>
+
+  <g filter="url(#weich-damen)">
+    <ellipse cx="230" cy="250" rx="300" ry="240" fill="url(#wolke1-damen)"/>
+    <ellipse cx="640" cy="660" rx="250" ry="300" fill="url(#wolke2-damen)"/>
+    <ellipse cx="110" cy="800" rx="200" ry="170" fill="url(#wolke2-damen)" opacity="0.5"/>
+  </g>
+
+  <!-- Angedeutete Glaskante: ein weit gezogener Bogen, kaum sichtbar. -->
+  <g filter="url(#halbweich-damen)" opacity="0.7">
+    <path d="M-40 630 C 220 420, 520 370, 860 200"
+          fill="none" stroke="url(#kante-damen)" stroke-width="2"/>
+  </g>
+
+  <g filter="url(#halbweich-damen)">
+    <rect x="-180" y="330" width="1160" height="26"
+          fill="url(#streif-damen)" opacity="0.3"
+          transform="rotate(-27 400 343)"/>
+  </g>
+
+  <rect width="800" height="1000" fill="url(#vignette-damen)"/>
+  <rect width="800" height="1000" filter="url(#korn-damen)" opacity="0.6"/>
+  <rect y="470" width="800" height="530" fill="url(#fuss-damen)"/>
 </svg>

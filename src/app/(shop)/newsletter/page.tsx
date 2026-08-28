@@ -61,8 +61,8 @@ export default async function NewsletterPage({
           <p className="eyebrow mb-3">Newsletter</p>
           <h1 className="text-4xl md:text-5xl">Neue Düfte zuerst entdecken</h1>
           <p className="mt-4 text-sm leading-relaxed text-muted md:text-base">
-            Wir schreiben selten – dafür mit Inhalt: neue Abfüllungen,
-            limitierte Sets und Nachricht, wenn ein ausverkaufter Duft wieder
+            Wir schreiben selten – dafür mit Inhalt: neue Düfte, frische
+            Abfüllungen und Nachricht, wenn ein ausverkaufter Duft wieder
             verfügbar ist. Keine Rabattflut, kein Weiterverkauf deiner Adresse.
           </p>
         </header>

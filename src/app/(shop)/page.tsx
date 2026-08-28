@@ -4,11 +4,12 @@ import type { Metadata } from "next";
 import { ButtonLink } from "@/components/ui/button";
 import { ProductCard } from "@/components/product/product-card";
 import { siteConfig } from "@/config/site";
-import { getBestsellers, getNewArrivals } from "@/lib/products";
+import { getBestsellers, getCategories, getNewArrivals } from "@/lib/products";
 import { amountUntilFreeShipping } from "@/lib/shipping";
 import { Money } from "@/components/currency/money";
 import { prisma } from "@/lib/prisma";
 import { demoDataStatus } from "@/lib/demo-seed";
+import { productImageUrl } from "@/lib/product-image";
 
 export const metadata: Metadata = {
   title: `${siteConfig.name} – Parfüms, Duftalternativen & Abfüllungen`,
@@ -19,33 +20,6 @@ export const metadata: Metadata = {
 
 // Lagerbestände ändern sich – die Startseite wird regelmässig neu erzeugt.
 export const revalidate = 60;
-
-const categories = [
-  {
-    slug: "damen",
-    name: "Damen",
-    description: "Blumig, weich und ausdrucksstark",
-    image: "/produkte/kategorie-damen.svg",
-  },
-  {
-    slug: "herren",
-    name: "Herren",
-    description: "Holzig, würzig und markant",
-    image: "/produkte/kategorie-herren.svg",
-  },
-  {
-    slug: "unisex",
-    name: "Unisex",
-    description: "Für alle, die sich nicht festlegen",
-    image: "/produkte/kategorie-unisex.svg",
-  },
-  {
-    slug: "sets",
-    name: "Sets",
-    description: "Geschenkfertig zusammengestellt",
-    image: "/produkte/kategorie-sets.svg",
-  },
-];
 
 const advantages = [
   {
@@ -133,9 +107,10 @@ function SectionHeading({
 }
 
 export default async function HomePage() {
-  const [bestsellers, newArrivals, demoStatus] = await Promise.all([
+  const [bestsellers, newArrivals, categories, demoStatus] = await Promise.all([
     getBestsellers(4),
     getNewArrivals(4),
+    getCategories(),
     demoDataStatus(prisma),
   ]);
   const demoProducts = demoStatus.demoProducts;
@@ -276,51 +251,82 @@ export default async function HomePage() {
       {/* ---------------------------------------------------------------- */}
       {/* Kategorien                                                        */}
       {/* ---------------------------------------------------------------- */}
-      <section aria-labelledby="kategorien" className="border-y border-line bg-charcoal">
-        <div className="container-shop py-20 md:py-24">
-          <div id="kategorien">
-            <SectionHeading
-              eyebrow="Sortiment"
-              title="Nach Kategorie stöbern"
-              description="Fünf Wege in unser Sortiment – von der kleinen Probe bis zum fertigen Geschenkset."
-            />
-          </div>
+      {categories.length > 0 && (
+        <section
+          aria-labelledby="kategorien"
+          className="border-y border-line bg-charcoal"
+        >
+          <div className="container-shop py-20 md:py-24">
+            <div id="kategorien">
+              <SectionHeading
+                eyebrow="Sortiment"
+                title="Nach Kategorie stöbern"
+                description="Such dir aus, wonach dir ist – jede Kategorie führt direkt in den passenden Teil des Sortiments."
+              />
+            </div>
 
-          <ul className="grid grid-cols-2 gap-4 md:gap-5 lg:grid-cols-5">
-            {categories.map((category) => (
-              <li key={category.slug}>
-                <Link
-                  href={`/shop?kategorie=${category.slug}`}
-                  className="group relative flex aspect-square flex-col justify-end overflow-hidden
-                    border border-line bg-ink p-4 transition-colors duration-300
-                    hover:border-gold/45 focus-visible:border-gold/45 md:p-5"
-                >
-                  <Image
-                    src={category.image}
-                    alt=""
-                    aria-hidden="true"
-                    fill
-                    sizes="(max-width: 1024px) 50vw, 20vw"
-                    className="object-cover opacity-70 transition-[opacity,transform] duration-500 group-hover:scale-[1.04] group-hover:opacity-90"
-                  />
-                  <div
-                    className="absolute inset-0 bg-linear-to-t from-ink via-ink/50 to-transparent"
-                    aria-hidden="true"
-                  />
-                  <div className="relative">
-                    <h3 className="font-display text-xl text-cream group-hover:text-gold-light">
-                      {category.name}
-                    </h3>
-                    <p className="mt-1 text-xs leading-snug text-muted">
-                      {category.description}
-                    </p>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+            <ul
+              className="grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3"
+            >
+              {categories.map((category) => (
+                <li key={category.id}>
+                  <Link
+                    href={`/shop?kategorie=${category.slug}`}
+                    className="group relative flex aspect-4/5 flex-col justify-end overflow-hidden
+                      border border-line bg-ink p-6 transition-colors duration-300
+                      hover:border-gold/50 focus-visible:border-gold/50"
+                  >
+                    {category.heroImageUrl ? (
+                      <Image
+                        src={productImageUrl(category.heroImageUrl, "card")}
+                        alt=""
+                        aria-hidden="true"
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    ) : (
+                      /* Ohne hinterlegtes Bild bleibt die Kachel eine ruhige
+                         Farbfläche statt eines leeren Rahmens. */
+                      <div
+                        aria-hidden="true"
+                        className="absolute inset-0 bg-linear-to-br from-elevated via-charcoal to-ink"
+                      />
+                    )}
+
+                    {/* Nur der untere Teil wird abgedunkelt – oben bleibt das
+                        Bild sichtbar. */}
+                    <div
+                      className="absolute inset-x-0 bottom-0 h-3/5 bg-linear-to-t from-ink via-ink/75 to-transparent"
+                      aria-hidden="true"
+                    />
+
+                    <div className="relative">
+                      <h3 className="font-display text-2xl text-cream transition-colors group-hover:text-gold-light md:text-[1.75rem]">
+                        {category.name}
+                      </h3>
+                      {category.description && (
+                        <p className="mt-1.5 text-sm leading-snug text-muted">
+                          {category.description}
+                        </p>
+                      )}
+                      <span className="mt-4 inline-flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-gold">
+                        Ansehen
+                        <span
+                          aria-hidden="true"
+                          className="transition-transform duration-300 group-hover:translate-x-1"
+                        >
+                          →
+                        </span>
+                      </span>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {/* ---------------------------------------------------------------- */}
       {/* Neu eingetroffen                                                  */}

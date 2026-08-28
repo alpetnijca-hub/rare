@@ -13,7 +13,7 @@ import { isSortKey, type SortKey } from "@/lib/catalog";
 export const metadata: Metadata = {
   title: "Shop – alle Düfte",
   description:
-    "Parfüms, Duftalternativen, Abfüllungen und Sets. Filtere nach Kategorie, Duftfamilie, Größe, Preis und Verfügbarkeit.",
+    "Parfüms, Duftalternativen und Abfüllungen. Filtere nach Kategorie, Duftfamilie, Größe, Preis und Verfügbarkeit.",
   alternates: { canonical: "/shop" },
 };
 
@@ -237,7 +237,7 @@ export default async function ShopPage({
         <h1 className="text-4xl md:text-5xl">Alle Düfte</h1>
         <p className="mt-4 text-sm leading-relaxed text-muted md:text-base">
           Parfüms, klar gekennzeichnete Duftalternativen, handabgefüllte
-          Proben und Geschenksets. Jede Größe hat einen eigenen Preis und einen
+          Proben. Jede Größe hat einen eigenen Preis und einen
           eigenen Lagerbestand – die Verfügbarkeit siehst du direkt am Produkt.
         </p>
       </div>
