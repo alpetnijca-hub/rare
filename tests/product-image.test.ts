@@ -134,6 +134,99 @@ describe("Hintergrund im Foto", () => {
   });
 });
 
+describe("Kulisse aus den Duftnoten", () => {
+  afterEach(() => {
+    delete process.env.SHOP_IMAGE_BACKGROUND;
+  });
+
+  it("setzt zur Duftfamilie passende Motive ein", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+
+    const zitrus = productImageUrl(cloudinary, "card", 1, "ZITRUS");
+    const holzig = productImageUrl(cloudinary, "card", 1, "HOLZIG");
+
+    expect(zitrus).toContain("lemons");
+    expect(holzig).toContain("cedar");
+    // Der Wortlaut darf sich ändern, die Zuordnung nicht: Jede Familie muss
+    // ihr eigenes Motiv bekommen.
+    expect(zitrus).not.toBe(holzig);
+  });
+
+  it("gibt allen Kulissen dieselbe Bildsprache", () => {
+    // Sonst sehen die Produktbilder nebeneinander aus wie zufällig
+    // zusammengesuchte Fotos statt wie eine Serie.
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+
+    for (const familie of ["ZITRUS", "HOLZIG", "LEDER", "FLORAL"]) {
+      expect(productImageUrl(cloudinary, "card", 1, familie)).toContain(
+        "warm%20golden%20light",
+      );
+    }
+  });
+
+  it("polstert zuerst und erzeugt die Kulisse danach", () => {
+    // Andersherum füllt die Kulisse nur den Ausschnitt des Originalfotos und
+    // oben und unten blieben schwarze Balken stehen.
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+    const result = productImageUrl(cloudinary, "card", 1, "FLORAL");
+
+    const pad = result.indexOf("c_pad");
+    const scene = result.indexOf("e_gen_background_replace");
+    expect(pad).toBeGreaterThan(-1);
+    expect(scene).toBeGreaterThan(pad);
+  });
+
+  it("enthält kein Komma im Kulissentext", () => {
+    // Ein Komma trennt in einer Cloudinary-Adresse die Anweisungen. Stünde
+    // eines im Text, zerfiele die Adresse und Cloudinary antwortete mit 400.
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+    const result = productImageUrl(cloudinary, "card", 1, "GOURMAND");
+    const teil = result.split("e_gen_background_replace:prompt_")[1].split("/")[0];
+
+    expect(teil).not.toContain(",");
+    expect(teil).not.toContain("%2C");
+  });
+
+  it("erzeugt für Karte und Produktseite dieselbe Adresse", () => {
+    // Gleiche Adresse heisst ein einziges erzeugtes Bild – und damit nur
+    // einmal Guthaben statt zweimal.
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+
+    expect(productImageUrl(cloudinary, "card", 1, "LEDER")).toBe(
+      productImageUrl(cloudinary, "detail", 1, "LEDER"),
+    );
+  });
+
+  it("stellt bei unbekannter Duftfamilie nur frei, statt eine Kulisse zu raten", () => {
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+
+    for (const familie of [null, undefined, "GIBTESNICHT"]) {
+      const result = productImageUrl(cloudinary, "card", 1, familie);
+      expect(result).toContain("e_background_removal/");
+      expect(result).not.toContain("e_gen_background_replace");
+    }
+  });
+
+  it("versteht auch die deutsche Schreibweise", () => {
+    for (const wert of ["szene", "duftnoten", "SCENE"]) {
+      process.env.SHOP_IMAGE_BACKGROUND = wert;
+      expect(productImageUrl(cloudinary, "card", 1, "ZITRUS")).toContain(
+        "e_gen_background_replace",
+      );
+    }
+  });
+
+  it("lässt Vorschaubilder ohne Kulisse", () => {
+    // Ein anderes Format wäre ein weiteres erzeugtes Bild und damit doppeltes
+    // Guthaben – für 240 Pixel lohnt sich das nicht.
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+    const result = productThumbUrl(cloudinary);
+
+    expect(result).not.toContain("e_gen_background_replace");
+    expect(result).toContain("e_background_removal/");
+  });
+});
+
 describe("signatureError", () => {
   /**
    * Vorher stand bei jedem fehlgeschlagenen Upload „Cloudinary ist nicht

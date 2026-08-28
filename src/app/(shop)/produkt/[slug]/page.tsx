@@ -268,6 +268,7 @@ export default async function ProductPage({ params }: PageProps) {
                 alt: image.alt,
               }))}
               productName={product.name}
+              fragranceFamily={product.fragranceFamily}
             />
           </div>
 

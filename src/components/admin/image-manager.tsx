@@ -28,10 +28,16 @@ export function ImageManager({
   productId,
   images,
   cloudinaryEnabled,
+  fragranceFamily,
 }: {
   productId: string;
   images: ImageRow[];
   cloudinaryEnabled: boolean;
+  /**
+   * Bestimmt die Kulisse, wenn SHOP_IMAGE_BACKGROUND auf "scene" steht – so
+   * siehst du im Adminbereich dasselbe Bild wie deine Kundschaft im Shop.
+   */
+  fragranceFamily?: string | null;
 }) {
   const [state, formAction] = useActionState(addProductImageAction, idleState);
   const { upload, uploading, error: uploadError } = useCloudinaryUpload();
@@ -60,7 +66,7 @@ export function ImageManager({
             <li key={image.id} className="flex flex-col gap-2">
               <div className="relative aspect-4/5 overflow-hidden border border-line bg-ink">
                 <Image
-                  src={productImageUrl(image.url, "detail")}
+                  src={productImageUrl(image.url, "detail", 1, fragranceFamily)}
                   alt={image.alt}
                   fill
                   sizes="200px"

@@ -47,7 +47,7 @@ export function ProductCard({
         {image ? (
           <>
             <Image
-              src={productImageUrl(image.url, "card")}
+              src={productImageUrl(image.url, "card", 1, product.fragranceFamily)}
               alt={image.alt}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -59,7 +59,7 @@ export function ProductCard({
             />
             {hoverImage && (
               <Image
-                src={productImageUrl(hoverImage.url, "card")}
+                src={productImageUrl(hoverImage.url, "card", 1, product.fragranceFamily)}
                 alt=""
                 aria-hidden="true"
                 fill

@@ -675,6 +675,7 @@ den Hintergrund automatisch durch die Shop-Farbe ersetzen lassen:
 ```bash
 SHOP_IMAGE_BACKGROUND="transparent"   # einfarbige Fläche entfernen
 SHOP_IMAGE_BACKGROUND="ai"            # freistellen (kostenpflichtiges Modul)
+SHOP_IMAGE_BACKGROUND="scene"         # freistellen + Kulisse aus den Duftnoten
 SHOP_IMAGE_BACKGROUND="keep"          # Standard: Foto bleibt unverändert
 ```
 
@@ -683,6 +684,26 @@ einfarbigen Hintergrund ohne starke Schatten; die Empfindlichkeit steuert
 `SHOP_IMAGE_BACKGROUND_TOLERANCE` (1–100, Vorgabe 30). `ai` kommt auch mit
 unruhigem Hintergrund zurecht, setzt aber das Zusatzmodul
 «Background Removal» im Cloudinary-Konto voraus.
+
+`scene` geht einen Schritt weiter: Der Flakon wird freigestellt und
+anschliessend vor eine erzeugte Kulisse gesetzt, die zur `fragranceFamily` des
+Produkts passt – Zitrus bekommt Früchte, Holzig bekommt Oud und Zedernrinde,
+Leder bekommt Tabak. Die Motive stehen in `src/config/scent-scenes.ts` und
+teilen sich denselben Bildstil, damit alle Produktbilder wie eine Serie wirken.
+
+Zwei Dinge dazu:
+
+- **Guthaben.** Jedes Bild wird genau einmal erzeugt und danach von Cloudinary
+  ausgeliefert. Produktkarte und Produktseite verwenden bewusst dieselbe
+  Adresse, damit nicht zweimal Guthaben fliesst; Vorschaubilder unter der
+  Galerie bekommen gar keine Kulisse.
+- **Erster Abruf.** Cloudinary erzeugt die Kulisse erst, wenn die Adresse zum
+  ersten Mal abgerufen wird. Deshalb ruft `warmeBilderVor()` in
+  `src/app/admin/actions.ts` sie direkt nach dem Speichern einmal selbst ab –
+  sonst liefe die erste Kundin in eine Wartezeit oder ein kaputtes Bild.
+
+Steht keine oder eine unbekannte Duftfamilie am Produkt, wird der Flakon nur
+freigestellt statt eine Kulisse zu raten.
 
 Standard ist bewusst `keep`: Die Einstellung wirkt auf **alle** Bilder
 gleichzeitig, und ein Freistellen, das danebengeht, ruiniert das ganze

@@ -17,9 +17,12 @@ export interface GalleryImage {
 export function ProductGallery({
   images,
   productName,
+  fragranceFamily,
 }: {
   images: GalleryImage[];
   productName: string;
+  /** Bestimmt die Kulisse, wenn SHOP_IMAGE_BACKGROUND auf "scene" steht. */
+  fragranceFamily?: string | null;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -49,7 +52,7 @@ export function ProductGallery({
       <div className="relative aspect-4/5 overflow-hidden border border-line bg-charcoal">
         <Image
           key={active.url}
-          src={productImageUrl(active.url, "detail")}
+          src={productImageUrl(active.url, "detail", 1, fragranceFamily)}
           alt={active.alt}
           fill
           priority

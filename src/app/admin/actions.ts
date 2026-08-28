@@ -13,6 +13,7 @@ import {
   sendShippingConfirmationEmail,
 } from "@/lib/email";
 import { deleteCloudinaryImage } from "@/lib/cloudinary";
+import { productImageUrl } from "@/lib/product-image";
 import {
   adminCategorySchema,
   adminDiscountSchema,
@@ -94,6 +95,44 @@ function collectNewImages(
       sortOrder: index,
     }))
     .filter((image) => image.url.startsWith("http"));
+}
+
+/**
+ * Holt die bearbeitete Fassung eines Bildes einmal selbst ab.
+ *
+ * Cloudinary erzeugt sie erst beim ersten Abruf. Bei einer erzeugten Kulisse
+ * (SHOP_IMAGE_BACKGROUND="scene") dauert das einige Sekunden – zu lange für
+ * die erste Kundin, die das Produkt öffnet: Der Bildoptimierer von Next.js
+ * gibt vorher auf und zeigt ein kaputtes Bild.
+ *
+ * Deshalb rufen wir die Adresse direkt nach dem Speichern einmal ab. Danach
+ * liegt die fertige Fassung bei Cloudinary und wird sofort ausgeliefert.
+ *
+ * Fehler sind hier bewusst folgenlos. Klappt der Vorabruf nicht, erzeugt
+ * Cloudinary das Bild eben beim ersten echten Abruf – das darf das Speichern
+ * eines Produkts nicht scheitern lassen.
+ */
+async function warmeBilderVor(
+  urls: string[],
+  fragranceFamily: string | null,
+): Promise<void> {
+  const adressen = urls
+    .map((url) => productImageUrl(url, "card", 1, fragranceFamily))
+    .filter((url) => url.includes("res.cloudinary.com"));
+
+  if (adressen.length === 0) return;
+
+  await Promise.all(
+    adressen.map((url) =>
+      // Bewusst GET und nicht HEAD: Nur ein vollständiger Abruf erzwingt
+      // nachweislich, dass Cloudinary die Fassung wirklich erzeugt. Das Bild
+      // selbst wird verworfen; ein paar hundert Kilobyte einmal pro Bild
+      // fallen serverseitig nicht ins Gewicht.
+      fetch(url, { signal: AbortSignal.timeout(20_000) })
+        .then((antwort) => antwort.arrayBuffer())
+        .catch(() => undefined),
+    ),
+  );
 }
 
 /**
@@ -267,6 +306,11 @@ export async function saveProductAction(
       select: { id: true },
     });
     savedId = created.id;
+
+    await warmeBilderVor(
+      bilder.map((bild) => bild.url),
+      data.fragranceFamily,
+    );
   }
 
   revalidatePath("/admin/produkte");
@@ -531,7 +575,13 @@ export async function addProductImageAction(
     });
   }
 
-  const count = await prisma.productImage.count({ where: { productId } });
+  const [count, product] = await Promise.all([
+    prisma.productImage.count({ where: { productId } }),
+    prisma.product.findUnique({
+      where: { id: productId },
+      select: { fragranceFamily: true },
+    }),
+  ]);
 
   await prisma.productImage.create({
     data: {
@@ -542,6 +592,8 @@ export async function addProductImageAction(
       sortOrder: count,
     },
   });
+
+  await warmeBilderVor([url], product?.fragranceFamily ?? null);
 
   revalidatePath(`/admin/produkte/${productId}`);
   revalidatePath("/shop");

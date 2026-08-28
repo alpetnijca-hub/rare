@@ -20,6 +20,7 @@
  * Bilder sollen weiterhin funktionieren.
  */
 
+import { sceneMotif } from "@/config/scent-scenes";
 import { envValue } from "@/lib/env";
 
 /**
@@ -31,18 +32,26 @@ import { envValue } from "@/lib/env";
  *                   in jedem Cloudinary-Tarif, verlangt aber einen ruhigen,
  *                   einfarbigen Hintergrund.
  *   "ai"          – Cloudinary schneidet den Gegenstand frei, auch bei
- *                   unruhigem Hintergrund. Setzt das kostenpflichtige
- *                   Zusatzmodul "Background Removal" voraus.
+ *                   unruhigem Hintergrund. Setzt das Zusatzmodul
+ *                   "Background Removal" voraus.
+ *   "scene"       – Wie "ai", stellt den Flakon danach aber vor eine erzeugte
+ *                   Kulisse, die zur Duftfamilie passt (Zitrus → Früchte,
+ *                   Holzig → Oud). Die Motive stehen in
+ *                   `src/config/scent-scenes.ts`. Verbraucht pro Bild einmalig
+ *                   Guthaben für erzeugende Umformungen.
  *
  * Umschaltbar über SHOP_IMAGE_BACKGROUND. Bewusst "keep" als Standard: Ein
  * automatisches Freistellen, das danebengeht, ruiniert jedes Produktbild auf
  * einen Schlag – und zwar unbemerkt, weil niemand alle Bilder nachkontrolliert.
  */
-export type BackgroundMode = "keep" | "transparent" | "ai";
+export type BackgroundMode = "keep" | "transparent" | "ai" | "scene";
 
 function backgroundMode(): BackgroundMode {
   const raw = envValue(process.env.SHOP_IMAGE_BACKGROUND)?.toLowerCase();
   if (raw === "transparent" || raw === "ai") return raw;
+  // "szene" und "duftnoten" sind erlaubt, damit man nicht raten muss, ob die
+  // Einstellung deutsch oder englisch geschrieben wird.
+  if (raw === "scene" || raw === "szene" || raw === "duftnoten") return "scene";
   return "keep";
 }
 
@@ -57,16 +66,39 @@ function transparencyTolerance(): number {
   return value;
 }
 
-/** Vorgeschaltete Bearbeitung, bevor auf das Zielformat gepolstert wird. */
+/**
+ * Vorgeschaltete Bearbeitung, bevor auf das Zielformat gepolstert wird.
+ *
+ * "scene" fällt hier auf reines Freistellen zurück: Die Kulisse selbst wird
+ * erst *nach* dem Polstern erzeugt (siehe `productImageUrl`), weil sie sonst
+ * nur den Ausschnitt des Originalfotos füllt und oben und unten schwarze
+ * Balken stehen blieben.
+ */
 function backgroundStep(): string {
   switch (backgroundMode()) {
     case "transparent":
       return `e_make_transparent:${transparencyTolerance()}/`;
     case "ai":
+    case "scene":
       return "e_background_removal/";
     default:
       return "";
   }
+}
+
+/**
+ * Macht aus einem Kulissentext den Teil einer Cloudinary-Adresse.
+ *
+ * Alles ausser Buchstaben, Ziffern und Leerzeichen fliegt raus. Vor allem das
+ * Komma: In einer Cloudinary-Adresse trennt es die Anweisungen, ein Komma im
+ * Text zerlegt also die ganze Adresse und liefert HTTP 400.
+ */
+function encodeScenePrompt(text: string): string {
+  const clean = text
+    .replace(/[^a-zA-Z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return encodeURIComponent(clean);
 }
 
 /** Seitenverhältnis der Bildflächen im Shop (4:5, hochkant). */
@@ -95,6 +127,7 @@ export function productImageUrl(
   url: string,
   context: ImageContext = "card",
   scale = 1,
+  family?: string | null,
 ): string {
   if (!url.includes("res.cloudinary.com") || !url.includes(cloudinaryMarker)) {
     return url;
@@ -108,6 +141,22 @@ export function productImageUrl(
 
   const width = Math.round(productImageRatio.width * scale);
   const height = Math.round(productImageRatio.height * scale);
+
+  const motif = backgroundMode() === "scene" ? sceneMotif(family) : null;
+
+  if (motif) {
+    // Reihenfolge ist hier entscheidend: erst auf 4:5 polstern, dann die
+    // Kulisse erzeugen. Andersherum entsteht die Kulisse nur im Ausschnitt des
+    // Originalfotos, und oben und unten blieben schwarze Balken stehen.
+    //
+    // Die Polsterfarbe ist absichtlich für alle Flächen dieselbe und nicht
+    // `backgrounds[context]`: Sie wird ohnehin von der Kulisse überdeckt,
+    // gleiche Adresse heisst aber gleiches erzeugtes Bild – und damit nur
+    // einmal Guthaben statt zweimal für Karte und Produktseite.
+    const pad = `c_pad,w_${width},h_${height},b_rgb:${backgrounds.card}`;
+    const scene = `e_gen_background_replace:prompt_${encodeScenePrompt(motif)}`;
+    return `${prefix}${cloudinaryMarker}${pad}/${scene}/f_auto,q_auto/${rest}`;
+  }
 
   const transformation = [
     "c_pad",
@@ -125,7 +174,14 @@ export function productImageUrl(
   return `${prefix}${cloudinaryMarker}${backgroundStep()}${transformation}/${rest}`;
 }
 
-/** Quadratischer Ausschnitt für die kleinen Vorschaubilder unter der Galerie. */
+/**
+ * Quadratischer Ausschnitt für die kleinen Vorschaubilder unter der Galerie.
+ *
+ * Bewusst ohne Kulisse, auch wenn `scene` eingeschaltet ist: Ein anderes
+ * Format heisst ein weiteres erzeugtes Bild und damit doppeltes Guthaben – für
+ * ein Vorschaubild von 240 Pixeln lohnt sich das nicht. Der freigestellte
+ * Flakon auf dunklem Grund wirkt daneben wie ein Kontaktabzug.
+ */
 export function productThumbUrl(url: string, size = 240): string {
   if (!url.includes("res.cloudinary.com") || !url.includes(cloudinaryMarker)) {
     return url;

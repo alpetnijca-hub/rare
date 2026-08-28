@@ -160,7 +160,7 @@ export default async function AdminProductsPage({
                           <div className="relative size-12 shrink-0 overflow-hidden border border-line bg-ink">
                             {product.images[0] && (
                               <Image
-                                src={productImageUrl(product.images[0].url, "detail")}
+                                src={productImageUrl(product.images[0].url, "detail", 1, product.fragranceFamily)}
                                 alt=""
                                 aria-hidden="true"
                                 fill

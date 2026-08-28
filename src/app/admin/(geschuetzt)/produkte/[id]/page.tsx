@@ -116,6 +116,7 @@ export default async function EditProductPage({
         >
           <ImageManager
             productId={product.id}
+            fragranceFamily={product.fragranceFamily}
             images={product.images.map((image) => ({
               id: image.id,
               url: image.url,
