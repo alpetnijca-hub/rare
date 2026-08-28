@@ -80,8 +80,23 @@ export type ProductCardData = Prisma.ProductGetPayload<{
 export interface ProductListItem {
   product: ProductCardData;
   /** Günstigste aktive Variante – Basis für "ab X". */
-  fromPriceCents: number;
+  /**
+   * Preis, der auf der Produktkarte steht: der der **teuersten** Größe.
+   *
+   * Bewusst nicht der günstigste. Steht auf einer Karte „ab CHF 4.90“, liest
+   * man das als Preis des Parfüms – dabei ist es der Preis einer 2-ml-Probe.
+   * Die grosse Zahl vorn beugt genau diesem Missverständnis vor.
+   */
+  topPriceCents: number;
+  /** Streichpreis der teuersten Größe, falls gesetzt. */
   compareAtPriceCents: number | null;
+  /** Millilitermenge der teuersten Größe – für den Grundpreis. */
+  topVolumeMl: number;
+  /**
+   * Günstigste Größe. Steht klein unter dem Preis, damit trotzdem erkennbar
+   * bleibt, dass es den Duft auch zum Ausprobieren gibt.
+   */
+  lowestPriceCents: number;
   /** Beste Verfügbarkeit über alle Varianten. */
   availability: Availability | null;
   sizes: string[];
@@ -119,8 +134,10 @@ export function toListItem(product: ProductCardData): ProductListItem {
   if (variants.length === 0) {
     return {
       product,
-      fromPriceCents: 0,
+      topPriceCents: 0,
       compareAtPriceCents: null,
+      topVolumeMl: 0,
+      lowestPriceCents: 0,
       availability: null,
       sizes: [],
       purchasable: false,
@@ -129,6 +146,15 @@ export function toListItem(product: ProductCardData): ProductListItem {
 
   const cheapest = variants.reduce((min, variant) =>
     variant.priceCents < min.priceCents ? variant : min,
+  );
+
+  // Teuerste Größe: Bei Gleichstand gewinnt die grössere Menge, damit der
+  // Grundpreis daneben zur wirklich grössten Flasche gehört.
+  const dearest = variants.reduce((max, variant) =>
+    variant.priceCents > max.priceCents ||
+    (variant.priceCents === max.priceCents && variant.volumeMl > max.volumeMl)
+      ? variant
+      : max,
   );
 
   // Beste Verfügbarkeit gewinnt: lieferbar schlägt vorbestellbar schlägt nicht verfügbar.
@@ -147,8 +173,10 @@ export function toListItem(product: ProductCardData): ProductListItem {
 
   return {
     product,
-    fromPriceCents: cheapest.priceCents,
-    compareAtPriceCents: cheapest.compareAtPriceCents,
+    topPriceCents: dearest.priceCents,
+    compareAtPriceCents: dearest.compareAtPriceCents,
+    topVolumeMl: dearest.volumeMl,
+    lowestPriceCents: cheapest.priceCents,
     availability: best,
     sizes: variants.map((variant) => variant.size),
     purchasable: availabilities.some((entry) => entry.purchasable),
@@ -277,10 +305,12 @@ export async function listProducts(
     );
   }
 
-  // Preissortierung braucht den günstigsten Preis – der steht erst jetzt fest.
+  // Preissortierung: nach dem Preis, der auch auf der Karte steht – dem der
+  // teuersten Größe. Sortierte man nach dem günstigsten, stünden Düfte in
+  // einer Reihenfolge, die zu den angezeigten Zahlen nicht passt.
   if (sort === "preis-auf" || sort === "preis-ab") {
     const priceOf = (product: (typeof filtered)[number]) =>
-      Math.min(...product.variants.map((variant) => variant.priceCents));
+      Math.max(...product.variants.map((variant) => variant.priceCents));
 
     filtered.sort((a, b) =>
       sort === "preis-auf" ? priceOf(a) - priceOf(b) : priceOf(b) - priceOf(a),

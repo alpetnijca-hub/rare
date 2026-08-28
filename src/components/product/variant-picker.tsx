@@ -145,16 +145,36 @@ export function VariantPicker({
   const { format: formatPrice, formatBase } = useCurrency();
   const quantityId = useId();
 
-  // Vorauswahl beim ersten Rendern: Variante aus der URL, sonst die erste
+  // Vorauswahl beim ersten Rendern: Variante aus der URL, sonst die grösste
   // bestellbare. Danach ist die lokale Auswahl massgeblich – das hält den
   // Größenwechsel sofort spürbar, ohne auf den Server zu warten.
+  //
+  // Bewusst die grösste und nicht die erste: Die Liste beginnt mit der
+  // 2-ml-Probe. Stünde die vorne, zeigte die Produktseite beim Öffnen einen
+  // Preis von wenigen Franken – und genau so liest man ihn dann auch: als
+  // Preis des Parfüms.
   const initialId = useMemo(() => {
     const fromUrl = searchParams.get("variante");
     if (fromUrl && variants.some((variant) => variant.id === fromUrl)) {
       return fromUrl;
     }
+
+    const teuerste = (auswahl: VariantOption[]) =>
+      auswahl.reduce<VariantOption | null>(
+        (max, variant) =>
+          max === null ||
+          variant.priceCents > max.priceCents ||
+          (variant.priceCents === max.priceCents &&
+            variant.volumeMl > max.volumeMl)
+            ? variant
+            : max,
+        null,
+      );
+
     return (
-      variants.find((variant) => variant.purchasable)?.id ?? variants[0]?.id ?? ""
+      teuerste(variants.filter((variant) => variant.purchasable))?.id ??
+      teuerste(variants)?.id ??
+      ""
     );
     // Absichtlich nur beim ersten Rendern ausgewertet.
     // eslint-disable-next-line react-hooks/exhaustive-deps

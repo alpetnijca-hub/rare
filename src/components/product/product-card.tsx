@@ -21,18 +21,23 @@ export function ProductCard({
   priority?: boolean;
   className?: string;
 }) {
-  const { product, fromPriceCents, compareAtPriceCents, availability, sizes } = item;
+  const {
+    product,
+    topPriceCents,
+    compareAtPriceCents,
+    topVolumeMl,
+    lowestPriceCents,
+    availability,
+    sizes,
+  } = item;
   const image = product.images[0];
   const hoverImage = product.images[1];
-  const cheapestVariant = product.variants.reduce(
-    (min, variant) => (variant.priceCents < min.priceCents ? variant : min),
-    product.variants[0],
-  );
-  const savings = discountPercent(fromPriceCents, compareAtPriceCents);
+  const savings = discountPercent(topPriceCents, compareAtPriceCents);
+  // Der Grundpreis muss sich auf den angezeigten Preis beziehen – sonst passen
+  // die beiden Zahlen nebeneinander nicht zusammen.
   const hasBasePrice =
-    cheapestVariant !== undefined &&
-    basePricePer100Ml(cheapestVariant.priceCents, cheapestVariant.volumeMl) !==
-      null;
+    basePricePer100Ml(topPriceCents, topVolumeMl) !== null;
+  const hasCheaperSize = lowestPriceCents > 0 && lowestPriceCents < topPriceCents;
 
   return (
     <article
@@ -128,24 +133,29 @@ export function ProductCard({
 
         <div className="mt-auto flex flex-col gap-2 pt-2">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <span className="text-xs text-subtle">ab</span>
             <span className="font-display text-xl text-gold-light">
-              <Money cents={fromPriceCents} />
+              <Money cents={topPriceCents} />
             </span>
-            {compareAtPriceCents && compareAtPriceCents > fromPriceCents && (
+            {compareAtPriceCents && compareAtPriceCents > topPriceCents && (
               <span className="text-sm text-subtle line-through">
                 <Money cents={compareAtPriceCents} />
               </span>
             )}
           </div>
 
+          {/* Der kleine Preis gehört dazu: Die grosse Zahl ist der Preis der
+              grössten Größe, nicht der einzige Preis. Wer nur probieren will,
+              soll trotzdem sehen, dass es günstiger geht. */}
+          {hasCheaperSize && (
+            <p className="text-[11px] text-subtle">
+              Kleinere Größen ab <Money cents={lowestPriceCents} />
+            </p>
+          )}
+
           {hasBasePrice && (
             <p className="text-[11px] text-subtle">
               Grundpreis{" "}
-              <BasePrice
-                priceCents={cheapestVariant.priceCents}
-                volumeMl={cheapestVariant.volumeMl}
-              />
+              <BasePrice priceCents={topPriceCents} volumeMl={topVolumeMl} />
             </p>
           )}
 
