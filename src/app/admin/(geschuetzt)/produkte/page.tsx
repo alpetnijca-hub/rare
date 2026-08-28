@@ -9,6 +9,7 @@ import { formatPrice } from "@/lib/money";
 import { availableStock } from "@/lib/availability";
 import { familyLabels, kindLabels } from "@/lib/catalog";
 import { productImageUrl } from "@/lib/product-image";
+import { WarmImagesButton } from "@/components/admin/warm-images-button";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +70,10 @@ export default async function AdminProductsPage({
         description="Sortiment verwalten: Beschreibungen, Größen, Preise und Lagerbestände."
         actions={<ButtonLink href="/admin/produkte/neu">Neues Produkt</ButtonLink>}
       />
+
+      <Card title="Produktbilder vorbereiten">
+        <WarmImagesButton />
+      </Card>
 
       {geloescht === "1" && (
         <p

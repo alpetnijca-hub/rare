@@ -117,12 +117,12 @@ function collectNewImages(
 async function warmeBilderVor(
   urls: string[],
   scene: SceneSource,
-): Promise<void> {
+): Promise<number> {
   const adressen = urls
     .map((url) => productImageUrl(url, "card", 1, scene))
     .filter((url) => url.includes("res.cloudinary.com"));
 
-  if (adressen.length === 0) return;
+  if (adressen.length === 0) return 0;
 
   await Promise.all(
     adressen.map((url) =>
@@ -134,6 +134,80 @@ async function warmeBilderVor(
         .then((antwort) => antwort.arrayBuffer())
         .catch(() => undefined),
     ),
+  );
+
+  return adressen.length;
+}
+
+/**
+ * Bereitet die Bilder aller Produkte auf einmal vor.
+ *
+ * Nötig ist das nie: Der Shop baut die Bildadresse bei jedem Aufruf neu, eine
+ * geänderte Kulisse greift also von selbst. Cloudinary erzeugt die Fassung
+ * aber erst beim ersten Abruf, und das dauert bei einer KI-Kulisse einige
+ * Sekunden – diese Wartezeit soll nicht die erste Kundin treffen.
+ *
+ * Deshalb dieser Knopf: Er ruft die Adressen einmal selbst ab. Danach liegen
+ * sie bei Cloudinary bereit und werden sofort ausgeliefert.
+ *
+ * Gearbeitet wird in kleinen Gruppen und mit einer Frist. Ein Aufruf, der
+ * minutenlang läuft, wird auf Vercel abgeschnitten – dann wäre nicht einmal
+ * klar, wie weit er gekommen ist. So meldet er wenigstens ehrlich, wie viele
+ * Bilder fertig sind, und lässt sich einfach noch einmal drücken.
+ */
+export async function warmProductImagesAction(
+  _prev: ActionState,
+  _formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+
+  const produkte = await prisma.product.findMany({
+    where: { images: { some: {} } },
+    orderBy: { updatedAt: "desc" },
+    select: {
+      fragranceFamily: true,
+      topNotes: true,
+      heartNotes: true,
+      baseNotes: true,
+      images: { orderBy: { sortOrder: "asc" }, select: { url: true } },
+    },
+  });
+
+  const frist = Date.now() + 45_000;
+  let fertig = 0;
+  let offen = 0;
+
+  for (const produkt of produkte) {
+    // Nur das Hauptbild: Es steht auf der Produktkarte und ganz oben auf der
+    // Produktseite. Die weiteren Bilder erzeugt Cloudinary, sobald jemand
+    // durch die Galerie blättert.
+    const hauptbild = produkt.images[0];
+    if (!hauptbild) continue;
+
+    if (Date.now() > frist) {
+      offen += 1;
+      continue;
+    }
+
+    // Nur tatsächlich vorbereitete Bilder zählen. Bilder aus `public/`
+    // brauchen nichts – sie liegen ohnehin bereit.
+    fertig += await warmeBilderVor([hauptbild.url], produkt);
+  }
+
+  if (fertig === 0 && offen === 0) {
+    return success(
+      "Es gibt nichts vorzubereiten. Vorbereitet werden müssen nur Bilder, die über Cloudinary laufen.",
+    );
+  }
+
+  if (offen > 0) {
+    return success(
+      `${fertig} Bilder vorbereitet. ${offen} sind noch offen – drück den Knopf gleich noch einmal.`,
+    );
+  }
+
+  return success(
+    `${fertig} ${fertig === 1 ? "Bild" : "Bilder"} vorbereitet. Die Kulissen stehen jetzt sofort bereit.`,
   );
 }
 
