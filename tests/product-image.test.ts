@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { productImageUrl, productThumbUrl } from "@/lib/product-image";
+import { signatureError } from "@/components/admin/use-cloudinary-upload";
 
 /**
  * Einheitliche Produktbilder.
@@ -130,5 +131,35 @@ describe("Hintergrund im Foto", () => {
     const result = productImageUrl(cloudinary);
     expect(result).not.toContain("e_make_transparent");
     expect(result).not.toContain("e_background_removal");
+  });
+});
+
+describe("signatureError", () => {
+  /**
+   * Vorher stand bei jedem fehlgeschlagenen Upload „Cloudinary ist nicht
+   * eingerichtet“ – auch bei abgelaufener Anmeldung. Das schickt einen in die
+   * falsche Richtung, deshalb ist hier festgehalten, dass die Fälle
+   * auseinandergehalten werden.
+   */
+  it("nennt bei 503 die fehlenden Zugangsdaten und den nötigen Deploy", () => {
+    const meldung = signatureError(503);
+    expect(meldung).toContain("CLOUDINARY_API_SECRET");
+    expect(meldung).toContain("Deploy");
+  });
+
+  it("nennt bei 401 und 403 die abgelaufene Anmeldung, nicht Cloudinary", () => {
+    for (const status of [401, 403]) {
+      const meldung = signatureError(status);
+      expect(meldung).toContain("Anmeldung");
+      expect(meldung).not.toContain("Cloudinary");
+    }
+  });
+
+  it("nennt bei 429 die Wartezeit", () => {
+    expect(signatureError(429)).toContain("Warte");
+  });
+
+  it("nennt bei unbekannten Fehlern den Statuscode", () => {
+    expect(signatureError(500)).toContain("500");
   });
 });

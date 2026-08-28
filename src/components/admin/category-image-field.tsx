@@ -97,8 +97,10 @@ export function CategoryImageField({
             </div>
           ) : (
             <p className="text-xs leading-relaxed text-subtle">
-              Der Direktupload ist noch nicht eingerichtet. Trage unten die
-              Adresse eines Bildes ein, das bereits im Netz liegt.
+              Der Direktupload ist noch nicht eingerichtet – dafür fehlen die
+              Cloudinary-Zugangsdaten in den Projekteinstellungen. Trage
+              solange unten die Adresse eines Bildes ein, das bereits im Netz
+              liegt.
             </p>
           )}
 

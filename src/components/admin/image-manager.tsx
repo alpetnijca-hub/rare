@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useRef } from "react";
 import { idleState } from "@/app/admin/state";
 import { addProductImageAction, deleteProductImageAction } from "@/app/admin/actions";
 import { ConfirmSubmit, FormMessage, SubmitButton } from "@/components/admin/ui";
 import { Button } from "@/components/ui/button";
 import { Field, TextInput } from "@/components/ui/field";
+import { useCloudinaryUpload } from "@/components/admin/use-cloudinary-upload";
 import { productImageUrl } from "@/lib/product-image";
 
 export interface ImageRow {
@@ -19,9 +20,9 @@ export interface ImageRow {
 /**
  * Bildverwaltung.
  *
- * Der Upload läuft direkt vom Browser zu Cloudinary. Die Signatur kommt vom
- * Server (`/api/admin/cloudinary-signatur`) – das API-Secret verlässt den
- * Server dabei nie. Alternativ lässt sich eine Bild-URL manuell eintragen.
+ * Der Upload läuft über `useCloudinaryUpload`: direkt vom Browser zu
+ * Cloudinary, die Signatur kommt vom Server – das API-Secret verlässt ihn
+ * dabei nie. Alternativ lässt sich eine Bild-URL manuell eintragen.
  */
 export function ImageManager({
   productId,
@@ -33,8 +34,7 @@ export function ImageManager({
   cloudinaryEnabled: boolean;
 }) {
   const [state, formAction] = useActionState(addProductImageAction, idleState);
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
+  const { upload, uploading, error: uploadError } = useCloudinaryUpload();
   const urlRef = useRef<HTMLInputElement>(null);
   const publicIdRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -43,67 +43,13 @@ export function ImageManager({
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 10 * 1024 * 1024) {
-      setUploadError("Die Datei ist grösser als 10 MB.");
-      return;
-    }
+    const result = await upload(file);
+    if (!result) return;
 
-    setUploading(true);
-    setUploadError(null);
-
-    try {
-      // 1. Signatur vom Server holen.
-      const signatureResponse = await fetch("/api/admin/cloudinary-signatur", {
-        method: "POST",
-      });
-
-      if (!signatureResponse.ok) {
-        setUploadError("Signatur konnte nicht erzeugt werden.");
-        setUploading(false);
-        return;
-      }
-
-      const signature = (await signatureResponse.json()) as {
-        signature: string;
-        timestamp: number;
-        apiKey: string;
-        folder: string;
-        uploadUrl: string;
-      };
-
-      // 2. Datei direkt zu Cloudinary hochladen.
-      const body = new FormData();
-      body.append("file", file);
-      body.append("api_key", signature.apiKey);
-      body.append("timestamp", String(signature.timestamp));
-      body.append("signature", signature.signature);
-      body.append("folder", signature.folder);
-
-      const uploadResponse = await fetch(signature.uploadUrl, {
-        method: "POST",
-        body,
-      });
-
-      if (!uploadResponse.ok) {
-        setUploadError("Der Upload wurde von Cloudinary abgelehnt.");
-        setUploading(false);
-        return;
-      }
-
-      const uploaded = (await uploadResponse.json()) as {
-        secure_url: string;
-        public_id: string;
-      };
-
-      // 3. URL in die Formularfelder übernehmen.
-      if (urlRef.current) urlRef.current.value = uploaded.secure_url;
-      if (publicIdRef.current) publicIdRef.current.value = uploaded.public_id;
-      if (fileRef.current) fileRef.current.value = "";
-    } catch {
-      setUploadError("Der Upload ist fehlgeschlagen. Bitte erneut versuchen.");
-    } finally {
-      setUploading(false);
-    }
+    // Die fertige Adresse landet in den Feldern, die das Formular abschickt.
+    if (urlRef.current) urlRef.current.value = result.url;
+    if (publicIdRef.current) publicIdRef.current.value = result.publicId;
+    if (fileRef.current) fileRef.current.value = "";
   }
 
   return (
@@ -187,8 +133,10 @@ export function ImageManager({
         ) : (
           <p className="border border-amber-800/60 bg-amber-950/25 px-4 py-3 text-xs leading-relaxed text-amber-100/85">
             Cloudinary ist nicht konfiguriert. Du kannst Bild-URLs weiterhin
-            manuell eintragen – für den direkten Datei-Upload trage die
-            Cloudinary-Zugangsdaten in der <code>.env</code> ein.
+            manuell eintragen – für den direkten Datei-Upload trage
+            CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY und
+            CLOUDINARY_API_SECRET in den Projekteinstellungen ein und starte
+            danach einen neuen Deploy.
           </p>
         )}
 

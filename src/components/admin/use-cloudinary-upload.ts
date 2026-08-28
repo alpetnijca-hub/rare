@@ -23,6 +23,29 @@ export interface UploadedImage {
 /** Grösste zulässige Datei. Grössere lehnt Cloudinary ohnehin ab. */
 export const maxUploadBytes = 10 * 1024 * 1024;
 
+/**
+ * Übersetzt die Antwort der Signatur-Schnittstelle in einen Satz, der sagt,
+ * was zu tun ist.
+ *
+ * Vorher stand bei jedem Fehler „Cloudinary ist nicht eingerichtet“ – auch
+ * dann, wenn die Zugangsdaten längst hinterlegt waren und in Wahrheit nur die
+ * Anmeldung abgelaufen war. Das schickt einen auf die falsche Fährte, deshalb
+ * unterscheidet diese Funktion die Fälle.
+ */
+export function signatureError(status: number): string {
+  switch (status) {
+    case 401:
+    case 403:
+      return "Deine Anmeldung ist abgelaufen. Lade die Seite neu, melde dich erneut an und versuch es dann noch einmal.";
+    case 429:
+      return "Zu viele Anfragen kurz hintereinander. Warte eine Minute und lade das Bild dann erneut hoch.";
+    case 503:
+      return "Cloudinary ist noch nicht eingerichtet. Trage CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY und CLOUDINARY_API_SECRET in den Projekteinstellungen ein und starte danach einen neuen Deploy – Änderungen an Umgebungsvariablen greifen erst dann.";
+    default:
+      return `Der Upload konnte nicht vorbereitet werden (Serverantwort ${status}). Versuch es noch einmal; bleibt es dabei, stimmt etwas an den Cloudinary-Zugangsdaten nicht.`;
+  }
+}
+
 export function useCloudinaryUpload() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,9 +65,7 @@ export function useCloudinaryUpload() {
       });
 
       if (!signatureResponse.ok) {
-        setError(
-          "Der Bild-Upload ist nicht eingerichtet. Trage die Cloudinary-Zugangsdaten ein oder gib unten eine Bild-Adresse an.",
-        );
+        setError(signatureError(signatureResponse.status));
         return null;
       }
 
@@ -69,7 +90,18 @@ export function useCloudinaryUpload() {
       });
 
       if (!uploadResponse.ok) {
-        setError("Der Upload wurde von Cloudinary abgelehnt.");
+        // Cloudinary schreibt in die Antwort, woran es lag – etwa an einem
+        // falschen API-Secret oder einem überschrittenen Kontingent.
+        const grund = await uploadResponse
+          .json()
+          .then((data: { error?: { message?: string } }) => data.error?.message)
+          .catch(() => undefined);
+
+        setError(
+          grund
+            ? `Cloudinary hat den Upload abgelehnt: ${grund}`
+            : `Cloudinary hat den Upload abgelehnt (Antwort ${uploadResponse.status}).`,
+        );
         return null;
       }
 
@@ -80,7 +112,9 @@ export function useCloudinaryUpload() {
 
       return { url: uploaded.secure_url, publicId: uploaded.public_id };
     } catch {
-      setError("Der Upload ist fehlgeschlagen. Bitte erneut versuchen.");
+      setError(
+        "Der Upload ist fehlgeschlagen – vermutlich ein Netzwerkproblem. Bitte erneut versuchen.",
+      );
       return null;
     } finally {
       setUploading(false);

@@ -145,9 +145,11 @@ export function NewProductImages({
         </div>
       ) : (
         <p className="border border-amber-800/60 bg-amber-950/25 px-4 py-3 text-sm leading-relaxed text-amber-100/85">
-          Der Direktupload ist noch nicht eingerichtet. Trage die
-          Cloudinary-Zugangsdaten in den Projekteinstellungen ein – oder gib
-          unten die Adresse eines Bildes an, das bereits im Netz liegt.
+          Der Direktupload ist noch nicht eingerichtet. Trage
+          CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY und CLOUDINARY_API_SECRET
+          in den Projekteinstellungen ein und starte danach einen neuen Deploy –
+          ohne Deploy greifen neue Umgebungsvariablen nicht. Bis dahin kannst du
+          unten die Adresse eines Bildes angeben, das bereits im Netz liegt.
         </p>
       )}
 
