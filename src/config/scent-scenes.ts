@@ -33,15 +33,22 @@ import { findNoteKeyword } from "@/lib/notes";
 /**
  * Gemeinsame Bildsprache aller Kulissen: dunkel, warm, ruhig.
  *
- * Der Schluss („dark moody product photography shallow depth of field“) sieht
- * überflüssig aus, ist es aber nicht: Nachgemessen an einem echten
- * Produktfoto ergab derselbe Bildwunsch ohne diesen Teil eine mittelhelle
- * Kulisse (Helligkeit 86 von 255), mit ihm eine dunkle (51). Wer hier kürzt,
- * bekommt helle Bilder auf einer schwarzen Seite.
+ * Zwei Teile, beide an einem echten Produktfoto nachgemessen:
+ *
+ * „dark moody product photography“ muss stehen bleiben. Ohne diesen Zusatz
+ * kam eine mittelhelle Kulisse heraus (Helligkeit 86 von 255), mit ihm eine
+ * dunkle (45–51). Wer hier kürzt, bekommt helle Bilder auf einer schwarzen
+ * Seite.
+ *
+ * „shallow depth of field“ stand hier ebenfalls und war der Grund, warum bei
+ * den meisten Düften gar keine Duftnoten im Bild auftauchten: Die Anweisung
+ * erzeugt genau das, was sie verspricht – einen unscharfen, leeren
+ * Hintergrund. Derselbe Bildwunsch ohne sie zeigt die Zitronen deutlich neben
+ * dem Flakon, bei gleicher Dunkelheit. Nicht wieder hinzufügen.
  */
 const sceneSetting =
   "on dark stone surface with warm golden light and soft shadows " +
-  "dark moody product photography shallow depth of field";
+  "dark moody product photography";
 
 /**
  * Motiv je Duftfamilie – der Rückfall, wenn aus den Duftnoten nichts
@@ -68,10 +75,13 @@ const sceneMotifs: Record<string, string> = {
  * geht an ein Bildmodell, das englische Substantive braucht. Mit „Bergamotte“
  * kann es wenig anfangen, mit „bergamot fruits“ sehr viel.
  *
- * Bewusst **unvollständig**. Nicht jede Duftnote hat ein Aussehen: Moschus,
- * Ambroxan, Aldehyde oder Iso E Super sind Gerüche ohne Gegenstand. Sie stehen
- * hier nicht drin und werden übersprungen, statt das Bild mit einer erfundenen
- * Darstellung zu füllen.
+ * Riechstoffe ohne eigenen Gegenstand – Moschus, Ambrox, Hedione – bekommen
+ * das Bild dessen, wonach sie riechen: weiche Wolle, Bernstein, Jasmin. Das
+ * ist eine Übersetzung und keine Behauptung über den Inhalt der Flasche.
+ *
+ * Trotzdem bleibt die Liste **unvollständig**, und das ist Absicht: Für eine
+ * Note, zu der niemandem ein Bild einfällt, wird nichts erfunden. Sie wird
+ * übersprungen, und es greift die Duftfamilie.
  *
  * Die Schlüssel werden kleingeschrieben und ohne Umlaute verglichen und
  * müssen nur **in** der Note stecken: „Vanille“, „vanille“ und
@@ -260,6 +270,9 @@ const noteMotifs: Record<string, string> = {
 
   // Holz und Harz
   oud: "dark oud wood pieces",
+  // Braucht einen eigenen Eintrag, seit „holz“ als Sammelbegriff dazugekommen
+  // ist: Sonst gewinnt das längere „holz“ und aus Oud würde beliebiges Holz.
+  oudholz: "dark oud wood pieces",
   agarholz: "dark agarwood pieces",
   sandelholz: "sandalwood pieces",
   zeder: "cedar wood pieces",
@@ -273,6 +286,12 @@ const noteMotifs: Record<string, string> = {
   bernstein: "amber resin pieces",
   benzoe: "benzoin resin pieces",
   labdanum: "labdanum resin",
+  elemi: "pale elemi resin pieces",
+  angelika: "angelica roots",
+  sussholz: "liquorice roots",
+  lakritzwurzel: "liquorice roots",
+  tabakblute: "pale tobacco blossoms",
+  bourbonvanille: "vanilla pods",
   harz: "resin pieces",
   rosenholz: "rosewood pieces",
   palisander: "dark rosewood planks",
@@ -404,6 +423,52 @@ const noteMotifs: Record<string, string> = {
   bienenwachs: "beeswax blocks",
   kerzenwachs: "melted candle wax",
   seide: "folded dark silk",
+
+  // ---------------------------------------------------------------------
+  // Sammelbegriffe
+  //
+  // In echten Duftpyramiden steht oft keine einzelne Note, sondern
+  // „Gewürze“, „holzige Noten“ oder „Trockenfrüchte“. Ohne diese Einträge
+  // blieb bei solchen Düften der halbe Hintergrund leer.
+  // ---------------------------------------------------------------------
+  gewurze: "an assortment of whole dried spices",
+  wurzig: "an assortment of whole dried spices",
+  holz: "pieces of dark wood",
+  holzig: "pieces of dark wood and bark",
+  holzernoten: "pieces of dark wood and bark",
+  trockenfruchte: "assorted dried fruits",
+  getrocknetefruchte: "assorted dried fruits",
+  exotischefruchte: "assorted tropical fruits",
+  sudfruchte: "assorted tropical fruits",
+  beeren: "assorted dark berries",
+  zitrusnoten: "assorted citrus fruits",
+  blumig: "an assortment of fresh blossoms",
+  bluten: "an assortment of fresh blossoms",
+  blumen: "an assortment of fresh blossoms",
+  krauter: "an assortment of fresh herbs",
+  grunenoten: "fresh green leaves",
+  frischenoten: "fresh green leaves and water droplets",
+  gewurznelke: "dried cloves",
+  hesperidisch: "assorted citrus fruits",
+
+  // ---------------------------------------------------------------------
+  // Riechstoffe ohne eigenen Gegenstand
+  //
+  // Moschus, Ambrox oder Hedione kann man nicht hinlegen und fotografieren.
+  // Sie bekommen deshalb das Bild dessen, wonach sie riechen – Moschus die
+  // weiche Wolle, Ambrox den Bernstein, Hedione den Jasmin. Das ist eine
+  // Übersetzung, keine Behauptung über den Inhalt der Flasche.
+  // ---------------------------------------------------------------------
+  moschus: "soft folded cashmere fabric in warm light",
+  musk: "soft folded cashmere fabric in warm light",
+  ambrette: "ambrette seeds and pale mallow blossoms",
+  ambrox: "amber resin pieces with a warm glow",
+  ambroxan: "amber resin pieces with a warm glow",
+  ambergris: "grey ambergris on wet dark sand",
+  hedione: "white jasmine petals in soft light",
+  cashmeran: "soft folded cashmere fabric in warm light",
+  isoesuper: "pale dry cedar shavings",
+  aldehyde: "fine white powder on dark stone",
 };
 
 const noteKeywords = Object.keys(noteMotifs);

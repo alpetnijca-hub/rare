@@ -158,6 +158,22 @@ describe("Kulisse aus den Duftnoten", () => {
     expect(zitrus).not.toBe(holzig);
   });
 
+  it("verlangt keine geringe Schärfentiefe", () => {
+    // „shallow depth of field“ stand einmal in der Bildsprache und war der
+    // Grund, warum bei den meisten Düften gar keine Duftnoten im Bild
+    // auftauchten: Die Anweisung erzeugt genau das, was sie verspricht – einen
+    // unscharfen, leeren Hintergrund.
+    process.env.SHOP_IMAGE_BACKGROUND = "scene";
+    const result = productImageUrl(cloudinary, "card", 1, {
+      topNotes: ["Zitrone"],
+    });
+
+    expect(result).not.toContain("shallow");
+    expect(result).not.toContain("depth%20of%20field");
+    // Dunkel muss es trotzdem bleiben.
+    expect(result).toContain("dark%20moody%20product%20photography");
+  });
+
   it("gibt allen Kulissen dieselbe Bildsprache", () => {
     // Sonst sehen die Produktbilder nebeneinander aus wie zufällig
     // zusammengesuchte Fotos statt wie eine Serie.
@@ -241,12 +257,12 @@ describe("Kulisse aus den Duftnoten", () => {
   it("fällt ohne darstellbare Note auf die Duftfamilie zurück", () => {
     process.env.SHOP_IMAGE_BACKGROUND = "scene";
 
-    // Moschus und Ambroxan sind Gerüche ohne Gegenstand – dafür gibt es
-    // bewusst kein Motiv.
+    // „Ambrocenide“ und „Norlimbanol“ stehen bewusst in keiner Liste: Zu
+    // ihnen fällt niemandem ein Bild ein, also wird keines erfunden.
     const result = productImageUrl(cloudinary, "card", 1, {
       fragranceFamily: "HOLZIG",
-      topNotes: ["Moschus"],
-      heartNotes: ["Ambroxan"],
+      topNotes: ["Ambrocenide"],
+      heartNotes: ["Norlimbanol"],
     });
 
     expect(result).toContain("cedar");
@@ -285,14 +301,13 @@ describe("Kulisse aus den Duftnoten", () => {
   });
 
   it("meldet für den Adminbereich, welche Noten verwendet werden", () => {
-    expect(usedNotes({ topNotes: ["Zitrone", "Moschus", "Vanille"] })).toEqual([
-      "Zitrone",
-      "Vanille",
-    ]);
+    expect(
+      usedNotes({ topNotes: ["Zitrone", "Ambrocenide", "Vanille"] }),
+    ).toEqual(["Zitrone", "Vanille"]);
     expect(
       usedNotes({ topNotes: ["Zitrone", "Rose"], baseNotes: ["Vanille"] }),
     ).toEqual(["Zitrone", "Rose", "Vanille"]);
-    expect(usedNotes({ topNotes: ["Moschus", "Ambroxan"] })).toEqual([]);
+    expect(usedNotes({ topNotes: ["Ambrocenide", "Norlimbanol"] })).toEqual([]);
   });
 
   it("lässt keine Duftnote die Bildadresse zerlegen", () => {
@@ -426,14 +441,15 @@ describe("Hinweis im Adminbereich", () => {
     process.env.SHOP_IMAGE_BACKGROUND = "scene";
 
     const hinweis = sceneHint({
-      topNotes: ["Zitrone", "Moschus"],
+      topNotes: ["Zitrone", "Ambrocenide"],
       heartNotes: ["Vanille"],
     });
 
     expect(hinweis).toContain("Zitrone");
     expect(hinweis).toContain("Vanille");
-    // Moschus hat kein Aussehen und darf nicht als verwendet gemeldet werden.
-    expect(hinweis).not.toContain("Moschus");
+    // Für „Ambrocenide“ gibt es kein Bild – die Note darf nicht als verwendet
+    // gemeldet werden.
+    expect(hinweis).not.toContain("Ambrocenide");
   });
 
   it("erklärt, warum die Duftfamilie einspringt", () => {
@@ -441,7 +457,7 @@ describe("Hinweis im Adminbereich", () => {
 
     const hinweis = sceneHint({
       fragranceFamily: "HOLZIG",
-      topNotes: ["Moschus"],
+      topNotes: ["Ambrocenide"],
     });
 
     expect(hinweis).toContain("Duftfamilie");

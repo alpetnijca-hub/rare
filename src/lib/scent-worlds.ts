@@ -43,6 +43,8 @@ export const scentWorlds: readonly ScentWorld[] = [
       "meerwasser", "meereswasser", "meeresbrise", "meer", "ozean", "marine",
       "aquatisch", "alge", "muschel", "sand", "meersalz", "salz",
       "wasser", "regen", "nebel", "eiskristall", "schnee",
+      // Sammelbegriffe aus echten Duftpyramiden.
+      "zitrusnoten", "hesperidisch", "frischenoten",
     ],
   },
   {
@@ -57,6 +59,8 @@ export const scentWorlds: readonly ScentWorld[] = [
       "cassis", "rhabarber", "granatapfel", "quitte", "blaubeere",
       "heidelbeere", "preiselbeere", "banane", "papaya", "passionsfrucht",
       "maracuja",
+      "trockenfruchte", "getrocknetefruchte", "exotischefruchte",
+      "sudfruchte", "beeren",
     ],
   },
   {
@@ -70,6 +74,7 @@ export const scentWorlds: readonly ScentWorld[] = [
       "narzisse", "geranie", "osmanthus", "kirschblute", "lilie", "flieder",
       "mimose", "gardenie", "hyazinthe", "kamille", "lotus", "seerose",
       "orchidee", "ginster",
+      "blumig", "bluten", "blumen",
     ],
   },
   {
@@ -82,6 +87,7 @@ export const scentWorlds: readonly ScentWorld[] = [
       "grunertee", "schwarzertee", "matcha", "tee", "bambus", "efeu",
       "eichenmoos", "moos", "heu", "wermut", "estragon", "gras", "galbanum",
       "eukalyptus", "wacholder", "fenchel", "zitronengras", "farn",
+      "krauter", "grunenoten",
     ],
   },
   {
@@ -93,6 +99,7 @@ export const scentWorlds: readonly ScentWorld[] = [
       "pfeffer", "rosapfeffer", "kardamom", "zimt", "nelke", "muskat",
       "safran", "ingwer", "koriander", "anis", "sternanis", "chili", "kumin",
       "kreuzkummel", "lorbeer",
+      "gewurze", "wurzig",
     ],
   },
   {
@@ -107,6 +114,7 @@ export const scentWorlds: readonly ScentWorld[] = [
       // „Rosenholz“ enthält „Rose“, „Ebenholz“ enthält „Holz“ – beide sind
       // hier eigene Stichwörter, damit sie sicher beim Holz landen.
       "rosenholz", "palisander", "ebenholz", "teakholz", "tanne", "pinie",
+      "holzig", "oudholz",
     ],
   },
   {

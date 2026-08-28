@@ -730,10 +730,13 @@ dieser Reihenfolge entschieden:
 2. **Duftfamilie**, wenn keine Note ein Motiv ergibt.
 3. **Nichts** – dann wird der Flakon nur freigestellt.
 
-Höchstens zwei Motive pro Bild, und die dunkle Bildsprache steht am Anfang der
-Beschreibung. Beides ist ausprobiert: Mit drei Motiven wird die Beschreibung so
-lang, dass das Modell den dunklen Bildstil am Ende überliest – im Test kam eine
-helle blaue Kulisse heraus.
+Höchstens drei Motive pro Bild, und die dunkle Bildsprache steht am Anfang der
+Beschreibung. Der gemeinsame Schluss ist an einem echten Produktfoto
+nachgemessen: „dark moody product photography“ hält die Kulisse dunkel
+(Helligkeit 45–51 von 255 statt 86). „shallow depth of field“ stand dort
+einmal ebenfalls und war der Grund, warum bei den meisten Düften gar keine
+Motive im Bild auftauchten – die Anweisung erzeugt genau das, was sie
+verspricht: einen unscharfen, leeren Hintergrund. Nicht wieder hinzufügen.
 
 Im Adminbereich steht über den Produktbildern, welche Noten tatsächlich
 verwendet werden (`sceneHint()`), damit niemand rätselt, warum „Moschus“ nichts
