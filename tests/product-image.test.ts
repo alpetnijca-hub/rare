@@ -6,7 +6,12 @@ import {
 } from "@/lib/product-image";
 import { signatureError } from "@/components/admin/use-cloudinary-upload";
 import { fragranceFamilies } from "@/lib/catalog";
-import { motifFromNotes, sceneMotif, usedNotes } from "@/config/scent-scenes";
+import {
+  motifFromNotes,
+  noteMotifs,
+  sceneMotif,
+  usedNotes,
+} from "@/config/scent-scenes";
 
 /**
  * Einheitliche Produktbilder.
@@ -158,11 +163,13 @@ describe("Kulisse aus den Duftnoten", () => {
     expect(zitrus).not.toBe(holzig);
   });
 
-  it("verlangt keine geringe Schärfentiefe", () => {
-    // „shallow depth of field“ stand einmal in der Bildsprache und war der
-    // Grund, warum bei den meisten Düften gar keine Duftnoten im Bild
-    // auftauchten: Die Anweisung erzeugt genau das, was sie verspricht – einen
-    // unscharfen, leeren Hintergrund.
+  it("verlangt nichts was den Hintergrund leert", () => {
+    // Zwei Formulierungen standen einmal in der Bildsprache und waren der
+    // Grund, warum bei vielen Düften gar keine Duftnoten im Bild auftauchten:
+    // „shallow depth of field“ erzeugt genau das, was es verspricht – einen
+    // unscharfen, leeren Hintergrund. Und „dark moody product photography“
+    // brachte das dritte „dark“ in denselben Satz, worauf das Modell in eine
+    // komplett leere schwarze Kulisse kippte.
     process.env.SHOP_IMAGE_BACKGROUND = "scene";
     const result = productImageUrl(cloudinary, "card", 1, {
       topNotes: ["Zitrone"],
@@ -170,8 +177,9 @@ describe("Kulisse aus den Duftnoten", () => {
 
     expect(result).not.toContain("shallow");
     expect(result).not.toContain("depth%20of%20field");
+    expect(result).not.toContain("moody%20product%20photography");
     // Dunkel muss es trotzdem bleiben.
-    expect(result).toContain("dark%20moody%20product%20photography");
+    expect(result).toContain("dark%20stone");
   });
 
   it("gibt allen Kulissen dieselbe Bildsprache", () => {
@@ -281,10 +289,28 @@ describe("Kulisse aus den Duftnoten", () => {
     expect(motiv).not.toContain("leather");
   });
 
-  it("stellt die dunkle Bildsprache an den Anfang", () => {
+  it("stellt die Zutaten an den Anfang", () => {
     // Das Modell gewichtet den Anfang der Beschreibung am stärksten. Stand
-    // "dark" nur hinten, kam eine helle Kulisse heraus.
-    expect(motifFromNotes(["Zitrone"])).toMatch(/^dark moody/);
+    // dort eine Einleitung wie "dark moody still life with", verdrängte sie
+    // genau das, worum es geht – gemessen an zwölf echten Produktbildern.
+    expect(motifFromNotes(["Zitrone"])).toMatch(/^fresh lemons/);
+  });
+
+  it("sagt dem Modell wohin die Zutaten gehören", () => {
+    // Ohne diese Ortsangabe malt das Modell gern eine leere Rückwand.
+    expect(motifFromNotes(["Zitrone"])).toContain("around the perfume bottle");
+  });
+
+  it("hält die Kulisse dunkel ohne sie zu leeren", () => {
+    const motiv = motifFromNotes(["Zitrone"]) ?? "";
+
+    expect(motiv).toContain("dark stone");
+    // Drei "dark" in einem Satz kippten das Modell in eine komplett leere
+    // schwarze Kulisse – fünf von zwölf Düften hatten daraufhin gar keine
+    // Duftnote im Bild.
+    expect(motiv.match(/dark/g)?.length ?? 0).toBeLessThanOrEqual(2);
+    expect(motiv).not.toContain("moody product photography");
+    expect(motiv).not.toContain("shallow depth of field");
   });
 
   it("versteht Umlaute, Grossschreibung und Leerzeichen", () => {
@@ -415,6 +441,41 @@ describe("Kulisse aus den Duftnoten", () => {
         `Kulisse fehlt für ${familie}`,
       ).not.toBeNull();
     }
+  });
+
+  it("nennt je Motiv genau einen Gegenstand", () => {
+    // Bis zu drei Motive kommen ins Bild. Enthält eines davon selbst ein
+    // „and“, sind es in Wahrheit vier oder fünf Gegenstände – und das Modell
+    // malt dann lieber eine leere Kulisse. Gemessen an „Initio Side Effect“:
+    // mit „dark rum in a glass and sugarcane“ blieb der Hintergrund leer, mit
+    // „a glass of amber rum“ lagen die Zimtstangen im Bild.
+    for (const [stichwort, motiv] of Object.entries(noteMotifs)) {
+      expect(motiv, `„${stichwort}“ nennt mehrere Gegenstände`).not.toContain(
+        " and ",
+      );
+    }
+  });
+
+  it("hat kein Komma in einem Motiv", () => {
+    // In einer Cloudinary-Adresse trennt das Komma die Anweisungen. Ein Komma
+    // im Text zerlegt die ganze Adresse und liefert HTTP 400.
+    for (const [stichwort, motiv] of Object.entries(noteMotifs)) {
+      expect(motiv, `„${stichwort}“ enthält ein Komma`).not.toContain(",");
+    }
+  });
+
+  it("gibt jedem Duft eine Kulisse – auch bei unbekannten Noten", () => {
+    // Die Duftfamilie ist im Produkt Pflicht. Damit bleibt kein Duft ohne
+    // Hintergrund, selbst wenn keine seiner Noten im Wörterbuch steht.
+    const unbekannt = sceneMotif({
+      fragranceFamily: "GOURMAND",
+      topNotes: ["Xyzquux"],
+      heartNotes: [],
+      baseNotes: [],
+    });
+
+    expect(unbekannt).not.toBeNull();
+    expect(unbekannt).toContain("vanilla pods");
   });
 
   it("lässt Vorschaubilder ohne Kulisse", () => {

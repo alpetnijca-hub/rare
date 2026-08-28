@@ -26,29 +26,47 @@
  *  2. **Immer derselbe Schluss** (`sceneSetting`). Dadurch sehen alle
  *     Produktbilder wie eine Serie aus und nicht wie zufällig
  *     zusammengewürfelte Fotos.
+ *  3. **Ein Motiv ist ein Gegenstand.** Kein „and“ innerhalb eines Motivs.
+ *     Bis zu drei Motive kommen ins Bild; enthält eines davon selbst noch ein
+ *     „and“, sind es in Wahrheit vier oder fünf Gegenstände, und das Modell
+ *     malt lieber gar nichts als eine überfüllte Kulisse. Genau daran ist
+ *     „Initio Side Effect“ gescheitert: `rum` hiess „dark rum in a glass and
+ *     sugarcane“, zusammen mit Zimt und Vanille waren das vier Dinge und der
+ *     Hintergrund blieb leer. Als eigenständiges „a glass of amber rum“ und
+ *     damit drei Dingen lagen die Zimtstangen sofort im Bild. Ein Test in
+ *     `tests/product-image.test.ts` hält die Regel fest.
+ *
+ * Wie das gemessen wurde: An denselben zwölf echten Produktbildern des Shops
+ * jeweils eine einzige Sache geändert und das Ergebnis angeschaut. Vorher
+ * hatten fünf der zwölf Düfte keine einzige Zutat im Bild, nachher keiner
+ * mehr. Wer den Text hier ändert, sollte es genauso machen – geraten wurde
+ * schon genug.
  */
 
 import { findNoteKeyword } from "@/lib/notes";
 
 /**
- * Gemeinsame Bildsprache aller Kulissen: dunkel, warm, ruhig.
+ * Gemeinsame Bildsprache aller Kulissen: dunkel, warm, ruhig – und die
+ * Anweisung, die Zutaten **um den Flakon herum** zu legen.
  *
- * Zwei Teile, beide an einem echten Produktfoto nachgemessen:
+ * Jedes Wort hier ist an den echten Produktfotos des Shops nachgemessen; die
+ * Messreihe steht im Kopf dieser Datei. Kurz:
  *
- * „dark moody product photography“ muss stehen bleiben. Ohne diesen Zusatz
- * kam eine mittelhelle Kulisse heraus (Helligkeit 86 von 255), mit ihm eine
- * dunkle (45–51). Wer hier kürzt, bekommt helle Bilder auf einer schwarzen
- * Seite.
- *
- * „shallow depth of field“ stand hier ebenfalls und war der Grund, warum bei
- * den meisten Düften gar keine Duftnoten im Bild auftauchten: Die Anweisung
- * erzeugt genau das, was sie verspricht – einen unscharfen, leeren
- * Hintergrund. Derselbe Bildwunsch ohne sie zeigt die Zitronen deutlich neben
- * dem Flakon, bei gleicher Dunkelheit. Nicht wieder hinzufügen.
+ *  - „around the perfume bottle“ ist der Grund, warum die Zutaten überhaupt
+ *    auftauchen. Ohne diese Ortsangabe malt das Modell gern eine leere
+ *    Rückwand.
+ *  - „dark moody product photography“ stand hier früher und war der Grund,
+ *    warum fünf von zwölf Düften gar keine Duftnote im Bild hatten: Bei drei
+ *    „dark“ im selben Satz kippt das Modell in eine komplett leere schwarze
+ *    Kulisse. „on dark stone“ allein hält das Bild dunkel genug
+ *    (Helligkeit 33 statt 116 von 255) und lässt die Zutaten stehen.
+ *  - „shallow depth of field“ gehört ebenfalls nicht hierher – die Anweisung
+ *    erzeugt genau das, was sie verspricht: einen unscharfen, leeren
+ *    Hintergrund.
  */
 const sceneSetting =
-  "on dark stone surface with warm golden light and soft shadows " +
-  "dark moody product photography";
+  "around the perfume bottle on dark stone " +
+  "with warm golden light and soft shadows";
 
 /**
  * Motiv je Duftfamilie – der Rückfall, wenn aus den Duftnoten nichts
@@ -56,15 +74,15 @@ const sceneSetting =
  * aus `src/lib/catalog.ts`.
  */
 const sceneMotifs: Record<string, string> = {
-  FLORAL: "scattered rose petals and white blossoms",
-  ORIENTAL: "scattered amber resin pieces and dried spices",
-  HOLZIG: "pieces of dark cedar wood and tree bark scattered around",
-  FRISCH: "wet dark stones and sea spray with fresh green leaves",
+  FLORAL: "rose petals and white blossoms",
+  ORIENTAL: "amber resin pieces and whole dried spices",
+  HOLZIG: "pieces of dark cedar wood and tree bark",
+  FRISCH: "wet dark stones and fresh green leaves",
   ZITRUS: "fresh lemons and green citrus leaves",
-  FRUCHTIG: "fresh peaches and red berries scattered around",
-  GOURMAND: "vanilla pods and roasted cocoa beans scattered around",
-  AROMATISCH: "sprigs of fresh lavender and rosemary scattered around",
-  CHYPRE: "oakmoss and dry patchouli leaves scattered around",
+  FRUCHTIG: "ripe peaches and red berries",
+  GOURMAND: "vanilla pods and roasted cocoa beans",
+  AROMATISCH: "sprigs of fresh lavender and rosemary",
+  CHYPRE: "oakmoss and dry patchouli leaves",
   LEDER: "a piece of dark leather and dried tobacco leaves",
 };
 
@@ -87,7 +105,7 @@ const sceneMotifs: Record<string, string> = {
  * müssen nur **in** der Note stecken: „Vanille“, „vanille“ und
  * „Vanilleschote“ treffen alle denselben Eintrag (siehe `src/lib/notes.ts`).
  */
-const noteMotifs: Record<string, string> = {
+export const noteMotifs: Readonly<Record<string, string>> = {
   // Zitrus
   zitrone: "fresh lemons",
   limette: "fresh limes",
@@ -121,7 +139,7 @@ const noteMotifs: Record<string, string> = {
   pflaume: "ripe plums",
   apfel: "fresh apples",
   birne: "ripe pears",
-  feige: "fresh figs and fig leaves",
+  feige: "fresh ripe figs",
   ananas: "sliced pineapple",
   mango: "ripe mango pieces",
   litschi: "peeled lychees",
@@ -158,7 +176,7 @@ const noteMotifs: Record<string, string> = {
   rose: "fresh rose petals",
   jasmin: "white jasmine flowers",
   veilchen: "purple violets",
-  iris: "iris roots and pale petals",
+  iris: "pale iris flowers",
   maiglockchen: "lily of the valley flowers",
   tuberose: "white tuberose flowers",
   ylangylang: "yellow ylang ylang flowers",
@@ -168,7 +186,7 @@ const noteMotifs: Record<string, string> = {
   freesie: "freesia flowers",
   pfingstrose: "pink peonies",
   narzisse: "narcissus flowers",
-  geranie: "geranium leaves and flowers",
+  geranie: "pink geranium flowers",
   osmanthus: "small golden osmanthus flowers",
   kirschblute: "cherry blossom branches",
   lilie: "white lilies",
@@ -217,7 +235,7 @@ const noteMotifs: Record<string, string> = {
   heu: "dried hay",
   eukalyptus: "eucalyptus branches",
   wacholder: "juniper berries on a branch",
-  fenchel: "fennel bulbs and fronds",
+  fenchel: "fresh fennel bulbs",
   zitronengras: "cut lemongrass stalks",
   matcha: "green matcha powder",
   schwarzertee: "dried black tea leaves",
@@ -235,10 +253,10 @@ const noteMotifs: Record<string, string> = {
   hafer: "oat stalks",
   stroh: "dry straw",
   waldboden: "damp forest floor with leaves",
-  tannennadel: "fir needles and a small branch",
-  kiefernadel: "pine needles and a small branch",
+  tannennadel: "fresh fir branches",
+  kiefernadel: "fresh pine branches",
   klee: "green clover leaves",
-  chai: "chai spices and dried tea leaves",
+  chai: "whole chai spices",
 
   // Gewürze
   pfeffer: "black peppercorns",
@@ -256,7 +274,7 @@ const noteMotifs: Record<string, string> = {
   lorbeer: "dried bay leaves",
   kumin: "cumin seeds",
   kreuzkummel: "cumin seeds",
-  vanillepfeffer: "black peppercorns and vanilla pods",
+  vanillepfeffer: "vanilla pods with black peppercorns",
   piment: "allspice berries",
   szechuanpfeffer: "szechuan peppercorns",
   kubebenpfeffer: "cubeb peppercorns",
@@ -264,7 +282,7 @@ const noteMotifs: Record<string, string> = {
   bockshornklee: "fenugreek seeds",
   macis: "dried mace blades",
   galgant: "galangal root",
-  kurkuma: "turmeric root and powder",
+  kurkuma: "fresh turmeric root",
   paprika: "dried red paprika pods",
   zimtblute: "cassia buds",
 
@@ -277,7 +295,7 @@ const noteMotifs: Record<string, string> = {
   sandelholz: "sandalwood pieces",
   zeder: "cedar wood pieces",
   zedernholz: "cedar wood pieces",
-  kiefer: "pine branches and cones",
+  kiefer: "pine branches with cones",
   birke: "birch bark",
   eiche: "oak bark",
   weihrauch: "frankincense resin pieces",
@@ -300,9 +318,9 @@ const noteMotifs: Record<string, string> = {
   mahagoni: "dark mahogany wood",
   akazienholz: "acacia wood pieces",
   olivenholz: "olive wood pieces",
-  kampfer: "camphor crystals and wood",
-  fichte: "spruce branches and cones",
-  larche: "larch branches and cones",
+  kampfer: "white camphor crystals",
+  fichte: "spruce branches with cones",
+  larche: "larch branches with cones",
   buche: "beech wood pieces",
   korkeiche: "cork oak bark",
   birkenrinde: "curled birch bark",
@@ -313,12 +331,12 @@ const noteMotifs: Record<string, string> = {
   ambra: "grey ambergris on wet dark sand",
   guajakholz: "guaiac wood pieces",
   kaschmirholz: "pale cashmere wood pieces",
-  tanne: "fir branches and cones",
-  pinie: "pine cones and needles",
+  tanne: "fir branches with cones",
+  pinie: "pine cones",
   zypresse: "cypress branches",
   papyrus: "dried papyrus stalks",
   weihrauchharz: "frankincense resin pieces",
-  raucherwerk: "smouldering incense and resin pieces",
+  raucherwerk: "smouldering incense resin",
 
   // Süss und Gourmand
   vanille: "vanilla pods",
@@ -335,9 +353,9 @@ const noteMotifs: Record<string, string> = {
   zucker: "sugar crystals",
   reis: "raw rice grains",
   nougat: "pieces of nougat",
-  marzipan: "marzipan pieces and almonds",
+  marzipan: "marzipan pieces",
   lakritz: "black liquorice pieces",
-  kokosmilch: "coconut milk in a bowl and cracked coconut",
+  kokosmilch: "coconut milk in a bowl",
   ahornsirup: "maple syrup in a glass jar",
   keks: "butter biscuits",
   geback: "golden pastry pieces",
@@ -354,7 +372,7 @@ const noteMotifs: Record<string, string> = {
   melasse: "dark molasses in a jar",
   butter: "a block of butter",
   joghurt: "yoghurt in a bowl",
-  espresso: "a small espresso and roasted beans",
+  espresso: "a small espresso cup with roasted beans",
   walnuss: "cracked walnuts",
   cashew: "cashew nuts",
 
@@ -362,13 +380,13 @@ const noteMotifs: Record<string, string> = {
   leder: "a piece of dark leather",
   wildleder: "a piece of dark suede",
   tabak: "dried tobacco leaves",
-  pfeifentabak: "dried tobacco leaves and a pipe",
+  pfeifentabak: "a tobacco pipe with dried leaves",
   rauch: "wisps of smoke",
-  lagerfeuer: "glowing embers and wisps of smoke",
-  birkenteer: "birch tar and dark bark",
-  whisky: "a glass of whisky and oak staves",
-  rum: "dark rum in a glass and sugarcane",
-  cognac: "cognac in a glass and oak wood",
+  lagerfeuer: "glowing embers",
+  birkenteer: "curls of birch bark",
+  whisky: "a glass of amber whisky",
+  rum: "a glass of amber rum",
+  cognac: "a glass of amber cognac",
   gin: "gin in a glass with juniper berries",
   wodka: "vodka in a glass on ice",
   champagner: "champagne in a coupe glass",
@@ -383,18 +401,18 @@ const noteMotifs: Record<string, string> = {
   // „Meerwasser“ enthält auch „Wasser“. Weil das längste Stichwort gewinnt
   // (siehe src/lib/notes.ts), bekommt das Meer sein eigenes Bild und nicht
   // bloss ein paar Tropfen.
-  meerwasser: "dark ocean water with white sea foam and wet rocks",
-  meereswasser: "dark ocean water with white sea foam and wet rocks",
-  meeresbrise: "dark ocean waves and wet black rocks at dusk",
-  meer: "dark ocean water with white sea foam and wet rocks",
-  ozean: "dark ocean water with white sea foam and wet rocks",
-  marine: "dark ocean waves and wet black rocks",
-  aquatisch: "dark water surface with ripples and wet stones",
+  meerwasser: "dark ocean water with white sea foam",
+  meereswasser: "dark ocean water with white sea foam",
+  meeresbrise: "dark ocean waves at dusk",
+  meer: "dark ocean water with white sea foam",
+  ozean: "dark ocean water with white sea foam",
+  marine: "dark ocean waves",
+  aquatisch: "a dark water surface with ripples",
   alge: "dark wet seaweed on black rocks",
   muschel: "seashells on wet dark sand",
   treibholz: "weathered driftwood on wet dark sand",
   sand: "fine dark sand with ripples",
-  meersalz: "coarse sea salt crystals and wet black rocks",
+  meersalz: "coarse sea salt crystals",
   salz: "coarse salt crystals",
   regen: "water droplets on a dark surface",
   wasser: "clear water droplets on a dark surface",
@@ -434,8 +452,8 @@ const noteMotifs: Record<string, string> = {
   gewurze: "an assortment of whole dried spices",
   wurzig: "an assortment of whole dried spices",
   holz: "pieces of dark wood",
-  holzig: "pieces of dark wood and bark",
-  holzernoten: "pieces of dark wood and bark",
+  holzig: "pieces of dark wood",
+  holzernoten: "pieces of dark wood",
   trockenfruchte: "assorted dried fruits",
   getrocknetefruchte: "assorted dried fruits",
   exotischefruchte: "assorted tropical fruits",
@@ -447,7 +465,7 @@ const noteMotifs: Record<string, string> = {
   blumen: "an assortment of fresh blossoms",
   krauter: "an assortment of fresh herbs",
   grunenoten: "fresh green leaves",
-  frischenoten: "fresh green leaves and water droplets",
+  frischenoten: "fresh green leaves with water droplets",
   gewurznelke: "dried cloves",
   hesperidisch: "assorted citrus fruits",
 
@@ -461,7 +479,7 @@ const noteMotifs: Record<string, string> = {
   // ---------------------------------------------------------------------
   moschus: "soft folded cashmere fabric in warm light",
   musk: "soft folded cashmere fabric in warm light",
-  ambrette: "ambrette seeds and pale mallow blossoms",
+  ambrette: "pale mallow blossoms",
   ambrox: "amber resin pieces with a warm glow",
   ambroxan: "amber resin pieces with a warm glow",
   ambergris: "grey ambergris on wet dark sand",
@@ -528,11 +546,10 @@ export function motifFromNotes(notes: readonly string[]): string | null {
 
 function buildScene(gewaehlt: NoteMatch[]): string | null {
   if (gewaehlt.length === 0) return null;
-  // "dark moody still life" steht vorn, weil das Modell den Anfang der
-  // Beschreibung am stärksten gewichtet.
-  return `dark moody still life with ${gewaehlt
-    .map((eintrag) => eintrag.motif)
-    .join(" and ")} ${sceneSetting}`;
+  // Die Zutaten stehen ganz vorn, weil das Modell den Anfang der Beschreibung
+  // am stärksten gewichtet. Eine Einleitung wie „dark moody still life with“
+  // stand hier früher und hat genau das verdrängt, worum es geht.
+  return `${gewaehlt.map((eintrag) => eintrag.motif).join(" and ")} ${sceneSetting}`;
 }
 
 /** Alles, woraus eine Kulisse entstehen kann. */
