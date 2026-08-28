@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { productImageUrl, productThumbUrl } from "@/lib/product-image";
 import { signatureError } from "@/components/admin/use-cloudinary-upload";
+import { fragranceFamilies } from "@/lib/catalog";
+import { sceneMotif } from "@/config/scent-scenes";
 
 /**
  * Einheitliche Produktbilder.
@@ -213,6 +215,14 @@ describe("Kulisse aus den Duftnoten", () => {
       expect(productImageUrl(cloudinary, "card", 1, "ZITRUS")).toContain(
         "e_gen_background_replace",
       );
+    }
+  });
+
+  it("hat für jede Duftfamilie ein Motiv", () => {
+    // Ohne diesen Test fällt eine neu angelegte Duftfamilie erst auf, wenn ein
+    // Produkt im Shop ohne Kulisse dasteht – und niemand weiss, warum.
+    for (const familie of fragranceFamilies) {
+      expect(sceneMotif(familie), `Kulisse fehlt für ${familie}`).not.toBeNull();
     }
   });
 

@@ -57,6 +57,7 @@ enum FragranceFamily {
   HOLZIG
   FRISCH
   ZITRUS
+  FRUCHTIG
   GOURMAND
   AROMATISCH
   CHYPRE

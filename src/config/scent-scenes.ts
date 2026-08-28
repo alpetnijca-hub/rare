@@ -35,6 +35,7 @@ const sceneMotifs: Record<string, string> = {
   HOLZIG: "pieces of dark cedar wood and tree bark scattered around",
   FRISCH: "green leaves and water droplets scattered around",
   ZITRUS: "fresh lemons and green citrus leaves",
+  FRUCHTIG: "fresh peaches and red berries scattered around",
   GOURMAND: "vanilla pods and roasted cocoa beans scattered around",
   AROMATISCH: "sprigs of fresh lavender and rosemary scattered around",
   CHYPRE: "oakmoss and dry patchouli leaves scattered around",
