@@ -29,6 +29,7 @@ export function ProductCard({
     lowestPriceCents,
     availability,
     sizes,
+    linkVariantId,
   } = item;
   const image = product.images[0];
   const hoverImage = product.images[1];
@@ -104,7 +105,14 @@ export function ProductCard({
 
         <h3 className="text-lg leading-snug">
           <Link
-            href={`/produkt/${product.slug}`}
+            href={
+              // In der Abteilung „Abfüllungen“ zeigt die Karte den Preis einer
+              // kleinen Größe – dann soll die Produktseite auch diese Größe
+              // ausgewählt haben und nicht den grossen Flakon.
+              linkVariantId
+                ? `/produkt/${product.slug}?variante=${linkVariantId}`
+                : `/produkt/${product.slug}`
+            }
             className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
           >
             {product.name}

@@ -9,6 +9,12 @@ import {
 import { ShopSidebar, ShopToolbar } from "@/components/product/shop-filters";
 import { getCategories, getFilterFacets, listProducts } from "@/lib/products";
 import { isSortKey, type SortKey } from "@/lib/catalog";
+import {
+  decantCategory,
+  decantMaxMl,
+  decantMinMl,
+  isDecantSearch,
+} from "@/lib/decants";
 
 export const metadata: Metadata = {
   title: "Shop – alle Düfte",
@@ -179,9 +185,33 @@ export default async function ShopPage({
 
   const sort: SortKey = isSortKey(sortParam) ? sortParam : "beliebt";
 
+  const suchbegriff = Array.isArray(resolved.suche)
+    ? resolved.suche[0]
+    : resolved.suche;
+
+  // „Abfüllungen“ ist keine Kategorie in der Datenbank, sondern ergibt sich
+  // aus den Größen: jeder Duft mit 1–10 ml. Sie lässt sich auf drei Wegen
+  // erreichen, und alle drei landen bei demselben Filter:
+  //
+  //   1. der Kategorie in der Filterliste (?kategorie=abfuellungen),
+  //   2. dem Suchfeld – wer „Abfüllungen“ eintippt, sucht keinen Duft
+  //      dieses Namens, sondern die kleinen Größen,
+  //   3. ?probe=1 aus früheren Links, die im Umlauf sein können.
+  const alsKategorie = asArray(resolved.kategorie).includes(
+    decantCategory.slug,
+  );
+  const alsSuche = Boolean(suchbegriff && isDecantSearch(suchbegriff));
+  const onlyDecants = alsKategorie || alsSuche || resolved.probe === "1";
+
   const filters = {
-    search: Array.isArray(resolved.suche) ? resolved.suche[0] : resolved.suche,
-    categories: asArray(resolved.kategorie),
+    // Beim Suchwort „Abfüllungen“ wäre eine Textsuche zusätzlich sinnlos –
+    // kein Produkt heisst so, und die Liste bliebe leer.
+    search: alsSuche ? undefined : suchbegriff,
+    // Den reservierten Slug nicht als echte Kategorie weiterreichen: In der
+    // Datenbank gibt es ihn nicht, die Abfrage käme leer zurück.
+    categories: asArray(resolved.kategorie).filter(
+      (slug) => slug !== decantCategory.slug,
+    ),
     families: asArray(resolved.familie),
     volumes: asArray(resolved.groesse)
       .map((value) => Number.parseInt(value, 10))
@@ -189,7 +219,7 @@ export default async function ShopPage({
     minPriceCents: asNumber(resolved["preis-min"]),
     maxPriceCents: asNumber(resolved["preis-max"]),
     onlyAvailable: resolved.verfuegbar === "1",
-    onlySamples: resolved.probe === "1",
+    onlyDecants,
     sort,
     page: asNumber(resolved.seite) ?? 1,
     perPage: 12,
@@ -209,10 +239,15 @@ export default async function ShopPage({
   }
 
   const filterData = {
-    categories: categories.map((category) => ({
-      value: category.slug,
-      label: category.name,
-    })),
+    categories: [
+      // „Abfüllungen“ steht oben und kommt nicht aus der Datenbank – sie
+      // ergibt sich aus den Größen. Eine gleichnamige Kategorie im
+      // Adminbereich würde hier sonst zweimal auftauchen.
+      { value: decantCategory.slug, label: decantCategory.name },
+      ...categories
+        .filter((category) => category.slug !== decantCategory.slug)
+        .map((category) => ({ value: category.slug, label: category.name })),
+    ],
     families: facets.families,
     sizes: facets.sizes,
     minPriceCents: facets.minPriceCents,
@@ -227,18 +262,20 @@ export default async function ShopPage({
     filters.minPriceCents !== undefined ||
     filters.maxPriceCents !== undefined ||
     filters.onlyAvailable ||
-    filters.onlySamples;
+    filters.onlyDecants;
 
   return (
     <div className="container-shop py-12 md:py-16">
       {/* Kopfbereich */}
       <div className="mb-10 max-w-2xl">
         <p className="eyebrow mb-3">Sortiment</p>
-        <h1 className="text-4xl md:text-5xl">Alle Düfte</h1>
+        <h1 className="text-4xl md:text-5xl">
+          {onlyDecants ? decantCategory.name : "Alle Düfte"}
+        </h1>
         <p className="mt-4 text-sm leading-relaxed text-muted md:text-base">
-          Parfüms, klar gekennzeichnete Duftalternativen, handabgefüllte
-          Proben. Jede Größe hat einen eigenen Preis und einen
-          eigenen Lagerbestand – die Verfügbarkeit siehst du direkt am Produkt.
+          {onlyDecants
+            ? `Alle Düfte, die es als Abfüllung gibt – von ${decantMinMl} bis ${decantMaxMl} ml, von Hand abgefüllt. Die Preise auf den Karten sind die der Abfüllungen, nicht die der grossen Flakons.`
+            : "Parfüms, klar gekennzeichnete Duftalternativen, handabgefüllte Proben. Jede Größe hat einen eigenen Preis und einen eigenen Lagerbestand – die Verfügbarkeit siehst du direkt am Produkt."}
         </p>
       </div>
 

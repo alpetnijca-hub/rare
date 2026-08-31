@@ -8,6 +8,7 @@ import {
   sortOptions,
   type SortKey,
 } from "@/lib/catalog";
+import { decantMaxMl, decantMinMl, decantsOf } from "@/lib/decants";
 
 export { familyLabels, kindLabels, sortOptions };
 export type { SortKey };
@@ -101,6 +102,17 @@ export interface ProductListItem {
   availability: Availability | null;
   sizes: string[];
   purchasable: boolean;
+  /**
+   * Die Größe, von der die Zahlen auf dieser Karte stammen – als Anhang an
+   * den Link zur Produktseite.
+   *
+   * Nur in der Abteilung „Abfüllungen“ gesetzt: Wer dort eine Karte mit
+   * „10 ml · CHF 19.00“ anklickt, soll auf der Produktseite auch 10 ml
+   * ausgewählt vorfinden und nicht den 100-ml-Flakon. Sonst ist der Wert
+   * `null`, denn im Normalfall wählt die Produktseite ohnehin die Größe, die
+   * auf der Karte stand.
+   */
+  linkVariantId: string | null;
 }
 
 export interface ProductFilters {
@@ -112,8 +124,15 @@ export interface ProductFilters {
   minPriceCents?: number;
   maxPriceCents?: number;
   onlyAvailable?: boolean;
-  /** Nur Düfte, die es auch in einer Probengröße gibt. */
-  onlySamples?: boolean;
+  /**
+   * Nur Düfte, die es als Abfüllung gibt (1–10 ml).
+   *
+   * Ist dieser Filter gesetzt, rechnen die Karten auch nur mit den
+   * Abfüllungen: Preis, Grundpreis, Größenliste und Verfügbarkeit beziehen
+   * sich dann auf die kleinen Größen. Sonst stünde in der Abteilung
+   * „Abfüllungen“ der Preis des 100-ml-Flakons.
+   */
+  onlyDecants?: boolean;
   sort?: SortKey;
   page?: number;
   perPage?: number;
@@ -127,9 +146,35 @@ export interface ProductListResult {
   pageCount: number;
 }
 
-/** Wandelt ein Produkt in die Anzeigeform für Karten und Listen. */
-export function toListItem(product: ProductCardData): ProductListItem {
-  const variants = product.variants;
+/**
+ * Worauf sich die Zahlen auf der Karte beziehen.
+ *
+ * `"alle"` ist der Normalfall: Der Preis der grössten Größe steht vorn.
+ * `"abfuellung"` blendet die grossen Flakons aus – in der Abteilung
+ * „Abfüllungen“ soll neben dem Wort „2 ml“ auch der Preis von 2 ml stehen und
+ * nicht der des 100-ml-Flakons.
+ */
+export type PriceScope = "alle" | "abfuellung";
+
+/**
+ * Wandelt ein Produkt in die Anzeigeform für Karten und Listen.
+ *
+ * Bei `scope: "abfuellung"` wird durchgehend nur mit den Abfüllungen
+ * gerechnet – Preis, Streichpreis, Grundpreis, Größenliste und
+ * Verfügbarkeit. Halbe Sachen wären hier schlimmer als gar keine: Ein
+ * Abfüllungspreis über einer Lagerampel, die vom 100-ml-Flakon stammt, ist
+ * eine falsche Auskunft.
+ */
+export function toListItem(
+  product: ProductCardData,
+  scope: PriceScope = "alle",
+): ProductListItem {
+  // Gibt es keine Abfüllung, bleibt es bei allen Größen. Das kann über die
+  // Shopliste nicht passieren – dort filtert schon die Abfrage –, wohl aber
+  // über Empfehlungen und die Startseite.
+  const decants = decantsOf(product.variants);
+  const variants =
+    scope === "abfuellung" && decants.length > 0 ? decants : product.variants;
 
   if (variants.length === 0) {
     return {
@@ -141,6 +186,7 @@ export function toListItem(product: ProductCardData): ProductListItem {
       availability: null,
       sizes: [],
       purchasable: false,
+      linkVariantId: null,
     };
   }
 
@@ -180,6 +226,7 @@ export function toListItem(product: ProductCardData): ProductListItem {
     availability: best,
     sizes: variants.map((variant) => variant.size),
     purchasable: availabilities.some((entry) => entry.purchasable),
+    linkVariantId: scope === "abfuellung" ? dearest.id : null,
   };
 }
 
@@ -226,8 +273,17 @@ function buildWhere(filters: ProductFilters): Prisma.ProductWhereInput {
     variantConditions.volumeMl = { in: filters.volumes };
   }
 
-  if (filters.onlySamples) {
-    variantConditions.isSample = true;
+  if (filters.onlyDecants) {
+    // Mit einer zusätzlich gewählten Größe schneidet sich beides: Wer 5 ml
+    // angehakt hat und „Abfüllungen“ ansieht, will 5-ml-Abfüllungen sehen.
+    variantConditions.volumeMl = {
+      ...(typeof variantConditions.volumeMl === "object" &&
+      variantConditions.volumeMl !== null
+        ? variantConditions.volumeMl
+        : {}),
+      gte: decantMinMl,
+      lte: decantMaxMl,
+    };
   }
 
   if (filters.minPriceCents !== undefined || filters.maxPriceCents !== undefined) {
@@ -267,6 +323,7 @@ export async function listProducts(
   const perPage = Math.min(48, Math.max(6, filters.perPage ?? 12));
   const sort: SortKey = filters.sort ?? "beliebt";
   const where = buildWhere(filters);
+  const scope: PriceScope = filters.onlyDecants ? "abfuellung" : "alle";
 
   // Schritt 1: schmale Abfrage für die exakte Verfügbarkeits- und Preislogik.
   const candidates = await prisma.product.findMany({
@@ -307,10 +364,19 @@ export async function listProducts(
 
   // Preissortierung: nach dem Preis, der auch auf der Karte steht – dem der
   // teuersten Größe. Sortierte man nach dem günstigsten, stünden Düfte in
-  // einer Reihenfolge, die zu den angezeigten Zahlen nicht passt.
+  // einer Reihenfolge, die zu den angezeigten Zahlen nicht passt. In der
+  // Abteilung „Abfüllungen“ gilt dasselbe, dort aber nur unter den kleinen
+  // Größen: Sonst sortierte die Liste nach Flakonpreisen, die gar nicht zu
+  // sehen sind.
   if (sort === "preis-auf" || sort === "preis-ab") {
-    const priceOf = (product: (typeof filtered)[number]) =>
-      Math.max(...product.variants.map((variant) => variant.priceCents));
+    const priceOf = (product: (typeof filtered)[number]) => {
+      const decants = decantsOf(product.variants);
+      const relevant =
+        scope === "abfuellung" && decants.length > 0
+          ? decants
+          : product.variants;
+      return Math.max(...relevant.map((variant) => variant.priceCents));
+    };
 
     filtered.sort((a, b) =>
       sort === "preis-auf" ? priceOf(a) - priceOf(b) : priceOf(b) - priceOf(a),
@@ -339,7 +405,7 @@ export async function listProducts(
   products.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
 
   return {
-    items: products.map(toListItem),
+    items: products.map((product) => toListItem(product, scope)),
     total,
     page: safePage,
     perPage,
@@ -355,7 +421,7 @@ export async function getBestsellers(limit = 4): Promise<ProductListItem[]> {
     orderBy: [{ popularity: "desc" }, { name: "asc" }],
     take: limit,
   });
-  return products.map(toListItem);
+  return products.map((product) => toListItem(product));
 }
 
 /** Neu eingetroffene Produkte. */
@@ -366,7 +432,7 @@ export async function getNewArrivals(limit = 4): Promise<ProductListItem[]> {
     orderBy: [{ createdAt: "desc" }],
     take: limit,
   });
-  return products.map(toListItem);
+  return products.map((product) => toListItem(product));
 }
 
 export const productDetailInclude = {
@@ -418,7 +484,9 @@ export async function getRelatedProducts(
     take: limit,
   });
 
-  if (related.length >= limit) return related.map(toListItem);
+  if (related.length >= limit) {
+    return related.map((product) => toListItem(product));
+  }
 
   // Auffüllen, damit der Bereich nie halbleer wirkt.
   const fillers = await prisma.product.findMany({
@@ -432,7 +500,7 @@ export async function getRelatedProducts(
     take: limit - related.length,
   });
 
-  return [...related, ...fillers].map(toListItem);
+  return [...related, ...fillers].map((product) => toListItem(product));
 }
 
 /** Kategorien für Navigation und Filter. */

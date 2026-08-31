@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
+import { decantCategory } from "@/lib/decants";
 
 export const metadata: Metadata = {
   title: "Seite nicht gefunden",
@@ -10,8 +11,8 @@ export const metadata: Metadata = {
 const suggestions = [
   { href: "/shop", label: "Alle Düfte", hint: "Das komplette Sortiment" },
   {
-    href: "/shop?probe=1",
-    label: "Düfte mit Probengröße",
+    href: `/shop?kategorie=${decantCategory.slug}`,
+    label: decantCategory.name,
     hint: "Ab 2 ml zum Testen",
   },
   { href: "/kontakt", label: "Kontakt", hint: "Wir helfen persönlich weiter" },

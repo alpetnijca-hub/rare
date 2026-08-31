@@ -10,6 +10,7 @@ import { Money } from "@/components/currency/money";
 import { prisma } from "@/lib/prisma";
 import { demoDataStatus } from "@/lib/demo-seed";
 import { productImageUrl } from "@/lib/product-image";
+import { decantCategory } from "@/lib/decants";
 
 export const metadata: Metadata = {
   title: `${siteConfig.name} – Parfüms, Duftalternativen & Abfüllungen`,
@@ -211,8 +212,12 @@ export default async function HomePage() {
               <ButtonLink href="/shop" size="lg">
                 Düfte entdecken
               </ButtonLink>
-              <ButtonLink href="/shop?probe=1" variant="secondary" size="lg">
-                Düfte mit Probengröße
+              <ButtonLink
+                href={`/shop?kategorie=${decantCategory.slug}`}
+                variant="secondary"
+                size="lg"
+              >
+                Abfüllungen ab 2 ml
               </ButtonLink>
             </div>
 

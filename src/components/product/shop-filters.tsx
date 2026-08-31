@@ -47,7 +47,6 @@ function useCurrentFilters() {
       priceMin: searchParams.get("preis-min") ?? "",
       priceMax: searchParams.get("preis-max") ?? "",
       onlyAvailable: searchParams.get("verfuegbar") === "1",
-      onlySamples: searchParams.get("probe") === "1",
       sort: searchParams.get("sortierung") ?? "beliebt",
     }),
     [searchParams],
@@ -112,7 +111,6 @@ export function activeFilterCount(params: {
   priceMin: string;
   priceMax: string;
   onlyAvailable: boolean;
-  onlySamples: boolean;
 }) {
   return (
     params.categories.length +
@@ -120,8 +118,7 @@ export function activeFilterCount(params: {
     params.sizes.length +
     (params.priceMin ? 1 : 0) +
     (params.priceMax ? 1 : 0) +
-    (params.onlyAvailable ? 1 : 0) +
-    (params.onlySamples ? 1 : 0)
+    (params.onlyAvailable ? 1 : 0)
   );
 }
 
@@ -319,17 +316,6 @@ function FilterPanel({
             pushParams((params) => {
               if (checked) params.set("verfuegbar", "1");
               else params.delete("verfuegbar");
-            })
-          }
-        />
-        <CheckboxRow
-          id={`${idPrefix}-probe`}
-          label="Mit Probengröße erhältlich"
-          checked={current.onlySamples}
-          onChange={(checked) =>
-            pushParams((params) => {
-              if (checked) params.set("probe", "1");
-              else params.delete("probe");
             })
           }
         />
