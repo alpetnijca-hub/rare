@@ -52,6 +52,8 @@ export async function installDemoData(
         subtitle: product.subtitle,
         description: product.description,
         scentProfile: product.scentProfile,
+        longevity: product.longevity ?? null,
+        sillage: product.sillage ?? null,
         fragranceFamily: product.fragranceFamily,
         kind: product.kind,
         topNotes: product.topNotes,

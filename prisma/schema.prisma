@@ -118,6 +118,11 @@ model Product {
   /// Rechtlicher Hinweis, z. B. Kennzeichnung als Duftalternative
   legalNotice String?
 
+  /// Haltbarkeit auf der Haut, 1 (kurz) bis 5 (sehr lang). Leer = keine Angabe.
+  longevity   Int?
+  /// Duftwolke, 1 (hautnah) bis 5 (raumfüllend). Leer = keine Angabe.
+  sillage     Int?
+
   /// Kennzeichnung als Duftalternative (keine Originalware)
   isAlternative Boolean @default(false)
   /// Klar erkennbarer Demo-Datensatz

@@ -140,6 +140,8 @@ export default async function EditProductPage({
             subtitle: product.subtitle ?? "",
             description: product.description,
             scentProfile: product.scentProfile ?? "",
+            longevity: product.longevity ? String(product.longevity) : "",
+            sillage: product.sillage ? String(product.sillage) : "",
             fragranceFamily: product.fragranceFamily,
             kind: product.kind,
             topNotes: product.topNotes.join(", "),

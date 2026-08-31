@@ -8,6 +8,11 @@ import { FormMessage, SubmitButton } from "@/components/admin/ui";
 import { AdvancedCard, Card } from "@/components/admin/layout-parts";
 import { NewProductImages } from "@/components/admin/new-product-images";
 import { commonSizes } from "@/config/product-defaults";
+import {
+  longevityLabels,
+  sillageLabels,
+  strengthSteps,
+} from "@/lib/scent-strength";
 import { Checkbox, Field, Select, TextArea, TextInput } from "@/components/ui/field";
 import { familyLabels, fragranceFamilies, kindLabels, productKinds } from "@/lib/catalog";
 import { slugify } from "@/lib/utils";
@@ -32,6 +37,10 @@ export interface ProductFormValues {
   ingredients: string;
   usage: string;
   legalNotice: string;
+  /** Haltbarkeit 1–5, leer heisst „keine Angabe“. */
+  longevity: string;
+  /** Sillage 1–5, leer heisst „keine Angabe“. */
+  sillage: string;
   isAlternative: boolean;
   isDemo: boolean;
   isActive: boolean;
@@ -57,6 +66,8 @@ export const emptyProduct: ProductFormValues = {
   ingredients: "",
   usage: "",
   legalNotice: "",
+  longevity: "",
+  sillage: "",
   isAlternative: false,
   isDemo: false,
   isActive: true,
@@ -298,6 +309,47 @@ export function ProductForm({
           </Field>
           <Field id="baseNotes" label="Basisnote">
             {(aria) => <TextInput {...aria} name="baseNotes" defaultValue={values.baseNotes} />}
+          </Field>
+        </div>
+      </Card>
+
+      <Card
+        title="Haltbarkeit und Sillage"
+        description="Deine eigene Einschätzung aus dem Tragen. Beides ist freiwillig – ohne Angabe steht auf der Produktseite nichts, und das ist besser als eine geratene Zahl. Weil wir keine Rückgabe annehmen, hilft jede ehrliche Angabe hier mehr als anderswo."
+      >
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field
+            id="longevity"
+            label="Haltbarkeit"
+            hint="Wie lange bleibt der Duft auf der Haut?"
+          >
+            {(aria) => (
+              <Select {...aria} name="longevity" defaultValue={values.longevity}>
+                <option value="">Keine Angabe</option>
+                {strengthSteps.map((stufe) => (
+                  <option key={stufe} value={stufe}>
+                    {stufe} – {longevityLabels[stufe]}
+                  </option>
+                ))}
+              </Select>
+            )}
+          </Field>
+
+          <Field
+            id="sillage"
+            label="Sillage"
+            hint="Wie weit trägt die Duftwolke?"
+          >
+            {(aria) => (
+              <Select {...aria} name="sillage" defaultValue={values.sillage}>
+                <option value="">Keine Angabe</option>
+                {strengthSteps.map((stufe) => (
+                  <option key={stufe} value={stufe}>
+                    {stufe} – {sillageLabels[stufe]}
+                  </option>
+                ))}
+              </Select>
+            )}
           </Field>
         </div>
       </Card>

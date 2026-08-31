@@ -84,6 +84,8 @@ export interface SeedProduct {
   subtitle: string;
   description: string;
   scentProfile: string;
+  longevity?: number;
+  sillage?: number;
   fragranceFamily:
     | "FLORAL"
     | "ORIENTAL"
@@ -133,6 +135,8 @@ export const products: SeedProduct[] = [
       "Im Verlauf wird der Duft ruhiger: Vanille, Tonkabohne und ein Hauch Zedernholz bilden eine warme Basis, die stundenlang auf der Haut bleibt.\n" +
       "Ein Duft für kühlere Abende und für alle, die es weich und umhüllend mögen – deutlich wahrnehmbar, aber nie aufdringlich.",
     scentProfile: "Warm-orientalisch mit Amber, Vanille und Trockenfrüchten",
+    longevity: 4,
+    sillage: 4,
     fragranceFamily: "ORIENTAL",
     kind: "PARFUM",
     topNotes: ["Mandarine", "Rosa Pfeffer", "Bergamotte"],
@@ -170,6 +174,8 @@ export const products: SeedProduct[] = [
       "Die Basis aus Patchouli, Leder und Moschus sorgt für eine ausgeprägte Haltbarkeit – zwei Sprühstösse genügen in der Regel für den ganzen Abend.\n" +
       "Wir empfehlen, diesen Duft zuerst in 2 ml oder 5 ml zu testen. Oud ist Geschmackssache und entfaltet sich auf jeder Haut etwas anders.",
     scentProfile: "Dunkel-holzig mit Oud, Rose und Safran",
+    longevity: 5,
+    sillage: 5,
     fragranceFamily: "HOLZIG",
     kind: "ABFUELLUNG",
     topNotes: ["Safran", "Schwarzer Pfeffer", "Muskatnuss"],
@@ -208,6 +214,8 @@ export const products: SeedProduct[] = [
       "Litschi und Himbeere sorgen zu Beginn für Frische, das Herz bleibt blumig mit Pfingstrose und Veilchen. In der Basis trägt weisser Moschus den Duft ruhig aus.\n" +
       "Angenehm im Alltag und auch im Büro tragbar – nah an der Haut und ohne aufdringliche Süsse.",
     scentProfile: "Blumig-frisch mit Rose, Litschi und Moschus",
+    longevity: 2,
+    sillage: 2,
     fragranceFamily: "FLORAL",
     kind: "PARFUM",
     topNotes: ["Litschi", "Himbeere", "Zitrone"],
@@ -245,6 +253,8 @@ export const products: SeedProduct[] = [
       "Nach dem Auftragen bleibt zunächst eine bittere Kakaonote, die sich langsam zu einer cremigen Vanille öffnet.\n" +
       "Die aktuelle Charge ist in Produktion. Du kannst bereits vorbestellen – wir versenden, sobald die Ware eingetroffen ist.",
     scentProfile: "Gourmandig-dunkel mit Vanille, Tabak und Kaffee",
+    longevity: 4,
+    sillage: 3,
     fragranceFamily: "GOURMAND",
     kind: "PARFUM",
     topNotes: ["Kakao", "Bergamotte", "Kardamom"],
@@ -283,6 +293,8 @@ export const products: SeedProduct[] = [
       "Neroli und Petitgrain geben dem Herzen eine grüne, leicht bittere Nuance, bevor Vetiver und weisser Moschus für einen ruhigen Ausklang sorgen.\n" +
       "Ideal für warme Tage und für alle, die es unaufdringlich mögen. Erwartungsgemäss kürzere Haltbarkeit als schwere Ambernoten – dafür jederzeit nachlegbar.",
     scentProfile: "Frisch-zitrisch mit Neroli und Vetiver",
+    longevity: 3,
+    sillage: 3,
     fragranceFamily: "ZITRUS",
     kind: "PARFUM",
     topNotes: ["Zitrone", "Grapefruit", "Bergamotte"],

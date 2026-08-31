@@ -2,6 +2,7 @@ import { z } from "zod";
 import { maxQuantityPerItem } from "@/config/site";
 import { shippingCountries } from "@/lib/shipping";
 import { fragranceFamilies, orderStatuses, productKinds } from "@/lib/catalog";
+import { strengthMax, strengthMin } from "@/lib/scent-strength";
 
 export { fragranceFamilies, productKinds };
 
@@ -190,6 +191,11 @@ const notesSchema = z
       .slice(0, 20),
   );
 
+const strengthField = z
+  .union([z.literal(""), z.coerce.number().int().min(strengthMin).max(strengthMax)])
+  .optional()
+  .transform((value) => (value === "" || value === undefined ? null : value));
+
 export const adminProductSchema = z.object({
   name: trimmed(2, 120, "Produktname"),
   slug: z
@@ -209,6 +215,14 @@ export const adminProductSchema = z.object({
   ingredients: z.string().trim().max(3000).optional().or(z.literal("")),
   usage: z.string().trim().max(2000).optional().or(z.literal("")),
   legalNotice: z.string().trim().max(2000).optional().or(z.literal("")),
+  /**
+   * Haltbarkeit und Sillage auf der Skala 1–5, oder leer.
+   *
+   * Leer ist ausdrücklich erlaubt und der Ausgangszustand: Lieber keine
+   * Angabe als eine geratene. Deshalb `""` → `null` statt eines Vorgabewerts.
+   */
+  longevity: strengthField,
+  sillage: strengthField,
   isAlternative: z.coerce.boolean().default(false),
   isDemo: z.coerce.boolean().default(false),
   isActive: z.coerce.boolean().default(true),

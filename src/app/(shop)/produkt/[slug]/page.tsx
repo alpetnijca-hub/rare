@@ -10,6 +10,7 @@ import {
   type VariantOption,
 } from "@/components/product/variant-picker";
 import { siteConfig, taxConfig } from "@/config/site";
+import { StrengthMeters } from "@/components/product/strength-meter";
 import {
   productImageUrl,
   productSocialImageUrl,
@@ -373,6 +374,16 @@ export default async function ProductPage({ params }: PageProps) {
               heart={product.heartNotes}
               base={product.baseNotes}
             />
+
+            {/* Direkt unter den Noten und nicht in einem eigenen Abschnitt:
+                Wie ein Duft riecht und wie lange er hält, ist dieselbe Frage.
+                Steht nichts drin, erscheint hier auch nichts. */}
+            <div className="mt-6">
+              <StrengthMeters
+                longevity={product.longevity}
+                sillage={product.sillage}
+              />
+            </div>
           </InfoSection>
 
           {product.usage && (
