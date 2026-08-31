@@ -242,10 +242,12 @@ export default function PrivacyPage() {
         <p className="mt-4">
           {optionalServices.length === 0 ? (
             <>
-              Analyse-, Tracking- oder Marketingdienste setzen wir{" "}
-              <strong className="font-medium text-cream">nicht</strong> ein. Es
-              wird deshalb auch kein Einwilligungsbanner angezeigt – ein Banner
-              ohne einwilligungspflichtige Dienste wäre reine Dekoration.
+              Analyse-, Tracking- oder Marketingdienste von Dritten setzen
+              wir <strong className="font-medium text-cream">nicht</strong>{" "}
+              ein. Wie oft ein Duft aufgerufen wird, zählen wir selbst und
+              ohne jeden Personenbezug – siehe Ziffer 12. Es wird deshalb auch
+              kein Einwilligungsbanner angezeigt – ein Banner ohne
+              einwilligungspflichtige Dienste wäre reine Dekoration.
               Sollten wir künftig solche Dienste einsetzen, werden sie erst
               nach deiner ausdrücklichen Einwilligung geladen und an dieser
               Stelle aufgeführt.
@@ -268,7 +270,25 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="12. Soziale Netzwerke">
+      <LegalSection title="12. Aufrufzahlen unserer Produkte">
+        <p>
+          Wir zählen, wie oft eine Produktseite aufgerufen und wie oft ein Duft
+          in den Warenkorb gelegt wird. Das hilft uns bei der Entscheidung,
+          welche Düfte wir nachbestellen und welche Größen fehlen.
+        </p>
+        <p>
+          Gespeichert wird dabei ausschliesslich eine Zahl je Duft und
+          Kalendertag – <strong className="font-medium text-cream">keine
+          IP-Adresse, keine Kennung, kein Cookie und kein Verlauf</strong>. Die
+          Zählung findet auf unserem eigenen Server statt; es ist kein
+          Analysedienst und kein Dritter beteiligt. Da sich daraus kein Bezug
+          zu einer Person herstellen lässt, handelt es sich nicht um
+          Personendaten im Sinne des DSG, und es ist keine Einwilligung
+          erforderlich.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="13. Soziale Netzwerke">
         <p>
           Auf unserer Website verlinken wir unser Instagram-Profil{" "}
           {siteConfig.social.instagramHandle} lediglich als gewöhnlichen Link.
@@ -279,7 +299,7 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="13. Empfänger und Auslandsbekanntgabe">
+      <LegalSection title="14. Empfänger und Auslandsbekanntgabe">
         <p>Personendaten geben wir nur an folgende Kategorien weiter:</p>
         <LegalList
           items={[
@@ -300,7 +320,7 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="14. Aufbewahrung und Löschung">
+      <LegalSection title="15. Aufbewahrung und Löschung">
         <LegalList
           items={[
             "Bestell- und Rechnungsdaten: 10 Jahre (Art. 958f OR)",
@@ -312,7 +332,7 @@ export default function PrivacyPage() {
         />
       </LegalSection>
 
-      <LegalSection title="15. Deine Rechte">
+      <LegalSection title="16. Deine Rechte">
         <LegalList
           items={[
             "Auskunft über die zu deiner Person bearbeiteten Daten",
@@ -338,7 +358,7 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="16. Datensicherheit">
+      <LegalSection title="17. Datensicherheit">
         <p>
           Die Übertragung erfolgt durchgehend verschlüsselt über HTTPS.
           Zugangsdaten des internen Bereichs speichern wir ausschliesslich als
@@ -349,7 +369,7 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="17. Änderungen dieser Erklärung">
+      <LegalSection title="18. Änderungen dieser Erklärung">
         <p>
           Wir passen diese Datenschutzerklärung an, wenn sich unsere
           Bearbeitungen oder die Rechtslage ändern. Massgebend ist die jeweils

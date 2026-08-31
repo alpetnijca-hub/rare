@@ -38,6 +38,13 @@ export const necessaryCookies: Array<{
     type: "Local Storage",
   },
   {
+    name: "rare-scents-merkliste-v1",
+    purpose:
+      "Speichert die vorgemerkten Düfte, damit die Merkliste beim erneuten Besuch erhalten bleibt. Enthält nur Produktnummern.",
+    duration: "Bis zum Löschen durch den Besucher",
+    type: "Local Storage",
+  },
+  {
     name: "rare-scents-consent",
     purpose:
       "Speichert die Cookie-Entscheidung, damit die Auswahl nicht bei jedem Besuch erneut abgefragt wird.",

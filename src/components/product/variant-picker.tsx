@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useId, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCart } from "@/components/cart/cart-provider";
+import { reportStat } from "@/lib/report-stat";
 import { Button } from "@/components/ui/button";
 import { AvailabilityBadge } from "@/components/ui/badge";
 import { BackInStockForm } from "@/components/product/back-in-stock-form";
@@ -129,11 +130,14 @@ function VariantGroup({
 }
 
 export function VariantPicker({
+  productId,
   productName,
   productSlug,
   variants,
   taxRateBp,
 }: {
+  /** Nur für die Zählung, welcher Duft in den Warenkorb wandert. */
+  productId: string;
   productName: string;
   productSlug: string;
   variants: VariantOption[];
@@ -219,6 +223,9 @@ export function VariantPicker({
   function addToCart() {
     if (!selected.purchasable) return;
     addItem(selected.id, quantity);
+    // Gezählt wird der Duft, nicht die Größe: Interessant ist, welcher Duft
+    // ins Auge fällt und trotzdem nicht bestellt wird.
+    reportStat(productId, "warenkorb");
     setFeedback({
       variantId: selected.id,
       text: `${quantity} × ${productName} (${selected.size}) wurde in den Warenkorb gelegt.`,

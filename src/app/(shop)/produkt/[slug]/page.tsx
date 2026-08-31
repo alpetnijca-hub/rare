@@ -10,6 +10,7 @@ import {
   type VariantOption,
 } from "@/components/product/variant-picker";
 import { siteConfig, taxConfig } from "@/config/site";
+import { StatReporter } from "@/components/product/stat-reporter";
 import { StrengthMeters } from "@/components/product/strength-meter";
 import { WishlistButton } from "@/components/wishlist/wishlist-button";
 import {
@@ -237,6 +238,9 @@ export default async function ProductPage({ params }: PageProps) {
 
   return (
     <>
+      {/* Zählt den Aufruf. Rendert nichts. */}
+      <StatReporter productId={product.id} />
+
       <script
         type="application/ld+json"
         // Nur serverseitig erzeugte Daten – kein Nutzereingabe-Inhalt.
@@ -331,6 +335,7 @@ export default async function ProductPage({ params }: PageProps) {
             )}
 
             <VariantPicker
+              productId={product.id}
               productName={product.name}
               productSlug={product.slug}
               variants={variantOptions}

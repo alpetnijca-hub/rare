@@ -99,6 +99,18 @@ export const wishlistSchema = z.object({
   ids: z.array(z.string().min(1).max(64)).max(200),
 });
 
+/**
+ * Meldung für die Produktstatistik.
+ *
+ * Mehr als diese zwei Angaben nimmt der Server nicht entgegen – und
+ * speichert auch nicht mehr. Kein Zeitstempel vom Browser, keine Kennung,
+ * keine Sitzung.
+ */
+export const statEventSchema = z.object({
+  productId: z.string().min(1).max(64),
+  event: z.enum(["ansicht", "warenkorb"]),
+});
+
 export const checkoutSchema = z
   .object({
     items: cartSchema,

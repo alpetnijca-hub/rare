@@ -19,6 +19,7 @@ const navigation: NavItem[] = [
   { href: "/admin/bestellungen", label: "Bestellungen", badge: "orders" },
   { href: "/admin/produkte", label: "Produkte" },
   { href: "/admin/lager", label: "Lager", badge: "stock" },
+  { href: "/admin/interesse", label: "Interesse" },
   { href: "/admin/kategorien", label: "Kategorien" },
   { href: "/admin/rabattcodes", label: "Rabattcodes" },
 ];
