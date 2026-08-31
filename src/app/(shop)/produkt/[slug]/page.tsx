@@ -11,6 +11,7 @@ import {
 } from "@/components/product/variant-picker";
 import { siteConfig, taxConfig } from "@/config/site";
 import { StrengthMeters } from "@/components/product/strength-meter";
+import { WishlistButton } from "@/components/wishlist/wishlist-button";
 import {
   productImageUrl,
   productSocialImageUrl,
@@ -335,6 +336,16 @@ export default async function ProductPage({ params }: PageProps) {
               variants={variantOptions}
               taxRateBp={taxConfig.rateBp}
             />
+
+            {/* Merken statt kaufen: Wer sich noch nicht entscheiden kann,
+                soll den Duft wiederfinden statt ihn zu vergessen. */}
+            <div className="mt-5">
+              <WishlistButton
+                productId={product.id}
+                productName={product.name}
+                variant="button"
+              />
+            </div>
 
             {/* Vertrauenshinweise */}
             <ul className="grid gap-3 border-t border-line pt-6 text-sm text-muted sm:grid-cols-2">

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCart } from "@/components/cart/cart-provider";
+import { useWishlist } from "@/components/wishlist/wishlist-provider";
 import { CurrencySwitcher } from "@/components/currency/currency-switcher";
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
@@ -26,6 +27,38 @@ function CartCount() {
     >
       {itemCount > 99 ? "99+" : itemCount}
     </span>
+  );
+}
+
+function WishlistLink() {
+  const { count, ready } = useWishlist();
+
+  return (
+    <Link
+      href="/merkliste"
+      className="relative flex size-11 items-center justify-center text-cream transition-colors hover:text-gold"
+    >
+      <span className="sr-only">
+        Merkliste{ready && count > 0 ? `, ${count} Düfte` : ", leer"}
+      </span>
+      <svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path
+          d="M10 16.5S3.2 12.4 3.2 7.9A3.7 3.7 0 0 1 10 5.8a3.7 3.7 0 0 1 6.8 2.1c0 4.5-6.8 8.6-6.8 8.6Z"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinejoin="round"
+        />
+      </svg>
+      {ready && count > 0 && (
+        <span
+          className="absolute -right-2 -top-1.5 flex size-4.5 items-center justify-center
+            rounded-full bg-gold text-[10px] font-bold text-ink tabular-nums"
+          aria-hidden="true"
+        >
+          {count > 99 ? "99+" : count}
+        </span>
+      )}
+    </Link>
   );
 }
 
@@ -178,6 +211,8 @@ export function Header() {
               <path d="M11.5 11.5 16.5 16.5" stroke="currentColor" strokeWidth="1.4" />
             </svg>
           </Link>
+
+          <WishlistLink />
 
           <Link
             href="/warenkorb"

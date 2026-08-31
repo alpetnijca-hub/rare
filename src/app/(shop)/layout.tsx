@@ -1,4 +1,5 @@
 import { CartProvider } from "@/components/cart/cart-provider";
+import { WishlistProvider } from "@/components/wishlist/wishlist-provider";
 import { CookieConsent } from "@/components/cookie-consent";
 import { CurrencyProvider } from "@/components/currency/currency-provider";
 import { Header } from "@/components/layout/header";
@@ -16,6 +17,7 @@ export default async function ShopLayout({
   return (
     <CurrencyProvider currency={currency}>
       <CartProvider>
+        <WishlistProvider>
         <div className="flex min-h-dvh flex-col">
           <a href="#hauptinhalt" className="skip-link">
             Zum Hauptinhalt springen
@@ -30,6 +32,7 @@ export default async function ShopLayout({
           <Footer />
           <CookieConsent />
         </div>
+        </WishlistProvider>
       </CartProvider>
     </CurrencyProvider>
   );

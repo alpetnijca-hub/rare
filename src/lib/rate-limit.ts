@@ -126,6 +126,7 @@ export async function rateLimit(
 export const rateLimits = {
   checkout: { limit: 10, windowMs: 60_000 },
   cartQuote: { limit: 60, windowMs: 60_000 },
+  wishlist: { limit: 60, windowMs: 60_000 },
   newsletter: { limit: 5, windowMs: 60 * 60_000 },
   contact: { limit: 5, windowMs: 60 * 60_000 },
   backInStock: { limit: 10, windowMs: 60 * 60_000 },

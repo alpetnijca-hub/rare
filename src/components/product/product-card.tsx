@@ -6,6 +6,7 @@ import { basePricePer100Ml, discountPercent } from "@/lib/money";
 import { familyLabels, kindLabels, type ProductListItem } from "@/lib/products";
 import { cn } from "@/lib/utils";
 import { productImageUrl } from "@/lib/product-image";
+import { WishlistButton } from "@/components/wishlist/wishlist-button";
 
 /**
  * Produktkarte für Startseite, Shop und Empfehlungen.
@@ -87,13 +88,14 @@ export function ProductCard({
           {savings !== null && <Badge tone="danger">−{savings}%</Badge>}
         </div>
 
-        {product.isDemo && (
-          <div className="pointer-events-none absolute right-3 top-3">
+        <div className="absolute right-3 top-3 flex flex-col items-end gap-2">
+          {product.isDemo && (
             <Badge tone="neutral" className="bg-ink/80">
               Demo
             </Badge>
-          </div>
-        )}
+          )}
+          <WishlistButton productId={product.id} productName={product.name} />
+        </div>
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-4 md:p-5">

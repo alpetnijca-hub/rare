@@ -17,6 +17,7 @@ const serviceLinks = [
   { href: "/kontakt", label: "Kontakt" },
   { href: "/faq", label: "Häufige Fragen" },
   { href: "/versand", label: "Versand & Lieferung" },
+  { href: "/merkliste", label: "Merkliste" },
   { href: "/bestellung", label: "Bestellung verfolgen" },
 ];
 

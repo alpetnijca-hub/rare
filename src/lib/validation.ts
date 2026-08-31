@@ -88,6 +88,17 @@ const freeSampleField = z
   .optional()
   .nullable();
 
+/**
+ * Anfrage der Merkliste: nur Produkt-IDs.
+ *
+ * Der Browser schickt, was er sich gemerkt hat; alles Übrige – Name, Preis,
+ * Verfügbarkeit – kommt aus der Datenbank. Damit gilt hier dieselbe Regel wie
+ * beim Warenkorb: Aus dem Browser kommen nie Preise.
+ */
+export const wishlistSchema = z.object({
+  ids: z.array(z.string().min(1).max(64)).max(200),
+});
+
 export const checkoutSchema = z
   .object({
     items: cartSchema,
