@@ -372,6 +372,13 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
             <ButtonLink href="/shop" variant="secondary">
               Weiter einkaufen
             </ButtonLink>
+            {/* Bewerten geht erst, wenn das Paket unterwegs ist – vorher hat
+                niemand den Duft gerochen. */}
+            {(order.status === "SHIPPED" || order.status === "DELIVERED") && (
+              <ButtonLink href={`/bewerten/${token}`} variant="secondary">
+                Düfte bewerten
+              </ButtonLink>
+            )}
             <Link
               href="/widerruf"
               className="flex min-h-11 items-center text-sm text-muted underline underline-offset-4 transition-colors hover:text-gold-light"

@@ -413,6 +413,59 @@ export function shippingConfirmationEmail(data: {
 }
 
 // ---------------------------------------------------------------------------
+// 5b. Einladung zum Bewerten
+// ---------------------------------------------------------------------------
+
+/**
+ * Bitte um eine Bewertung, nachdem das Paket unterwegs ist.
+ *
+ * Bewusst eine eigene E-Mail und kein Anhängsel an die Versandbestätigung:
+ * Dort wartet man auf das Paket und hat noch nichts gerochen. Wer zu früh
+ * fragt, bekommt keine Antwort oder eine über die Verpackung.
+ *
+ * Der Ton fragt nach der Wahrheit und nicht nach Lob – das steht so auch im
+ * Text. Eine Bitte um „eine gute Bewertung“ wäre irreführende Werbung.
+ */
+export function reviewInviteEmail(data: {
+  orderNumber: string;
+  firstName: string;
+  items: OrderEmailItem[];
+  reviewUrl: string;
+}): RenderedEmail {
+  const body = `
+    ${paragraph(`Hallo ${escapeHtml(data.firstName)}, dein Paket sollte inzwischen bei dir sein.`)}
+    ${paragraph(
+      "Wenn du magst: Schreib in zwei Sätzen, wie sich der Duft bei dir " +
+        "trägt. Das hilft den nächsten Leuten mehr als alles, was wir selbst " +
+        "über unsere Düfte schreiben könnten – gerade weil man bei uns nichts " +
+        "zurückgeben kann.",
+    )}
+    ${paragraph(
+      "Ehrlich ist uns lieber als nett. Hat dich ein Duft enttäuscht, schreib " +
+        "das ruhig; wir lassen auch Kritik stehen.",
+    )}
+    <div style="height:24px;"></div>
+    ${sectionTitle("Deine Düfte")}
+    ${itemsTable(data.items)}
+  `;
+
+  return finish(
+    `Wie riecht's? Deine Bestellung ${data.orderNumber}`,
+    renderEmail({
+      preheader: "Zwei Sätze zu deinem Duft helfen den nächsten Leuten sehr.",
+      eyebrow: "Bewertung",
+      heading: "Wie war’s?",
+      bodyHtml: body,
+      cta: { label: "Duft bewerten", url: data.reviewUrl },
+      footnote:
+        "Veröffentlicht wird dein Vorname und der erste Buchstabe deines " +
+        "Nachnamens. Wenn du nicht bewerten möchtest, ignoriere diese " +
+        "Nachricht einfach – wir schreiben deswegen nicht noch einmal.",
+    }),
+  );
+}
+
+// ---------------------------------------------------------------------------
 // 6. Rückerstattung
 // ---------------------------------------------------------------------------
 

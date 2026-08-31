@@ -1073,3 +1073,61 @@ export async function deleteDemoData(): Promise<void> {
   revalidatePath("/");
   revalidatePath("/shop");
 }
+
+// ---------------------------------------------------------------------------
+// Bewertungen
+// ---------------------------------------------------------------------------
+
+/**
+ * Eine Bewertung freigeben oder ablehnen.
+ *
+ * **Abgelehnt wird Missbrauch, nicht Kritik.** Beschimpfungen, Werbung,
+ * offensichtlich falscher Bezug – dafür ist die Ablehnung da. Eine schlechte
+ * Bewertung zurückzuhalten, weil sie schlecht ist, macht aus dem Schnitt auf
+ * der Produktseite eine Falschaussage. Wer mit Bewertungen wirbt, muss sie
+ * vollständig zeigen (Art. 3 Abs. 1 lit. s UWG).
+ */
+export async function moderateReviewAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+
+  const reviewId = text(formData, "reviewId");
+  const entscheidung = text(formData, "entscheidung");
+
+  if (!reviewId) return fail("Bewertung nicht gefunden.");
+
+  const review = await prisma.review.findUnique({
+    where: { id: reviewId },
+    select: { id: true, product: { select: { slug: true } } },
+  });
+  if (!review) return fail("Bewertung nicht gefunden.");
+
+  if (entscheidung === "freigeben") {
+    await prisma.review.update({
+      where: { id: reviewId },
+      data: { status: "PUBLISHED", publishedAt: new Date(), moderationNote: null },
+    });
+  } else if (entscheidung === "ablehnen") {
+    await prisma.review.update({
+      where: { id: reviewId },
+      data: {
+        status: "REJECTED",
+        publishedAt: null,
+        moderationNote: text(formData, "grund") || null,
+      },
+    });
+  } else {
+    return fail("Unbekannte Entscheidung.");
+  }
+
+  revalidatePath("/admin/bewertungen");
+  revalidatePath(`/produkt/${review.product.slug}`);
+
+  return success(
+    entscheidung === "freigeben"
+      ? "Bewertung ist jetzt beim Duft sichtbar."
+      : "Bewertung abgelehnt und nicht veröffentlicht.",
+  );
+}

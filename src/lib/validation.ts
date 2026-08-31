@@ -3,6 +3,10 @@ import { maxQuantityPerItem } from "@/config/site";
 import { shippingCountries } from "@/lib/shipping";
 import { fragranceFamilies, orderStatuses, productKinds } from "@/lib/catalog";
 import { strengthMax, strengthMin } from "@/lib/scent-strength";
+import {
+  ratingMax as reviewRatingMax,
+  ratingMin as reviewRatingMin,
+} from "@/lib/reviews";
 
 export { fragranceFamilies, productKinds };
 
@@ -109,6 +113,23 @@ export const wishlistSchema = z.object({
 export const statEventSchema = z.object({
   productId: z.string().min(1).max(64),
   event: z.enum(["ansicht", "warenkorb"]),
+});
+
+/**
+ * Eine abgegebene Bewertung.
+ *
+ * Die Bestellung kommt aus dem Token in der Adresse, nicht aus dem Formular –
+ * sonst könnte jemand eine fremde Bestellnummer eintragen und im Namen
+ * anderer bewerten.
+ */
+export const reviewSchema = z.object({
+  productId: z.string().min(1).max(64),
+  rating: z.coerce
+    .number()
+    .int()
+    .min(reviewRatingMin, "Bitte eine Bewertung von 1 bis 5 Sternen wählen.")
+    .max(reviewRatingMax, "Bitte eine Bewertung von 1 bis 5 Sternen wählen."),
+  body: z.string().trim().max(1500).optional().or(z.literal("")),
 });
 
 export const checkoutSchema = z

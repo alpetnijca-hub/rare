@@ -128,6 +128,7 @@ export const rateLimits = {
   cartQuote: { limit: 60, windowMs: 60_000 },
   wishlist: { limit: 60, windowMs: 60_000 },
   stats: { limit: 120, windowMs: 60_000 },
+  review: { limit: 20, windowMs: 60 * 60_000 },
   newsletter: { limit: 5, windowMs: 60 * 60_000 },
   contact: { limit: 5, windowMs: 60 * 60_000 },
   backInStock: { limit: 10, windowMs: 60 * 60_000 },

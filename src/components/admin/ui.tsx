@@ -14,6 +14,8 @@ export function SubmitButton({
   size = "md",
   fullWidth,
   className,
+  name,
+  value,
 }: {
   children: ReactNode;
   pendingLabel?: string;
@@ -21,6 +23,13 @@ export function SubmitButton({
   size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
   className?: string;
+  /**
+   * Für Formulare mit mehreren Knöpfen: Der gedrückte Knopf schickt seinen
+   * Wert mit, und die Aktion weiss, welcher es war. Ein verstecktes Feld
+   * könnte das nicht – es wüsste nichts vom Klick.
+   */
+  name?: string;
+  value?: string;
 }) {
   const { pending } = useFormStatus();
 
@@ -32,6 +41,8 @@ export function SubmitButton({
       fullWidth={fullWidth}
       disabled={pending}
       className={className}
+      name={name}
+      value={value}
     >
       {pending ? pendingLabel : children}
     </Button>

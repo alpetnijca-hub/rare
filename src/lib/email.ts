@@ -10,6 +10,7 @@ import {
   orderConfirmationEmail,
   paymentFailedEmail,
   refundEmail,
+  reviewInviteEmail,
   shippingConfirmationEmail,
   type OrderEmailData,
   type RenderedEmail,
@@ -143,6 +144,11 @@ export function orderStatusLabel(status: string): string {
 /** Öffentliche Statusseite einer Gastbestellung. */
 export function orderStatusUrl(accessToken: string): string {
   return `${siteConfig.url}/bestellung/${accessToken}`;
+}
+
+/** Seite zum Bewerten der Düfte aus einer Bestellung. */
+export function reviewUrl(accessToken: string): string {
+  return `${siteConfig.url}/bewerten/${accessToken}`;
 }
 
 async function loadOrderEmailData(
@@ -284,6 +290,52 @@ export async function sendOrderCancelledEmail(
       refunded: options.refunded ?? false,
     }),
   );
+}
+
+/**
+ * Bitte um eine Bewertung.
+ *
+ * Wird nach dem Versand verschickt, aber nur einmal je Bestellung – der
+ * Zeitstempel `reviewInviteSentAt` verhindert eine zweite Nachricht, falls
+ * jemand den Status noch einmal auf „versendet“ setzt. Wer nicht bewerten
+ * will, hört nichts mehr von uns.
+ */
+export async function sendReviewInviteEmail(orderId: string): Promise<void> {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: orderEmailInclude,
+  });
+  if (!order || order.reviewInviteSentAt) return;
+
+  const bewertbar = order.items.filter((item) => item.productId !== null);
+  if (bewertbar.length === 0) return;
+
+  const result = await deliver(
+    order.email,
+    reviewInviteEmail({
+      orderNumber: order.orderNumber,
+      firstName: order.shippingAddress.firstName,
+      items: bewertbar.map((item) => ({
+        productName: item.productName,
+        size: item.variantSize,
+        sku: item.sku,
+        quantity: item.quantity,
+        unitPriceCents: item.unitPriceCents,
+        lineTotalCents: item.lineTotalCents,
+        isPreorder: item.isPreorder,
+        deliveryMinDays: item.deliveryMinDays,
+        deliveryMaxDays: item.deliveryMaxDays,
+      })),
+      reviewUrl: reviewUrl(order.accessToken),
+    }),
+  );
+
+  if (result.sent) {
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { reviewInviteSentAt: new Date() },
+    });
+  }
 }
 
 export async function sendShippingConfirmationEmail(

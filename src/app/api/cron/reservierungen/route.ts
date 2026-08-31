@@ -1,9 +1,11 @@
 import { NextRequest } from "next/server";
 import { expireStaleReservations } from "@/lib/orders";
+import { sendDueReviewInvites } from "@/lib/review-invites";
 import { envValue } from "@/lib/env";
 
 /**
- * Gibt abgelaufene Reservierungen frei.
+ * Täglicher Lauf: gibt abgelaufene Reservierungen frei und bittet um
+ * Bewertungen.
  *
  * Aufruf durch Vercel Cron (siehe vercel.json) oder einen externen
  * Zeitplaner. Ohne gültiges CRON_SECRET wird nichts ausgeführt.
@@ -24,7 +26,10 @@ async function run(request: NextRequest): Promise<Response> {
 
   try {
     const released = await expireStaleReservations();
-    return Response.json({ ok: true, released });
+    // Im selben Lauf: Wer sein Paket seit ein paar Tagen hat, wird einmal um
+    // eine Bewertung gebeten.
+    const invited = await sendDueReviewInvites();
+    return Response.json({ ok: true, released, invited });
   } catch (error) {
     console.error(
       "[cron] Reservierungen konnten nicht freigegeben werden:",

@@ -146,6 +146,7 @@ model Product {
   variants   ProductVariant[]
   orderItems OrderItem[]
   stats      ProductStat[]
+  reviews    Review[]
 
   @@index([isActive, createdAt])
   @@index([isActive, isBestseller])
@@ -415,10 +416,62 @@ model Order {
   payments  Payment[]
   shipments Shipment[]
   movements InventoryMovement[]
+  reviews   Review[]
+
+  /// Wann die Einladung zum Bewerten verschickt wurde. Verhindert, dass
+  /// dieselbe Bestellung zweimal angeschrieben wird.
+  reviewInviteSentAt DateTime?
 
   @@index([status, createdAt])
   @@index([email])
   @@index([createdAt])
+}
+
+/// Freigabestand einer Bewertung.
+enum ReviewStatus {
+  /// Eingegangen, noch nicht geprüft.
+  PENDING
+  /// Sichtbar im Shop.
+  PUBLISHED
+  /// Abgelehnt – Beschimpfung, Werbung, offensichtlich falscher Bezug.
+  REJECTED
+}
+
+/// Bewertung eines Dufts durch jemanden, der ihn wirklich gekauft hat.
+///
+/// Der Bezug zur Bestellung ist Pflicht und nicht optional: Ohne ihn wäre es
+/// eine beliebige Zuschrift aus dem Internet. Genau dieser Unterschied steht
+/// auch im Shop – „nur von Käuferinnen und Käufern“ darf nur dort stehen, wo
+/// es stimmt (Art. 3 Abs. 1 lit. s UWG).
+///
+/// Je Bestellung und Duft ist genau eine Bewertung möglich.
+model Review {
+  id        String       @id @default(cuid())
+  productId String
+  orderId   String
+
+  /// 1 bis 5 Sterne.
+  rating    Int
+  /// Anzeigename, standardmässig der Vorname aus der Bestellung.
+  authorName String
+  /// Der Text. Optional – manche wollen nur Sterne vergeben.
+  body      String?
+
+  status    ReviewStatus @default(PENDING)
+  /// Zeitpunkt der Freigabe; leer, solange nicht freigegeben.
+  publishedAt DateTime?
+  /// Interner Vermerk bei einer Ablehnung.
+  moderationNote String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@unique([orderId, productId])
+  @@index([productId, status])
+  @@index([status, createdAt])
 }
 
 /// Tageszähler je Duft: wie oft angesehen, wie oft in den Warenkorb gelegt.

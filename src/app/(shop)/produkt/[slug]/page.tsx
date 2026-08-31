@@ -10,6 +10,9 @@ import {
   type VariantOption,
 } from "@/components/product/variant-picker";
 import { siteConfig, taxConfig } from "@/config/site";
+import { ReviewList } from "@/components/review/review-list";
+import { publishedReviews, reviewSummary } from "@/lib/review-queries";
+import { ratingMax, ratingMin } from "@/lib/reviews";
 import { StatReporter } from "@/components/product/stat-reporter";
 import { StrengthMeters } from "@/components/product/strength-meter";
 import { WishlistButton } from "@/components/wishlist/wishlist-button";
@@ -154,7 +157,11 @@ export default async function ProductPage({ params }: PageProps) {
 
   if (!product) notFound();
 
-  const related = await getRelatedProducts(product, 4);
+  const [related, bewertungen, bewertungsschnitt] = await Promise.all([
+    getRelatedProducts(product, 4),
+    publishedReviews(product.id),
+    reviewSummary(product.id),
+  ]);
 
   // Varianten für die Client-Komponente aufbereiten – die Verfügbarkeit
   // wird hier serverseitig berechnet und nicht dem Browser überlassen.
@@ -219,6 +226,20 @@ export default async function ProductPage({ params }: PageProps) {
         seller: { "@type": "Organization", name: siteConfig.legalName },
       };
     }),
+    // Sternchen in der Google-Suche – aber nur, wenn es sie wirklich gibt.
+    // Eine erfundene Durchschnittsnote wäre nicht nur gegen die Richtlinien
+    // von Google, sondern auch irreführende Werbung.
+    ...(bewertungsschnitt.count > 0 && bewertungsschnitt.average !== null
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: bewertungsschnitt.average,
+            reviewCount: bewertungsschnitt.count,
+            bestRating: ratingMax,
+            worstRating: ratingMin,
+          },
+        }
+      : {}),
   };
 
   const breadcrumbJsonLd = {
@@ -400,6 +421,10 @@ export default async function ProductPage({ params }: PageProps) {
                 sillage={product.sillage}
               />
             </div>
+          </InfoSection>
+
+          <InfoSection title="Bewertungen">
+            <ReviewList summary={bewertungsschnitt} reviews={bewertungen} />
           </InfoSection>
 
           {product.usage && (
