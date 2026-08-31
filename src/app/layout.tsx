@@ -23,6 +23,26 @@ const inter = Inter({
   display: "swap",
 });
 
+/**
+ * Das Bild, das erscheint, wenn jemand einen Link auf diese Seite teilt.
+ *
+ * Ohne dieses Bild zeigen WhatsApp, Instagram und Co. nur einen nackten Link
+ * – für einen Shop, dessen Besucher fast alle über eine Nachricht oder eine
+ * Story kommen, ist das die verschenkteste Fläche überhaupt.
+ *
+ * Bewusst als Eintrag in den Metadaten und nicht als Datei `opengraph-image`
+ * neben dieser: Die Dateiform hat Vorrang vor allem, was `generateMetadata`
+ * setzt, und hätte damit auf **jeder** Produktseite den Duft durch dieses
+ * allgemeine Bild ersetzt. So gilt es überall – ausser dort, wo ein
+ * passenderes Bild bereitsteht.
+ */
+const socialPreviewImage = {
+  url: "/vorschaubild.jpg",
+  width: 1200,
+  height: 630,
+  alt: `${siteConfig.name} – ${siteConfig.tagline}`,
+} as const;
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
@@ -47,11 +67,13 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     title: `${siteConfig.name} – ${siteConfig.tagline}`,
     description: siteConfig.description,
+    images: [socialPreviewImage],
   },
   twitter: {
     card: "summary_large_image",
     title: `${siteConfig.name} – ${siteConfig.tagline}`,
     description: siteConfig.description,
+    images: [socialPreviewImage.url],
   },
   robots: {
     index: true,

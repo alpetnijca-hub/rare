@@ -10,7 +10,12 @@ import {
   type VariantOption,
 } from "@/components/product/variant-picker";
 import { siteConfig, taxConfig } from "@/config/site";
-import { productImageUrl, productThumbUrl } from "@/lib/product-image";
+import {
+  productImageUrl,
+  productSocialImageUrl,
+  productThumbUrl,
+  socialImageRatio,
+} from "@/lib/product-image";
 import {
   formatDeliveryRange,
   formatRestockDate,
@@ -66,8 +71,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: product.metaTitle || product.name,
       description: description.slice(0, 180),
       url: `${siteConfig.url}/produkt/${product.slug}`,
+      // Die bearbeitete Fassung im Querformat – nicht die rohe Datei. Siehe
+      // `productSocialImageUrl`.
       images: product.images.slice(0, 1).map((image) => ({
-        url: image.url,
+        url: productSocialImageUrl(image.url, product),
+        width: socialImageRatio.width,
+        height: socialImageRatio.height,
         alt: image.alt,
       })),
     },

@@ -185,6 +185,60 @@ export function productImageUrl(
 }
 
 /**
+ * Seitenverhältnis für Vorschaubilder beim Teilen (1200×630).
+ *
+ * Das ist das Format, das WhatsApp, Instagram, Facebook und X erwarten. Wer
+ * ein hochkantes Bild mitgibt, dessen Flakon wird oben und unten
+ * abgeschnitten – meist genau am Deckel.
+ */
+export const socialImageRatio = { width: 1200, height: 630 } as const;
+
+/**
+ * Das Bild, das erscheint, wenn jemand einen Produktlink teilt.
+ *
+ * Zwei Dinge unterscheiden es vom Bild auf der Seite:
+ *
+ *  1. **Es ist die bearbeitete Fassung.** Vorher ging die rohe Datei hinaus,
+ *     so wie sie hochgeladen wurde – ohne die Kulisse aus den Duftnoten und
+ *     ohne einheitlichen Hintergrund. Geteilt sah der Shop damit anders aus
+ *     als im Shop selbst.
+ *  2. **Es ist quer statt hochkant.** Angehängt wird ein zweiter Schritt, der
+ *     das fertige 4:5-Bild auf 1200×630 polstert. Gepolstert und nicht
+ *     beschnitten: Ein Zuschnitt auf dieses Verhältnis schneidet vom Flakon
+ *     Deckel und Sockel ab, geprüft an einem echten Produktbild. Die
+ *     Seitenstreifen bekommen dieselbe dunkle Farbe wie der Shop und fallen
+ *     deshalb kaum auf.
+ *
+ * Der Kulissenschritt davor ist zeichengleich mit dem der Produktseite –
+ * Cloudinary erkennt ihn wieder, statt die Kulisse ein zweites Mal zu
+ * erzeugen.
+ */
+export function productSocialImageUrl(
+  url: string,
+  scene?: SceneSource | null,
+): string {
+  const { width, height } = socialImageRatio;
+  const quer = `c_pad,w_${width},h_${height},b_rgb:${backgrounds.card}`;
+
+  if (!url.includes("res.cloudinary.com") || !url.includes(cloudinaryMarker)) {
+    return url;
+  }
+
+  const [prefix, rest] = url.split(cloudinaryMarker);
+  if (!rest || /^[a-z]_[^/]+\//.test(rest)) return url;
+
+  const motif = backgroundMode() === "scene" ? sceneMotif(scene) : null;
+
+  if (motif) {
+    const pad = `c_pad,w_${productImageRatio.width},h_${productImageRatio.height},b_rgb:${backgrounds.card}`;
+    const kulisse = `e_gen_background_replace:prompt_${encodeScenePrompt(motif)}`;
+    return `${prefix}${cloudinaryMarker}${pad}/${kulisse}/${quer}/f_auto,q_auto/${rest}`;
+  }
+
+  return `${prefix}${cloudinaryMarker}${backgroundStep()}${quer}/f_auto,q_auto/${rest}`;
+}
+
+/**
  * Quadratischer Ausschnitt für die kleinen Vorschaubilder unter der Galerie.
  *
  * Bewusst ohne Kulisse, auch wenn `scene` eingeschaltet ist: Ein anderes
