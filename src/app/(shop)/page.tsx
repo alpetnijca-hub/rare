@@ -14,7 +14,7 @@ import { productImageUrl } from "@/lib/product-image";
 export const metadata: Metadata = {
   title: `${siteConfig.name} – Parfüms, Duftalternativen & Abfüllungen`,
   description:
-    "Ausgewählte Parfüms, Duftalternativen und Abfüllungen in Größen von 2 ml bis 100 ml. Sichere Bezahlung, schneller Versand und persönliche Beratung.",
+    "Ausgewählte Parfüms, Duftalternativen und Abfüllungen in Größen von 2 ml bis 125 ml. Sichere Bezahlung, schneller Versand und persönliche Beratung.",
   alternates: { canonical: "/" },
 };
 
@@ -67,6 +67,23 @@ const advantages = [
   },
 ];
 
+/**
+ * Die drei Zahlen unter dem Hero.
+ *
+ * Als Liste statt dreimal derselbe Block: Sonst wandert beim nächsten
+ * Umbau die Trennlinie zwischen den Spalten wieder auseinander.
+ */
+function heroFacts(freeShippingFrom: number | null) {
+  return [
+    { label: "Größen", value: "2–125 ml" },
+    { label: "Lieferung", value: "3–14 Tage" },
+    {
+      label: "Gratis ab",
+      value: freeShippingFrom ? <Money cents={freeShippingFrom} /> : "—",
+    },
+  ];
+}
+
 function SectionHeading({
   eyebrow,
   title,
@@ -83,6 +100,7 @@ function SectionHeading({
   return (
     <div className="mb-10 flex flex-col gap-4 md:mb-12 md:flex-row md:items-end md:justify-between">
       <div className="max-w-2xl">
+        <span aria-hidden="true" className="rule-gold mb-4 block w-10" />
         <p className="eyebrow mb-3">{eyebrow}</p>
         <h2 className="text-3xl md:text-4xl">{title}</h2>
         {description && (
@@ -143,26 +161,53 @@ export default async function HomePage() {
             className="absolute inset-0 bg-linear-to-r from-ink via-ink/85 to-ink/30"
             aria-hidden="true"
           />
+          {/* Warmes Licht hinter der Schrift und ein dunkler Saum nach unten,
+              damit der Übergang zum nächsten Abschnitt nicht abreisst. */}
+          <div className="hero-glow absolute inset-0" aria-hidden="true" />
+          <div
+            className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-ink to-transparent"
+            aria-hidden="true"
+          />
         </div>
 
         <div className="container-shop flex min-h-[78vh] flex-col justify-center py-20 md:min-h-[82vh] md:py-28">
-          <div className="max-w-xl animate-rise">
-            <p className="eyebrow mb-5">Parfüms · Abfüllungen · Duftproben</p>
+          {/* Der Text baut sich von oben nach unten auf. Die Verzögerungen sind
+              klein genug, dass es sich wie eine Bewegung anfühlt und nicht wie
+              vier einzelne Effekte. Bei „Bewegung reduzieren“ im Betriebssystem
+              fällt die Animation global weg – siehe globals.css. */}
+          <div className="max-w-xl">
+            <p className="eyebrow animate-rise">
+              Parfüms · Abfüllungen · Duftproben
+            </p>
+            <span
+              aria-hidden="true"
+              className="rule-gold animate-rise mt-4 block w-16"
+              style={{ animationDelay: "60ms" }}
+            />
 
-            <h1 className="text-4xl leading-[1.08] sm:text-5xl md:text-6xl">
+            <h1
+              className="animate-rise mt-5 text-4xl leading-[1.08] sm:text-5xl md:text-6xl"
+              style={{ animationDelay: "80ms" }}
+            >
               Düfte, die man
               <span className="block text-gold">nicht überall findet</span>
             </h1>
 
-            <p className="mt-6 max-w-lg text-base leading-relaxed text-muted md:text-lg">
-              Wir sind zwei Duftliebhaber aus {siteConfig.countryName} und stellen
+            <p
+              className="animate-rise mt-6 max-w-lg text-base leading-relaxed text-muted md:text-lg"
+              style={{ animationDelay: "160ms" }}
+            >
+              Wir sind zwei Duftliebhaber aus der {siteConfig.countryName} und stellen
               eine kleine, sorgfältig geprüfte Auswahl zusammen: eigenständige
               Parfüms, klar gekennzeichnete Duftalternativen und Abfüllungen ab
               2 ml. So kannst du in Ruhe testen, bevor du dich für einen
               ganzen Flakon entscheidest.
             </p>
 
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <div
+              className="animate-rise mt-9 flex flex-col gap-3 sm:flex-row"
+              style={{ animationDelay: "240ms" }}
+            >
               <ButtonLink href="/shop" size="lg">
                 Düfte entdecken
               </ButtonLink>
@@ -171,29 +216,27 @@ export default async function HomePage() {
               </ButtonLink>
             </div>
 
-            <dl className="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-line pt-7 text-sm">
-              <div>
-                <dt className="text-[11px] uppercase tracking-[0.14em] text-subtle">
-                  Größen
-                </dt>
-                <dd className="mt-1 font-display text-xl text-cream">2–100 ml</dd>
-              </div>
-              <div>
-                <dt className="text-[11px] uppercase tracking-[0.14em] text-subtle">
-                  Lieferung
-                </dt>
-                <dd className="mt-1 font-display text-xl text-cream">
-                  3 Tage – 2 Wochen
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[11px] uppercase tracking-[0.14em] text-subtle">
-                  Gratis ab
-                </dt>
-                <dd className="mt-1 font-display text-xl text-cream">
-                  {freeShippingFrom ? <Money cents={freeShippingFrom} /> : "—"}
-                </dd>
-              </div>
+            <dl
+              className="animate-rise mt-12 grid max-w-md grid-cols-3 border-t border-line pt-7 text-sm"
+              style={{ animationDelay: "320ms" }}
+            >
+              {heroFacts(freeShippingFrom).map((fact, index) => (
+                <div
+                  key={fact.label}
+                  className={
+                    index === 0
+                      ? "pr-5"
+                      : "border-l border-line pl-5 pr-5 last:pr-0"
+                  }
+                >
+                  <dt className="text-[11px] uppercase tracking-[0.14em] text-subtle">
+                    {fact.label}
+                  </dt>
+                  <dd className="mt-1 font-display text-xl text-cream">
+                    {fact.value}
+                  </dd>
+                </div>
+              ))}
             </dl>
           </div>
         </div>
@@ -208,18 +251,22 @@ export default async function HomePage() {
         </h2>
         <div className="container-shop grid gap-8 py-14 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
           {advantages.map((advantage) => (
-            <div key={advantage.title} className="flex flex-col gap-3">
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 28 28"
-                fill="none"
-                aria-hidden="true"
-                className="text-gold"
-              >
-                {advantage.icon}
-              </svg>
-              <h3 className="font-sans text-sm font-semibold uppercase tracking-[0.1em] text-cream">
+            <div key={advantage.title} className="group flex flex-col gap-3">
+              {/* Der Rahmen um das Symbol gibt den vier Spalten einen
+                  gemeinsamen Anker – ohne ihn schwebten die Zeichnungen
+                  unterschiedlich hoch über dem Text. */}
+              <span className="flex size-12 items-center justify-center border border-line-strong bg-ink text-gold transition-colors duration-300 group-hover:border-gold/45">
+                <svg
+                  width="26"
+                  height="26"
+                  viewBox="0 0 28 28"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  {advantage.icon}
+                </svg>
+              </span>
+              <h3 className="mt-1 font-sans text-sm font-semibold uppercase tracking-[0.1em] text-cream">
                 {advantage.title}
               </h3>
               <p className="text-sm leading-relaxed text-muted">{advantage.text}</p>

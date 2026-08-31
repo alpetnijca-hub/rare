@@ -168,6 +168,18 @@
     );
   }
 
+  /* Warmer Lichtschein hinter der Hero-Überschrift.
+     Kein Bild, sondern ein Verlauf: kostet nichts zu laden und passt sich
+     jeder Bildschirmbreite an. Bewusst schwach – er soll die Schrift vom
+     Foto abheben, nicht selbst auffallen. */
+  .hero-glow {
+    background: radial-gradient(
+      62% 52% at 20% 46%,
+      color-mix(in srgb, var(--color-gold) 12%, transparent),
+      transparent 72%
+    );
+  }
+
   /* Skip-Link für Screenreader- und Tastaturnutzung. */
   .skip-link {
     position: absolute;

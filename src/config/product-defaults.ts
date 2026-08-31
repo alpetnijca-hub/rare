@@ -67,4 +67,5 @@ export const commonSizes: Array<{
   { label: "30 ml", volumeMl: 30, isSample: false },
   { label: "50 ml", volumeMl: 50, isSample: false },
   { label: "100 ml", volumeMl: 100, isSample: false },
+  { label: "125 ml", volumeMl: 125, isSample: false },
 ];
